@@ -1,0 +1,215 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Bytebase API",
+    "version": "v1"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Auth",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Login (service account)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/v1/auth/login",
+            "body": {
+              "type": "json",
+              "data": "{\n  \"email\": \"my-service-account@service.bytebase.com\",\n  \"password\": \"{{serviceKey}}\",\n  \"web\": true\n}"
+            }
+          },
+          "docs": "Exchange service-account credentials for a Bearer access token."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Instances",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": { "name": "List instances", "type": "http" },
+          "http": { "method": "GET", "url": "{{baseUrl}}/v1/instances" },
+          "docs": "List database instances."
+        },
+        {
+          "info": { "name": "Create instance", "type": "http" },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/v1/instances?instanceId=prod-mysql",
+            "body": { "type": "json", "data": "{}" }
+          },
+          "docs": "Register a database instance."
+        },
+        {
+          "info": { "name": "Get instance", "type": "http" },
+          "http": { "method": "GET", "url": "{{baseUrl}}/v1/instances/prod-mysql" },
+          "docs": "Get a single instance."
+        },
+        {
+          "info": { "name": "List instance databases", "type": "http" },
+          "http": { "method": "GET", "url": "{{baseUrl}}/v1/instances/prod-mysql/databases" },
+          "docs": "List databases discovered on an instance."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Projects",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": { "name": "List projects", "type": "http" },
+          "http": { "method": "GET", "url": "{{baseUrl}}/v1/projects" },
+          "docs": "List projects."
+        },
+        {
+          "info": { "name": "Get project", "type": "http" },
+          "http": { "method": "GET", "url": "{{baseUrl}}/v1/projects/project-sample" },
+          "docs": "Get a project."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Issues / Migrations",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": { "name": "List issues", "type": "http" },
+          "http": { "method": "GET", "url": "{{baseUrl}}/v1/projects/project-sample/issues" },
+          "docs": "List issues in a project."
+        },
+        {
+          "info": { "name": "Create issue", "type": "http" },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/v1/projects/project-sample/issues",
+            "body": { "type": "json", "data": "{}" }
+          },
+          "docs": "Create a schema-change / data-change issue."
+        },
+        {
+          "info": { "name": "Approve issue", "type": "http" },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/v1/projects/project-sample/issues/123:approve",
+            "body": { "type": "json", "data": "{\n  \"comment\": \"LGTM\"\n}" }
+          },
+          "docs": "Approve an issue at the current approval step."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Plans",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": { "name": "Create plan", "type": "http" },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/v1/projects/project-sample/plans",
+            "body": { "type": "json", "data": "{}" }
+          },
+          "docs": "Create a plan describing proposed changes."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Rollouts",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": { "name": "Create rollout", "type": "http" },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/v1/projects/project-sample/rollouts",
+            "body": { "type": "json", "data": "{}" }
+          },
+          "docs": "Create a rollout to execute a plan."
+        },
+        {
+          "info": { "name": "Get rollout", "type": "http" },
+          "http": { "method": "GET", "url": "{{baseUrl}}/v1/projects/project-sample/rollouts/123" },
+          "docs": "Get a rollout and its stages/tasks."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Sheets",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": { "name": "Create sheet", "type": "http" },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/v1/projects/project-sample/sheets",
+            "body": { "type": "json", "data": "{}" }
+          },
+          "docs": "Create a sheet (SQL statement) in a project."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Users / Roles",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": { "name": "List users", "type": "http" },
+          "http": { "method": "GET", "url": "{{baseUrl}}/v1/users" },
+          "docs": "List users."
+        },
+        {
+          "info": { "name": "List roles", "type": "http" },
+          "http": { "method": "GET", "url": "{{baseUrl}}/v1/roles" },
+          "docs": "List custom and predefined roles."
+        },
+        {
+          "info": { "name": "List groups", "type": "http" },
+          "http": { "method": "GET", "url": "{{baseUrl}}/v1/groups" },
+          "docs": "List user groups."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Webhooks",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": { "name": "Add project webhook", "type": "http" },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/v1/projects/project-sample/webhooks",
+            "body": { "type": "json", "data": "{\n  \"type\": \"SLACK\",\n  \"title\": \"deploy-alerts\",\n  \"url\": \"https://hooks.slack.com/services/xxx\"\n}" }
+          },
+          "docs": "Add a webhook to a project."
+        }
+      ]
+    }
+  ]
+}

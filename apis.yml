@@ -1,0 +1,219 @@
+aid: bytebase
+url: https://raw.githubusercontent.com/api-evangelist/bytebase/refs/heads/main/apis.yml
+name: Bytebase
+kind: company
+description: Bytebase is a database DevOps and CI/CD platform - the GitOps-style control
+  plane for schema change, migration, and access management across MySQL, PostgreSQL,
+  and many other engines. Every action in the web console is backed by a documented
+  API exposed as both Connect/gRPC and RESTful HTTP (gRPC transcoding), authenticated
+  with a service-account Bearer token. Bytebase ships as free, self-hostable open
+  source (OSS) with paid Pro and Enterprise tiers.
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+tags:
+- Database
+- DevOps
+- Schema Migration
+- CI/CD
+- DevSecOps
+created: '2026-06-21'
+modified: '2026-06-21'
+specificationVersion: '0.19'
+apis:
+- aid: bytebase:instances
+  name: Bytebase Instances API
+  tags:
+  - Instances
+  - Data Sources
+  - Database Servers
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://docs.bytebase.com/integrations/api/overview
+  baseURL: https://demo.bytebase.com/v1
+  properties:
+  - url: https://docs.bytebase.com/integrations/api/overview
+    type: Documentation
+  - url: https://api.bytebase.com/
+    type: APIReference
+  - url: openapi/bytebase-openapi.yml
+    type: OpenAPI
+  - url: collections/bytebase.postman_collection.json
+    type: PostmanCollection
+  - url: collections/bytebase.opencollection.json
+    type: OpenCollection
+  description: Register, list, update, and sync the database instances (and their data
+    sources) that Bytebase manages, plus list the databases discovered on each instance.
+- aid: bytebase:databases
+  name: Bytebase Databases API
+  tags:
+  - Databases
+  - Schema
+  - Metadata
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://docs.bytebase.com/integrations/api/overview
+  baseURL: https://demo.bytebase.com/v1
+  properties:
+  - url: https://docs.bytebase.com/integrations/api/overview
+    type: Documentation
+  - url: https://api.bytebase.com/
+    type: APIReference
+  - url: openapi/bytebase-openapi.yml
+    type: OpenAPI
+  - url: collections/bytebase.postman_collection.json
+    type: PostmanCollection
+  - url: collections/bytebase.opencollection.json
+    type: OpenCollection
+  description: Read and update databases, fetch live schema and metadata, list changelogs,
+    diff schemas, and trigger synchronization for databases tracked by Bytebase.
+- aid: bytebase:projects
+  name: Bytebase Projects API
+  tags:
+  - Projects
+  - Organization
+  - Governance
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://docs.bytebase.com/integrations/api/overview
+  baseURL: https://demo.bytebase.com/v1
+  properties:
+  - url: https://docs.bytebase.com/integrations/api/overview
+    type: Documentation
+  - url: https://api.bytebase.com/
+    type: APIReference
+  - url: openapi/bytebase-openapi.yml
+    type: OpenAPI
+  - url: collections/bytebase.postman_collection.json
+    type: PostmanCollection
+  - url: collections/bytebase.opencollection.json
+    type: OpenCollection
+  description: Create, list, update, and delete projects - the organizational units
+    that group databases, members, and database-change workflows in Bytebase.
+- aid: bytebase:issues-migrations
+  name: Bytebase Issues / Migrations API
+  tags:
+  - Issues
+  - Migrations
+  - Schema Change
+  - Approvals
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://docs.bytebase.com/integrations/api/overview
+  baseURL: https://demo.bytebase.com/v1
+  properties:
+  - url: https://docs.bytebase.com/integrations/api/overview
+    type: Documentation
+  - url: https://api.bytebase.com/
+    type: APIReference
+  - url: openapi/bytebase-openapi.yml
+    type: OpenAPI
+  - url: collections/bytebase.postman_collection.json
+    type: PostmanCollection
+  - url: collections/bytebase.opencollection.json
+    type: OpenCollection
+  description: Create and track schema-change and data-change issues (the migration
+    review unit in Bytebase), drive approval flows (approve, reject, request), and
+    manage issue comments. Plans organize the proposed changes behind an issue.
+- aid: bytebase:rollouts
+  name: Bytebase Rollouts API
+  tags:
+  - Rollouts
+  - Deployment
+  - Tasks
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://docs.bytebase.com/integrations/api/overview
+  baseURL: https://demo.bytebase.com/v1
+  properties:
+  - url: https://docs.bytebase.com/integrations/api/overview
+    type: Documentation
+  - url: https://api.bytebase.com/
+    type: APIReference
+  - url: openapi/bytebase-openapi.yml
+    type: OpenAPI
+  - url: collections/bytebase.postman_collection.json
+    type: PostmanCollection
+  - url: collections/bytebase.opencollection.json
+    type: OpenCollection
+  description: Execute the plan behind an issue by creating and managing rollouts and
+    their tasks - run, skip, or cancel tasks across stages and inspect task-run logs.
+- aid: bytebase:sheets
+  name: Bytebase Sheets API
+  tags:
+  - Sheets
+  - SQL
+  - Scripts
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://docs.bytebase.com/integrations/api/overview
+  baseURL: https://demo.bytebase.com/v1
+  properties:
+  - url: https://docs.bytebase.com/integrations/api/overview
+    type: Documentation
+  - url: https://api.bytebase.com/
+    type: APIReference
+  - url: openapi/bytebase-openapi.yml
+    type: OpenAPI
+  - url: collections/bytebase.postman_collection.json
+    type: PostmanCollection
+  - url: collections/bytebase.opencollection.json
+    type: OpenCollection
+  description: Create and retrieve sheets - the SQL statements / scripts that back
+    plan specs, migrations, and ad-hoc work in a project.
+- aid: bytebase:users-roles
+  name: Bytebase Users / Roles API
+  tags:
+  - Users
+  - Roles
+  - Groups
+  - IAM
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://docs.bytebase.com/integrations/api/overview
+  baseURL: https://demo.bytebase.com/v1
+  properties:
+  - url: https://docs.bytebase.com/integrations/api/overview
+    type: Documentation
+  - url: https://api.bytebase.com/
+    type: APIReference
+  - url: openapi/bytebase-openapi.yml
+    type: OpenAPI
+  - url: collections/bytebase.postman_collection.json
+    type: PostmanCollection
+  - url: collections/bytebase.opencollection.json
+    type: OpenCollection
+  description: Manage user accounts (including service accounts), custom roles, and
+    user groups that drive role-based access control across the Bytebase workspace.
+- aid: bytebase:webhooks
+  name: Bytebase Webhooks API
+  tags:
+  - Webhooks
+  - Notifications
+  - Events
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://docs.bytebase.com/integrations/api/overview
+  baseURL: https://demo.bytebase.com/v1
+  properties:
+  - url: https://docs.bytebase.com/integrations/api/overview
+    type: Documentation
+  - url: https://api.bytebase.com/
+    type: APIReference
+  - url: openapi/bytebase-openapi.yml
+    type: OpenAPI
+  - url: collections/bytebase.postman_collection.json
+    type: PostmanCollection
+  - url: collections/bytebase.opencollection.json
+    type: OpenCollection
+  description: Add, update, remove, and test project webhooks that push Bytebase events
+    (issue and rollout activity) to Slack, Discord, Teams, Lark, DingTalk, WeCom, or
+    a custom endpoint.
+common:
+- type: GitHubOrganization
+  url: https://github.com/bytebase
+- type: LinkedIn
+  url: https://www.linkedin.com/company/bytebase
+- type: Website
+  url: https://www.bytebase.com
+- type: Documentation
+  url: https://docs.bytebase.com/integrations/api/overview
+- type: Plans
+  url: plans/bytebase-plans-pricing.yml
+- type: RateLimits
+  url: rate-limits/bytebase-rate-limits.yml
+- type: FinOps
+  url: finops/bytebase-finops.yml
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

@@ -1,0 +1,89 @@
+aid: bytebase
+name: Bytebase
+review:
+  question: Does Bytebase expose a documented public WebSocket API?
+  answer: false
+  date: '2026-06-21'
+  reviewer: API Evangelist
+  asyncapiSpecCreated: false
+  asyncapiScopeNote: |
+    No AsyncAPI document was created. Bytebase's API is a Connect/gRPC service
+    also served as RESTful HTTP via gRPC transcoding. The asynchronous,
+    event-driven surface that Bytebase does expose is outbound HTTP webhooks
+    (project webhooks to Slack/Discord/Teams/Lark/DingTalk/WeCom/custom), not
+    a WebSocket or SSE stream the client subscribes to. No streaming pub/sub
+    transport is documented, so no AsyncAPI artifact was authored.
+findings:
+  summary: |
+    Bytebase does not publish a documented public WebSocket API. The platform
+    exposes a unified Connect/gRPC API that is also reachable as a RESTful HTTP
+    API through gRPC transcoding (google.api.http annotations). Clients
+    authenticate by POSTing service-account credentials to /v1/auth/login to
+    obtain a short-lived Bearer access token, then call resource endpoints such
+    as /v1/instances, /v1/projects, /v1/projects/{project}/issues, and
+    /v1/projects/{project}/rollouts. The only asynchronous surface is outbound
+    project webhooks. No ws:// or wss:// endpoint is documented. Bytebase is
+    free open source to self-host, with paid Pro and Enterprise tiers; the same
+    API is available across all tiers.
+  transports:
+    - protocol: gRPC
+      scheme: https
+      note: Connect/gRPC is the primary API; the console is built on it.
+      documented: true
+    - protocol: REST
+      scheme: https
+      baseURL: https://<your-bytebase-host>/v1
+      note: RESTful HTTP served via gRPC transcoding of the same services.
+      documented: true
+    - protocol: Webhook
+      scheme: https
+      note: Outbound project webhooks for issue/rollout events (Slack, Discord, Teams, Lark, DingTalk, WeCom, custom). One-way push, not subscribable streaming.
+      documented: true
+    - protocol: WebSocket
+      scheme: wss
+      documented: false
+      note: No WebSocket endpoint is documented in the Bytebase API overview, API reference, or proto definitions as of the review date.
+  endpointsConfirmedRest:
+    - POST   /v1/auth/login
+    - GET    /v1/instances
+    - POST   /v1/instances
+    - GET    /v1/instances/{instance}
+    - PATCH  /v1/instances/{instance}
+    - GET    /v1/instances/{instance}/databases
+    - GET    /v1/projects
+    - POST   /v1/projects
+    - GET    /v1/projects/{project}
+    - GET    /v1/projects/{project}/issues
+    - POST   /v1/projects/{project}/issues
+    - POST   /v1/projects/{project}/plans
+    - POST   /v1/projects/{project}/rollouts
+    - POST   /v1/projects/{project}/sheets
+    - POST   /v1/projects/{project}/webhooks
+    - GET    /v1/users
+    - GET    /v1/roles
+    - GET    /v1/groups
+sources:
+  - url: https://docs.bytebase.com/integrations/api/overview
+    type: Documentation
+    note: States Bytebase provides a gRPC and RESTful HTTP API; the console is built on the same API.
+  - url: https://docs.bytebase.com/integrations/api/authentication
+    type: Documentation
+    note: Auth via POST /v1/auth/login with service account email + service key, returning a Bearer token.
+  - url: https://api.bytebase.com/
+    type: APIReference
+    note: Generated API reference for the v1 services; all transports are gRPC / HTTPS REST.
+  - url: https://github.com/bytebase/bytebase
+    type: SourceCode
+    note: Proto definitions (proto/v1) define the services; no WebSocket surface.
+actions:
+  asyncapiPath: null
+  apisYmlUpdated: true
+  reason: |
+    No WebSocket protocol surface exists, and no client-subscribable streaming
+    (SSE or WebSocket) transport is documented. The only event-driven mechanism
+    is outbound project webhooks, which are HTTP push and not modeled as
+    AsyncAPI here. apis.yml documents the REST/OpenAPI surface and a dedicated
+    Webhooks API entry.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

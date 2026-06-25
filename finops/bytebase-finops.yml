@@ -1,0 +1,99 @@
+specification: FinOps Framework
+specificationVersion: '1.0'
+schema: https://www.finops.org/framework/
+provider: Bytebase
+providerId: bytebase
+created: '2026-06-21'
+modified: '2026-06-21'
+reconciled: true
+tags:
+- Database
+- DevOps
+- Schema Migration
+- CI/CD
+- DevSecOps
+- FinOps
+- Cost Management
+- FOCUS
+description: >-
+  FinOps view of Bytebase spend. Unlike usage-metered APIs, Bytebase is licensed
+  as software: a free self-hosted Community/OSS tier, a per-user Pro
+  subscription (cloud or self-host), and a custom annual Enterprise agreement.
+  Cost drivers are therefore seat count (Pro) and instance/feature license
+  quota plus negotiated contract value (Enterprise) - not API call volume.
+  Self-hosting adds the customer's own infrastructure cost outside Bytebase's
+  invoice.
+notes: >-
+  Per-user and Enterprise rates are subject to change; verify against the
+  Bytebase pricing page during reconciliation. Infrastructure cost for
+  self-hosted deployments is borne by the customer's cloud/hardware provider
+  and is not part of the Bytebase invoice.
+sources:
+- https://www.bytebase.com/pricing/
+- https://docs.bytebase.com/administration/license
+- https://focus.finops.org/focus-specification/v1-3/
+alignedWith:
+  framework: FinOps Foundation Framework
+  frameworkUrl: https://www.finops.org/framework/
+  dataSpec: FOCUS
+  dataSpecVersion: '1.3'
+  dataSpecUrl: https://focus.finops.org/focus-specification/v1-3/
+publisherName: Bytebase
+serviceCategory: Developer Tools
+billingModel:
+  pricingCategory: Subscription-Based
+  billingFrequency: Monthly or Annual
+  billingCurrency: USD
+  chargeCategories:
+  - Purchase
+  - Usage
+  - Adjustment
+focusColumns:
+  ServiceName: Bytebase
+  ServiceCategory: Developer Tools
+  ProviderName: Bytebase
+  PublisherName: Bytebase
+  InvoiceIssuerName: Bytebase
+  BillingCurrency: USD
+  ChargeCategory: Purchase
+  PricingCategory: Subscription-Based
+meters:
+- name: seats
+  description: Active users on the Pro plan, billed per user per month ($20/user/month).
+  unit: users
+  aggregation: max
+  dimensions:
+  - workspace
+  - plan
+- name: instance_licenses
+  description: License quota assigned to individual database instances to unlock gated Enterprise features.
+  unit: instances
+  aggregation: sum
+  dimensions:
+  - workspace
+  - instance
+- name: enterprise_contract
+  description: Negotiated annual Enterprise subscription value.
+  unit: contract
+  aggregation: max
+  dimensions:
+  - workspace
+- name: self_host_infrastructure
+  description: Underlying compute/storage cost for a self-hosted Bytebase deployment (external to the Bytebase invoice).
+  unit: infrastructure
+  aggregation: sum
+  dimensions:
+  - workspace
+  - cloud_provider
+principles:
+- name: Visibility
+  description: Track seat count and instance license assignments against the contracted plan; reconcile monthly.
+- name: Allocation
+  description: Map projects and instances to teams/cost centers; attribute Pro seats and instance licenses accordingly.
+- name: Optimization
+  description: Stay on the free Community/OSS tier where features allow; right-size Pro seats; only assign Enterprise instance licenses where gated features are needed.
+- name: Accountability
+  description: Assign an owner for the Bytebase subscription and (for self-host) for the underlying infrastructure bill; review seat and license drift each cycle.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

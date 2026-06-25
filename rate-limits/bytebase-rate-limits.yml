@@ -1,0 +1,65 @@
+specification: API Commons Rate Limits
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/RateLimits
+provider: Bytebase
+providerId: bytebase
+created: '2026-06-21'
+modified: '2026-06-21'
+reconciled: false
+tags:
+- Database
+- DevOps
+- Schema Migration
+- CI/CD
+- DevSecOps
+- Rate Limiting
+- Quotas
+description: >-
+  Bytebase does not publish fixed per-account API rate limits because the API
+  is most commonly consumed against a self-hosted or single-tenant cloud
+  deployment that the customer operates. Practical limits are therefore a
+  function of the deployment's own capacity and any reverse proxy / ingress in
+  front of it, rather than a vendor-imposed quota. The product's hard caps are
+  expressed as plan limits (instances and users) rather than request-rate
+  ceilings. Access tokens issued by /v1/auth/login are short-lived and must be
+  refreshed.
+notes: >-
+  Confirm during reconciliation whether the managed Bytebase Cloud applies any
+  edge throttling. For self-hosted instances, rate behavior is governed by the
+  operator's infrastructure. Plan-level instance and user caps are tracked in
+  the plans artifact, not here.
+sources:
+- https://docs.bytebase.com/integrations/api/overview
+- https://docs.bytebase.com/integrations/api/authentication
+- https://www.bytebase.com/pricing/
+responseCodes:
+  throttled: 429
+limits:
+- name: API Request Rate
+  scope: deployment
+  metric: requests
+  limit: governed by deployment capacity / operator
+  notes: No fixed vendor request-rate quota documented; self-hosted limits depend on the operator's infrastructure.
+- name: Database Instances (plan cap)
+  scope: workspace
+  metric: instances
+  limit: 10 on Community/Pro; unlimited on Enterprise
+  notes: A product plan cap, not a request-rate limit.
+- name: Users (plan cap)
+  scope: workspace
+  metric: users
+  limit: 20 on Community; unlimited on Pro/Enterprise
+  notes: A product plan cap, not a request-rate limit.
+- name: Access Token Lifetime
+  scope: token
+  metric: session
+  limit: short-lived; refresh via auth
+  notes: Tokens from /v1/auth/login expire and must be refreshed (RefreshToken).
+policies:
+- name: Token Refresh
+  description: Re-authenticate or refresh the access token before expiry; do not hardcode long-lived tokens.
+- name: Backoff Strategy
+  description: Clients should implement exponential backoff with jitter and honor Retry-After on any 429 from a fronting proxy.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

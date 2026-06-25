@@ -1,0 +1,239 @@
+{
+  "info": {
+    "name": "Bytebase API",
+    "description": "Bytebase Connect/gRPC + RESTful HTTP API (v1). Authenticate via POST /v1/auth/login with a service account, then use the returned token as a Bearer token. Set baseUrl to your Bytebase deployment host.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      { "key": "token", "value": "{{bearerToken}}", "type": "string" }
+    ]
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "https://demo.bytebase.com" },
+    { "key": "bearerToken", "value": "" },
+    { "key": "serviceKey", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login (service account)",
+          "request": {
+            "method": "POST",
+            "auth": { "type": "noauth" },
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"my-service-account@service.bytebase.com\",\n  \"password\": \"{{serviceKey}}\",\n  \"web\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/auth/login",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "v1", "auth", "login" ]
+            },
+            "description": "Exchange service-account credentials for a Bearer access token."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Instances",
+      "item": [
+        {
+          "name": "List instances",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/v1/instances", "host": [ "{{baseUrl}}" ], "path": [ "v1", "instances" ] },
+            "description": "List database instances."
+          }
+        },
+        {
+          "name": "Create instance",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{}", "options": { "raw": { "language": "json" } } },
+            "url": {
+              "raw": "{{baseUrl}}/v1/instances?instanceId=prod-mysql",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "v1", "instances" ],
+              "query": [ { "key": "instanceId", "value": "prod-mysql" } ]
+            },
+            "description": "Register a database instance."
+          }
+        },
+        {
+          "name": "Get instance",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/v1/instances/prod-mysql", "host": [ "{{baseUrl}}" ], "path": [ "v1", "instances", "prod-mysql" ] },
+            "description": "Get a single instance."
+          }
+        },
+        {
+          "name": "List instance databases",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/v1/instances/prod-mysql/databases", "host": [ "{{baseUrl}}" ], "path": [ "v1", "instances", "prod-mysql", "databases" ] },
+            "description": "List databases discovered on an instance."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Projects",
+      "item": [
+        {
+          "name": "List projects",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/v1/projects", "host": [ "{{baseUrl}}" ], "path": [ "v1", "projects" ] },
+            "description": "List projects."
+          }
+        },
+        {
+          "name": "Get project",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/v1/projects/project-sample", "host": [ "{{baseUrl}}" ], "path": [ "v1", "projects", "project-sample" ] },
+            "description": "Get a project."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Issues / Migrations",
+      "item": [
+        {
+          "name": "List issues",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/v1/projects/project-sample/issues", "host": [ "{{baseUrl}}" ], "path": [ "v1", "projects", "project-sample", "issues" ] },
+            "description": "List issues in a project."
+          }
+        },
+        {
+          "name": "Create issue",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{}", "options": { "raw": { "language": "json" } } },
+            "url": { "raw": "{{baseUrl}}/v1/projects/project-sample/issues", "host": [ "{{baseUrl}}" ], "path": [ "v1", "projects", "project-sample", "issues" ] },
+            "description": "Create a schema-change / data-change issue."
+          }
+        },
+        {
+          "name": "Approve issue",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"comment\": \"LGTM\"\n}", "options": { "raw": { "language": "json" } } },
+            "url": { "raw": "{{baseUrl}}/v1/projects/project-sample/issues/123:approve", "host": [ "{{baseUrl}}" ], "path": [ "v1", "projects", "project-sample", "issues", "123:approve" ] },
+            "description": "Approve an issue at the current approval step."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Plans",
+      "item": [
+        {
+          "name": "Create plan",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{}", "options": { "raw": { "language": "json" } } },
+            "url": { "raw": "{{baseUrl}}/v1/projects/project-sample/plans", "host": [ "{{baseUrl}}" ], "path": [ "v1", "projects", "project-sample", "plans" ] },
+            "description": "Create a plan describing proposed changes."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Rollouts",
+      "item": [
+        {
+          "name": "Create rollout",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{}", "options": { "raw": { "language": "json" } } },
+            "url": { "raw": "{{baseUrl}}/v1/projects/project-sample/rollouts", "host": [ "{{baseUrl}}" ], "path": [ "v1", "projects", "project-sample", "rollouts" ] },
+            "description": "Create a rollout to execute a plan."
+          }
+        },
+        {
+          "name": "Get rollout",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/v1/projects/project-sample/rollouts/123", "host": [ "{{baseUrl}}" ], "path": [ "v1", "projects", "project-sample", "rollouts", "123" ] },
+            "description": "Get a rollout and its stages/tasks."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sheets",
+      "item": [
+        {
+          "name": "Create sheet",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{}", "options": { "raw": { "language": "json" } } },
+            "url": { "raw": "{{baseUrl}}/v1/projects/project-sample/sheets", "host": [ "{{baseUrl}}" ], "path": [ "v1", "projects", "project-sample", "sheets" ] },
+            "description": "Create a sheet (SQL statement) in a project."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users / Roles",
+      "item": [
+        {
+          "name": "List users",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/v1/users", "host": [ "{{baseUrl}}" ], "path": [ "v1", "users" ] },
+            "description": "List users."
+          }
+        },
+        {
+          "name": "List roles",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/v1/roles", "host": [ "{{baseUrl}}" ], "path": [ "v1", "roles" ] },
+            "description": "List custom and predefined roles."
+          }
+        },
+        {
+          "name": "List groups",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/v1/groups", "host": [ "{{baseUrl}}" ], "path": [ "v1", "groups" ] },
+            "description": "List user groups."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Webhooks",
+      "item": [
+        {
+          "name": "Add project webhook",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"type\": \"SLACK\",\n  \"title\": \"deploy-alerts\",\n  \"url\": \"https://hooks.slack.com/services/xxx\"\n}", "options": { "raw": { "language": "json" } } },
+            "url": { "raw": "{{baseUrl}}/v1/projects/project-sample/webhooks", "host": [ "{{baseUrl}}" ], "path": [ "v1", "projects", "project-sample", "webhooks" ] },
+            "description": "Add a webhook to a project."
+          }
+        }
+      ]
+    }
+  ]
+}

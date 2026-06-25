@@ -1,0 +1,148 @@
+specification: API Commons Plans
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/Plans
+provider: Bytebase
+providerId: bytebase
+created: '2026-06-21'
+modified: '2026-06-21'
+reconciled: true
+tags:
+- Database
+- DevOps
+- Schema Migration
+- CI/CD
+- DevSecOps
+- Plans
+description: >-
+  Bytebase ships as free, self-hostable open source (the Community / Free tier)
+  with two paid upgrades. The API is available on every tier - it is the same
+  control plane the console uses. Pro is a per-user subscription (cloud and
+  self-host) and Enterprise is custom-quoted with self-hosting, air-gapped
+  deployment, and advanced governance/security. Some Enterprise features are
+  gated by assigning license quota to individual database instances; others
+  (e.g. SSO) apply workspace-wide.
+notes: >-
+  Prices reflect the published Bytebase pricing page and are subject to change;
+  verify current per-user rates, instance counts, and the exact free-tier
+  limits on the pricing page during reconciliation. OSS self-host is free
+  forever; Pro and Enterprise unlock additional features and limits.
+sources:
+- https://www.bytebase.com/pricing/
+- https://docs.bytebase.com/administration/license
+plans:
+- id: bytebase-community
+  name: Community (Free / OSS)
+  type: free
+  description: >-
+    Free-forever open source Bytebase, self-hosted. Database change management,
+    SQL editor, schema migration, and full API access. Capped instances and
+    users.
+  entries:
+  - label: Price
+    name: price
+    type: flat
+    metric: subscription
+    limit: 0
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: $0 (free, self-hosted OSS)
+    userMultiplied: false
+  - label: Database Instances
+    name: instances
+    type: flat
+    metric: instances
+    limit: 10
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: included
+    userMultiplied: false
+  - label: Users
+    name: users
+    type: flat
+    metric: users
+    limit: 20
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: included
+    userMultiplied: false
+  elements:
+  - name: Schema Change / Migration
+  - name: SQL Editor
+  - name: REST and gRPC API
+  - name: Self-Hosted Deployment
+- id: bytebase-pro
+  name: Pro
+  type: subscription
+  description: >-
+    Per-user subscription available on Bytebase Cloud and self-hosted. Adds
+    SSO (Google, GitHub), user groups, and email support on top of Community.
+  entries:
+  - label: Per User
+    name: per_user
+    type: flat
+    metric: users
+    limit: -1
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: $20 per user / month
+    userMultiplied: true
+  - label: Database Instances
+    name: instances
+    type: flat
+    metric: instances
+    limit: 10
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: included
+    userMultiplied: false
+  elements:
+  - name: Everything in Community
+  - name: SSO (Google, GitHub)
+  - name: User Groups
+  - name: Email Support
+  - name: Cloud or Self-Hosted
+- id: bytebase-enterprise
+  name: Enterprise
+  type: enterprise
+  description: >-
+    Custom-quoted annual subscription with unlimited users and instances,
+    advanced governance and security (dynamic data masking, approval
+    workflows, OIDC / LDAP / SCIM), self-hosted and air-gapped deployment,
+    SLA support, and onboarding. 14-day free trial available.
+  entries:
+  - label: Enterprise Agreement
+    name: enterprise
+    type: flat
+    metric: contract
+    limit: -1
+    timeFrame: year
+    geo: global
+    unit: 1
+    price: contact sales (custom, annual)
+    userMultiplied: false
+  - label: Per-Instance License Quota
+    name: instance_license
+    type: flat
+    metric: instances
+    limit: -1
+    timeFrame: year
+    geo: global
+    unit: 1
+    price: license quota assigned per instance for gated features
+    userMultiplied: false
+  elements:
+  - name: Everything in Pro
+  - name: Unlimited Users and Instances
+  - name: Dynamic Data Masking
+  - name: Approval Workflows
+  - name: OIDC / LDAP / SCIM
+  - name: Air-Gapped Self-Hosting
+  - name: SLA Support and Onboarding
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com
