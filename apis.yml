@@ -200,6 +200,12 @@ apis:
     (issue and rollout activity) to Slack, Discord, Teams, Lark, DingTalk, WeCom, or
     a custom endpoint.
 common:
+- type: TrustCenter
+  url: security/bytebase-trust-center.yml
+- type: DomainSecurity
+  url: security/bytebase-domain-security.yml
+- type: Authentication
+  url: authentication/bytebase-authentication.yml
 - type: GitHubOrganization
   url: https://github.com/bytebase
 - type: LinkedIn

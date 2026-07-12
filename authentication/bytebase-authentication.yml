@@ -1,0 +1,15 @@
+generated: '2026-07-11'
+method: derived
+source: openapi/bytebase-openapi.yml
+summary:
+  types:
+  - http
+schemes:
+- name: bearerAuth
+  type: http
+  scheme: bearer
+  bearerFormat: JWT
+  description: 'Access token obtained from POST /v1/auth/login using a service-account email
+    and service key. Supplied as `Authorization: Bearer <token>`.'
+  sources:
+  - openapi/bytebase-openapi.yml
