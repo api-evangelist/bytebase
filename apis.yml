@@ -200,6 +200,8 @@ apis:
     (issue and rollout activity) to Slack, Discord, Teams, Lark, DingTalk, WeCom, or
     a custom endpoint.
 common:
+- type: AgenticAccess
+  url: agentic-access/bytebase-agentic-access.yml
 - type: TrustCenter
   url: security/bytebase-trust-center.yml
 - type: DomainSecurity
