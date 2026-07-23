@@ -1,0 +1,86 @@
+openapi: 3.0.1
+info:
+  title: Bytebase Auth Rollouts API
+  description: Bytebase exposes a Connect/gRPC API that is also served as a RESTful HTTP API via gRPC transcoding (google.api.http annotations). Every action in the Bytebase web console is backed by this API. This document models the core RESTful HTTP surface - instances, databases, projects, issues (schema change / migration), plans, rollouts, sheets, users, roles, groups, and project webhooks. Authentication uses a short-lived access token obtained by logging in with a service account; the token is supplied as a Bearer token in the Authorization header. The server URL is the base of your own self-hosted or cloud Bytebase deployment (the public demo is shown).
+  termsOfService: https://www.bytebase.com/terms
+  contact:
+    name: Bytebase Support
+    url: https://www.bytebase.com/docs/
+  version: v1
+servers:
+- url: https://demo.bytebase.com/v1
+  description: Bytebase public demo (replace with your own deployment host)
+security:
+- bearerAuth: []
+tags:
+- name: Rollouts
+paths:
+  /projects/{project}/rollouts:
+    post:
+      operationId: createRollout
+      tags:
+      - Rollouts
+      summary: Create a rollout to execute a plan.
+      parameters:
+      - $ref: '#/components/parameters/ProjectPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Rollout'
+      responses:
+        '200':
+          description: The created rollout.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rollout'
+  /projects/{project}/rollouts/{rollout}:
+    get:
+      operationId: getRollout
+      tags:
+      - Rollouts
+      summary: Get a rollout and its stages/tasks.
+      parameters:
+      - $ref: '#/components/parameters/ProjectPath'
+      - name: rollout
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: The requested rollout.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rollout'
+components:
+  schemas:
+    Rollout:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Resource name, e.g. projects/shop/rollouts/123.
+        plan:
+          type: string
+        stages:
+          type: array
+          items:
+            type: object
+  parameters:
+    ProjectPath:
+      name: project
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Project resource id (the segment after projects/).
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Access token obtained from POST /v1/auth/login using a service-account email and service key. Supplied as `Authorization: Bearer <token>`.'

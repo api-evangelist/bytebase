@@ -1,0 +1,165 @@
+openapi: 3.0.1
+info:
+  title: Bytebase Auth Issues API
+  description: Bytebase exposes a Connect/gRPC API that is also served as a RESTful HTTP API via gRPC transcoding (google.api.http annotations). Every action in the Bytebase web console is backed by this API. This document models the core RESTful HTTP surface - instances, databases, projects, issues (schema change / migration), plans, rollouts, sheets, users, roles, groups, and project webhooks. Authentication uses a short-lived access token obtained by logging in with a service account; the token is supplied as a Bearer token in the Authorization header. The server URL is the base of your own self-hosted or cloud Bytebase deployment (the public demo is shown).
+  termsOfService: https://www.bytebase.com/terms
+  contact:
+    name: Bytebase Support
+    url: https://www.bytebase.com/docs/
+  version: v1
+servers:
+- url: https://demo.bytebase.com/v1
+  description: Bytebase public demo (replace with your own deployment host)
+security:
+- bearerAuth: []
+tags:
+- name: Issues
+paths:
+  /projects/{project}/issues:
+    get:
+      operationId: listIssues
+      tags:
+      - Issues
+      summary: List issues in a project.
+      parameters:
+      - $ref: '#/components/parameters/ProjectPath'
+      - $ref: '#/components/parameters/PageSize'
+      - $ref: '#/components/parameters/PageToken'
+      responses:
+        '200':
+          description: A page of issues.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListIssuesResponse'
+    post:
+      operationId: createIssue
+      tags:
+      - Issues
+      summary: Create a schema-change / data-change issue.
+      parameters:
+      - $ref: '#/components/parameters/ProjectPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Issue'
+      responses:
+        '200':
+          description: The created issue.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issue'
+  /projects/{project}/issues/{issue}:
+    get:
+      operationId: getIssue
+      tags:
+      - Issues
+      summary: Get an issue.
+      parameters:
+      - $ref: '#/components/parameters/ProjectPath'
+      - name: issue
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: The requested issue.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issue'
+  /projects/{project}/issues/{issue}:approve:
+    post:
+      operationId: approveIssue
+      tags:
+      - Issues
+      summary: Approve an issue at the current approval step.
+      parameters:
+      - $ref: '#/components/parameters/ProjectPath'
+      - name: issue
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                comment:
+                  type: string
+      responses:
+        '200':
+          description: The approved issue.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issue'
+components:
+  parameters:
+    PageSize:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+    PageToken:
+      name: page_token
+      in: query
+      schema:
+        type: string
+    ProjectPath:
+      name: project
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Project resource id (the segment after projects/).
+  schemas:
+    Issue:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Resource name, e.g. projects/shop/issues/123.
+        title:
+          type: string
+        type:
+          type: string
+          enum:
+          - DATABASE_CHANGE
+          - GRANT_REQUEST
+          - DATABASE_EXPORT
+        status:
+          type: string
+          enum:
+          - OPEN
+          - DONE
+          - CANCELED
+        description:
+          type: string
+        plan:
+          type: string
+          description: Resource name of the associated plan.
+        rollout:
+          type: string
+          description: Resource name of the associated rollout.
+    ListIssuesResponse:
+      type: object
+      properties:
+        issues:
+          type: array
+          items:
+            $ref: '#/components/schemas/Issue'
+        nextPageToken:
+          type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Access token obtained from POST /v1/auth/login using a service-account email and service key. Supplied as `Authorization: Bearer <token>`.'

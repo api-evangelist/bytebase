@@ -1,0 +1,198 @@
+openapi: 3.0.1
+info:
+  title: Bytebase Auth Instances API
+  description: Bytebase exposes a Connect/gRPC API that is also served as a RESTful HTTP API via gRPC transcoding (google.api.http annotations). Every action in the Bytebase web console is backed by this API. This document models the core RESTful HTTP surface - instances, databases, projects, issues (schema change / migration), plans, rollouts, sheets, users, roles, groups, and project webhooks. Authentication uses a short-lived access token obtained by logging in with a service account; the token is supplied as a Bearer token in the Authorization header. The server URL is the base of your own self-hosted or cloud Bytebase deployment (the public demo is shown).
+  termsOfService: https://www.bytebase.com/terms
+  contact:
+    name: Bytebase Support
+    url: https://www.bytebase.com/docs/
+  version: v1
+servers:
+- url: https://demo.bytebase.com/v1
+  description: Bytebase public demo (replace with your own deployment host)
+security:
+- bearerAuth: []
+tags:
+- name: Instances
+paths:
+  /instances:
+    get:
+      operationId: listInstances
+      tags:
+      - Instances
+      summary: List database instances.
+      parameters:
+      - $ref: '#/components/parameters/PageSize'
+      - $ref: '#/components/parameters/PageToken'
+      responses:
+        '200':
+          description: A page of instances.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListInstancesResponse'
+    post:
+      operationId: createInstance
+      tags:
+      - Instances
+      summary: Create (register) a database instance.
+      parameters:
+      - name: instanceId
+        in: query
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Instance'
+      responses:
+        '200':
+          description: The created instance.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Instance'
+  /instances/{instance}:
+    get:
+      operationId: getInstance
+      tags:
+      - Instances
+      summary: Get a single instance.
+      parameters:
+      - $ref: '#/components/parameters/InstancePath'
+      responses:
+        '200':
+          description: The requested instance.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Instance'
+    patch:
+      operationId: updateInstance
+      tags:
+      - Instances
+      summary: Update an instance.
+      parameters:
+      - $ref: '#/components/parameters/InstancePath'
+      - $ref: '#/components/parameters/UpdateMask'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Instance'
+      responses:
+        '200':
+          description: The updated instance.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Instance'
+    delete:
+      operationId: deleteInstance
+      tags:
+      - Instances
+      summary: Delete an instance.
+      parameters:
+      - $ref: '#/components/parameters/InstancePath'
+      responses:
+        '200':
+          description: Instance deleted.
+components:
+  parameters:
+    InstancePath:
+      name: instance
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Instance resource id (the segment after instances/).
+    PageSize:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+    PageToken:
+      name: page_token
+      in: query
+      schema:
+        type: string
+    UpdateMask:
+      name: update_mask
+      in: query
+      schema:
+        type: string
+      description: Comma-separated list of fields to update (FieldMask).
+  schemas:
+    ListInstancesResponse:
+      type: object
+      properties:
+        instances:
+          type: array
+          items:
+            $ref: '#/components/schemas/Instance'
+        nextPageToken:
+          type: string
+    Instance:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Resource name, e.g. instances/prod-mysql.
+        title:
+          type: string
+        engine:
+          type: string
+          enum:
+          - MYSQL
+          - POSTGRES
+          - TIDB
+          - SNOWFLAKE
+          - CLICKHOUSE
+          - MONGODB
+          - SQLITE
+          - ORACLE
+          - MSSQL
+          - REDIS
+          - SPANNER
+          - REDSHIFT
+          - MARIADB
+          - OCEANBASE
+          - DM
+          - RISINGWAVE
+        externalLink:
+          type: string
+        dataSources:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataSource'
+        state:
+          type: string
+          enum:
+          - ACTIVE
+          - DELETED
+    DataSource:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum:
+          - ADMIN
+          - READ_ONLY
+        host:
+          type: string
+        port:
+          type: string
+        username:
+          type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Access token obtained from POST /v1/auth/login using a service-account email and service key. Supplied as `Authorization: Bearer <token>`.'
