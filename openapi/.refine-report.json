@@ -1,0 +1,36 @@
+{
+  "provider": "bytebase",
+  "sources": [
+    "bytebase-auth-api-openapi.yml",
+    "bytebase-databases-api-openapi.yml",
+    "bytebase-groups-api-openapi.yml",
+    "bytebase-instances-api-openapi.yml",
+    "bytebase-issues-api-openapi.yml",
+    "bytebase-plans-api-openapi.yml",
+    "bytebase-projects-api-openapi.yml",
+    "bytebase-roles-api-openapi.yml",
+    "bytebase-rollouts-api-openapi.yml",
+    "bytebase-sheets-api-openapi.yml",
+    "bytebase-users-api-openapi.yml",
+    "bytebase-webhooks-api-openapi.yml"
+  ],
+  "outputs": [
+    "bytebase-auth-api-openapi.yml",
+    "bytebase-databases-api-openapi.yml",
+    "bytebase-groups-api-openapi.yml",
+    "bytebase-instances-api-openapi.yml",
+    "bytebase-issues-api-openapi.yml",
+    "bytebase-plans-api-openapi.yml",
+    "bytebase-projects-api-openapi.yml",
+    "bytebase-roles-api-openapi.yml",
+    "bytebase-rollouts-api-openapi.yml",
+    "bytebase-sheets-api-openapi.yml",
+    "bytebase-users-api-openapi.yml",
+    "bytebase-webhooks-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}
