@@ -1,0 +1,71 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Bytebase Auth Rollouts API",
+    "version": "v1"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Rollouts",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create a rollout to execute a plan.",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://demo.bytebase.com/v1/projects/:project/rollouts",
+            "params": [
+              {
+                "name": "project",
+                "value": "",
+                "type": "path",
+                "description": "Project resource id (the segment after projects/)."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a rollout to execute a plan."
+        },
+        {
+          "info": {
+            "name": "Get a rollout and its stages/tasks.",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://demo.bytebase.com/v1/projects/:project/rollouts/:rollout",
+            "params": [
+              {
+                "name": "project",
+                "value": "",
+                "type": "path",
+                "description": "Project resource id (the segment after projects/)."
+              },
+              {
+                "name": "rollout",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a rollout and its stages/tasks."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

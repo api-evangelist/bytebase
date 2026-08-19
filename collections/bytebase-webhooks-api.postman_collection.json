@@ -1,0 +1,157 @@
+{
+  "item": [
+    {
+      "id": "19d10db3-6d66-4706-bf75-3d800c7cff6f",
+      "name": "Webhooks",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "b4b86c0c-d3d2-4b2a-b6ed-d12fb877cb0c",
+          "name": "Add a webhook to a project.",
+          "request": {
+            "name": "Add a webhook to a project.",
+            "description": {},
+            "url": {
+              "path": [
+                "projects",
+                ":project",
+                "webhooks"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "project",
+                  "description": "(Required) Project resource id (the segment after projects/)."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"<string>\",\n  \"type\": \"<string>\",\n  \"title\": \"<string>\",\n  \"url\": \"<string>\",\n  \"notificationTypes\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "faa199a4-1610-41f0-938b-59b870d1b4aa",
+              "name": "The project with the added webhook.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "projects",
+                    ":project",
+                    "webhooks"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "project",
+                      "description": "(Required) Project resource id (the segment after projects/)."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"<string>\",\n  \"type\": \"<string>\",\n  \"title\": \"<string>\",\n  \"url\": \"<string>\",\n  \"notificationTypes\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"name\": \"string\",\n  \"title\": \"string\",\n  \"key\": \"string\",\n  \"state\": \"ACTIVE\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://demo.bytebase.com/v1",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "3f65dbea-927f-4857-ae9f-02bba8c55020",
+    "name": "Bytebase Auth Webhooks API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Bytebase exposes a Connect/gRPC API that is also served as a RESTful HTTP API via gRPC transcoding (google.api.http annotations). Every action in the Bytebase web console is backed by this API. This document models the core RESTful HTTP surface - instances, databases, projects, issues (schema change / migration), plans, rollouts, sheets, users, roles, groups, and project webhooks. Authentication uses a short-lived access token obtained by logging in with a service account; the token is supplied as a Bearer token in the Authorization header. The server URL is the base of your own self-hosted or cloud Bytebase deployment (the public demo is shown).\n\nContact Support:\n Name: Bytebase Support",
+      "type": "text/plain"
+    }
+  }
+}

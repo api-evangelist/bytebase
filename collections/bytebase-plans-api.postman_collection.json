@@ -1,0 +1,157 @@
+{
+  "item": [
+    {
+      "id": "b5e147aa-28d2-4c1b-9ad0-60a5146112ec",
+      "name": "Plans",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "9d00a6cf-7a5b-4abb-9c42-0a42a393b88f",
+          "name": "Create a plan describing the proposed changes.",
+          "request": {
+            "name": "Create a plan describing the proposed changes.",
+            "description": {},
+            "url": {
+              "path": [
+                "projects",
+                ":project",
+                "plans"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "project",
+                  "description": "(Required) Project resource id (the segment after projects/)."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"<string>\",\n  \"title\": \"<string>\",\n  \"steps\": [\n    {\n      \"specs\": [\n        \"<object>\",\n        \"<object>\"\n      ]\n    },\n    {\n      \"specs\": [\n        \"<object>\",\n        \"<object>\"\n      ]\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "74a3a31b-a83f-4458-aaa5-48f2cac2551c",
+              "name": "The created plan.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "projects",
+                    ":project",
+                    "plans"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "project",
+                      "description": "(Required) Project resource id (the segment after projects/)."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"<string>\",\n  \"title\": \"<string>\",\n  \"steps\": [\n    {\n      \"specs\": [\n        \"<object>\",\n        \"<object>\"\n      ]\n    },\n    {\n      \"specs\": [\n        \"<object>\",\n        \"<object>\"\n      ]\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"name\": \"<string>\",\n  \"title\": \"<string>\",\n  \"steps\": [\n    {\n      \"specs\": [\n        \"<object>\",\n        \"<object>\"\n      ]\n    },\n    {\n      \"specs\": [\n        \"<object>\",\n        \"<object>\"\n      ]\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://demo.bytebase.com/v1",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "478dc839-ee12-4cae-b20c-182dadd3d19d",
+    "name": "Bytebase Auth Plans API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Bytebase exposes a Connect/gRPC API that is also served as a RESTful HTTP API via gRPC transcoding (google.api.http annotations). Every action in the Bytebase web console is backed by this API. This document models the core RESTful HTTP surface - instances, databases, projects, issues (schema change / migration), plans, rollouts, sheets, users, roles, groups, and project webhooks. Authentication uses a short-lived access token obtained by logging in with a service account; the token is supplied as a Bearer token in the Authorization header. The server URL is the base of your own self-hosted or cloud Bytebase deployment (the public demo is shown).\n\nContact Support:\n Name: Bytebase Support",
+      "type": "text/plain"
+    }
+  }
+}

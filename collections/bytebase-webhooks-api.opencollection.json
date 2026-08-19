@@ -1,0 +1,47 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Bytebase Auth Webhooks API",
+    "version": "v1"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Webhooks",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Add a webhook to a project.",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://demo.bytebase.com/v1/projects/:project/webhooks",
+            "params": [
+              {
+                "name": "project",
+                "value": "",
+                "type": "path",
+                "description": "Project resource id (the segment after projects/)."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Add a webhook to a project."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

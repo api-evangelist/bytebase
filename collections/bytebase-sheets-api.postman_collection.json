@@ -1,0 +1,157 @@
+{
+  "item": [
+    {
+      "id": "fe640747-bc68-4acb-90e4-3ac5567729a1",
+      "name": "Sheets",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "9ae73a22-460e-408f-81fd-42fb675c3314",
+          "name": "Create a sheet (SQL statement) in a project.",
+          "request": {
+            "name": "Create a sheet (SQL statement) in a project.",
+            "description": {},
+            "url": {
+              "path": [
+                "projects",
+                ":project",
+                "sheets"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "project",
+                  "description": "(Required) Project resource id (the segment after projects/)."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"<string>\",\n  \"title\": \"<string>\",\n  \"content\": \"<byte>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "09f99692-a414-4786-bbfd-9f261be98a45",
+              "name": "The created sheet.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "projects",
+                    ":project",
+                    "sheets"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "project",
+                      "description": "(Required) Project resource id (the segment after projects/)."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"<string>\",\n  \"title\": \"<string>\",\n  \"content\": \"<byte>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"name\": \"<string>\",\n  \"title\": \"<string>\",\n  \"content\": \"<byte>\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://demo.bytebase.com/v1",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "5442bdc8-ac22-46e8-ac5b-2c045a35a98f",
+    "name": "Bytebase Auth Sheets API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Bytebase exposes a Connect/gRPC API that is also served as a RESTful HTTP API via gRPC transcoding (google.api.http annotations). Every action in the Bytebase web console is backed by this API. This document models the core RESTful HTTP surface - instances, databases, projects, issues (schema change / migration), plans, rollouts, sheets, users, roles, groups, and project webhooks. Authentication uses a short-lived access token obtained by logging in with a service account; the token is supplied as a Bearer token in the Authorization header. The server URL is the base of your own self-hosted or cloud Bytebase deployment (the public demo is shown).\n\nContact Support:\n Name: Bytebase Support",
+      "type": "text/plain"
+    }
+  }
+}

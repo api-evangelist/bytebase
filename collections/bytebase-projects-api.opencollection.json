@@ -1,0 +1,88 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Bytebase Auth Projects API",
+    "version": "v1"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Projects",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List projects.",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://demo.bytebase.com/v1/projects",
+            "params": [
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "page_token",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "List projects."
+        },
+        {
+          "info": {
+            "name": "Create a project.",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://demo.bytebase.com/v1/projects",
+            "params": [
+              {
+                "name": "projectId",
+                "value": "",
+                "type": "query"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a project."
+        },
+        {
+          "info": {
+            "name": "Get a project.",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://demo.bytebase.com/v1/projects/:project",
+            "params": [
+              {
+                "name": "project",
+                "value": "",
+                "type": "path",
+                "description": "Project resource id (the segment after projects/)."
+              }
+            ]
+          },
+          "docs": "Get a project."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

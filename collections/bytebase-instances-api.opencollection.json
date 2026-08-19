@@ -1,0 +1,136 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Bytebase Auth Instances API",
+    "version": "v1"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Instances",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List database instances.",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://demo.bytebase.com/v1/instances",
+            "params": [
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "page_token",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "List database instances."
+        },
+        {
+          "info": {
+            "name": "Create (register) a database instance.",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://demo.bytebase.com/v1/instances",
+            "params": [
+              {
+                "name": "instanceId",
+                "value": "",
+                "type": "query"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create (register) a database instance."
+        },
+        {
+          "info": {
+            "name": "Get a single instance.",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://demo.bytebase.com/v1/instances/:instance",
+            "params": [
+              {
+                "name": "instance",
+                "value": "",
+                "type": "path",
+                "description": "Instance resource id (the segment after instances/)."
+              }
+            ]
+          },
+          "docs": "Get a single instance."
+        },
+        {
+          "info": {
+            "name": "Update an instance.",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://demo.bytebase.com/v1/instances/:instance",
+            "params": [
+              {
+                "name": "instance",
+                "value": "",
+                "type": "path",
+                "description": "Instance resource id (the segment after instances/)."
+              },
+              {
+                "name": "update_mask",
+                "value": "",
+                "type": "query",
+                "description": "Comma-separated list of fields to update (FieldMask)."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update an instance."
+        },
+        {
+          "info": {
+            "name": "Delete an instance.",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://demo.bytebase.com/v1/instances/:instance",
+            "params": [
+              {
+                "name": "instance",
+                "value": "",
+                "type": "path",
+                "description": "Instance resource id (the segment after instances/)."
+              }
+            ]
+          },
+          "docs": "Delete an instance."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

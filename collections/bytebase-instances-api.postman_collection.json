@@ -1,0 +1,546 @@
+{
+  "item": [
+    {
+      "id": "2baa825a-1054-4a72-91ca-7c78dd69e0f9",
+      "name": "Instances",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "0a8ca6d3-42ab-4183-8dfe-828505fe6425",
+          "name": "List database instances.",
+          "request": {
+            "name": "List database instances.",
+            "description": {},
+            "url": {
+              "path": [
+                "instances"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "page_size",
+                  "value": "<integer>"
+                },
+                {
+                  "disabled": false,
+                  "key": "page_token",
+                  "value": "<string>"
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "0cad96ba-1796-4149-89b3-f3b27944c9fe",
+              "name": "A page of instances.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "instances"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "page_size",
+                      "value": "<integer>"
+                    },
+                    {
+                      "key": "page_token",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"instances\": [\n    {\n      \"name\": \"string\",\n      \"title\": \"string\",\n      \"engine\": \"SNOWFLAKE\",\n      \"externalLink\": \"string\",\n      \"dataSources\": [\n        {\n          \"id\": \"string\",\n          \"type\": \"ADMIN\",\n          \"host\": \"string\",\n          \"port\": \"string\",\n          \"username\": \"string\"\n        },\n        {\n          \"id\": \"string\",\n          \"type\": \"ADMIN\",\n          \"host\": \"string\",\n          \"port\": \"string\",\n          \"username\": \"string\"\n        }\n      ],\n      \"state\": \"ACTIVE\"\n    },\n    {\n      \"name\": \"string\",\n      \"title\": \"string\",\n      \"engine\": \"ORACLE\",\n      \"externalLink\": \"string\",\n      \"dataSources\": [\n        {\n          \"id\": \"string\",\n          \"type\": \"ADMIN\",\n          \"host\": \"string\",\n          \"port\": \"string\",\n          \"username\": \"string\"\n        },\n        {\n          \"id\": \"string\",\n          \"type\": \"ADMIN\",\n          \"host\": \"string\",\n          \"port\": \"string\",\n          \"username\": \"string\"\n        }\n      ],\n      \"state\": \"DELETED\"\n    }\n  ],\n  \"nextPageToken\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "49a13e70-cf59-4563-9859-1ea09e64d3b7",
+          "name": "Create (register) a database instance.",
+          "request": {
+            "name": "Create (register) a database instance.",
+            "description": {},
+            "url": {
+              "path": [
+                "instances"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "instanceId",
+                  "value": "<string>",
+                  "description": "(Required) "
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"<string>\",\n  \"title\": \"<string>\",\n  \"engine\": \"<string>\",\n  \"externalLink\": \"<string>\",\n  \"dataSources\": [\n    {\n      \"id\": \"<string>\",\n      \"type\": \"<string>\",\n      \"host\": \"<string>\",\n      \"port\": \"<string>\",\n      \"username\": \"<string>\"\n    },\n    {\n      \"id\": \"<string>\",\n      \"type\": \"<string>\",\n      \"host\": \"<string>\",\n      \"port\": \"<string>\",\n      \"username\": \"<string>\"\n    }\n  ],\n  \"state\": \"<string>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "2f1f6ea3-5271-42b2-9106-3866a9fbf3de",
+              "name": "The created instance.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "instances"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "instanceId",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"<string>\",\n  \"title\": \"<string>\",\n  \"engine\": \"<string>\",\n  \"externalLink\": \"<string>\",\n  \"dataSources\": [\n    {\n      \"id\": \"<string>\",\n      \"type\": \"<string>\",\n      \"host\": \"<string>\",\n      \"port\": \"<string>\",\n      \"username\": \"<string>\"\n    },\n    {\n      \"id\": \"<string>\",\n      \"type\": \"<string>\",\n      \"host\": \"<string>\",\n      \"port\": \"<string>\",\n      \"username\": \"<string>\"\n    }\n  ],\n  \"state\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"name\": \"<string>\",\n  \"title\": \"<string>\",\n  \"engine\": \"<string>\",\n  \"externalLink\": \"<string>\",\n  \"dataSources\": [\n    {\n      \"id\": \"<string>\",\n      \"type\": \"<string>\",\n      \"host\": \"<string>\",\n      \"port\": \"<string>\",\n      \"username\": \"<string>\"\n    },\n    {\n      \"id\": \"<string>\",\n      \"type\": \"<string>\",\n      \"host\": \"<string>\",\n      \"port\": \"<string>\",\n      \"username\": \"<string>\"\n    }\n  ],\n  \"state\": \"<string>\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "07e20b5c-03e0-46f9-b813-f1b0105f1f94",
+          "name": "Get a single instance.",
+          "request": {
+            "name": "Get a single instance.",
+            "description": {},
+            "url": {
+              "path": [
+                "instances",
+                ":instance"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "instance",
+                  "description": "(Required) Instance resource id (the segment after instances/)."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "1ef30c0b-992e-48dc-ab5d-52f15eae27ee",
+              "name": "The requested instance.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "instances",
+                    ":instance"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "instance",
+                      "description": "(Required) Instance resource id (the segment after instances/)."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"name\": \"<string>\",\n  \"title\": \"<string>\",\n  \"engine\": \"<string>\",\n  \"externalLink\": \"<string>\",\n  \"dataSources\": [\n    {\n      \"id\": \"<string>\",\n      \"type\": \"<string>\",\n      \"host\": \"<string>\",\n      \"port\": \"<string>\",\n      \"username\": \"<string>\"\n    },\n    {\n      \"id\": \"<string>\",\n      \"type\": \"<string>\",\n      \"host\": \"<string>\",\n      \"port\": \"<string>\",\n      \"username\": \"<string>\"\n    }\n  ],\n  \"state\": \"<string>\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "08c6955e-abd1-4c92-9323-a2989a2cbfee",
+          "name": "Update an instance.",
+          "request": {
+            "name": "Update an instance.",
+            "description": {},
+            "url": {
+              "path": [
+                "instances",
+                ":instance"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "update_mask",
+                  "value": "<string>",
+                  "description": "Comma-separated list of fields to update (FieldMask)."
+                }
+              ],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "instance",
+                  "description": "(Required) Instance resource id (the segment after instances/)."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PATCH",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"<string>\",\n  \"title\": \"<string>\",\n  \"engine\": \"<string>\",\n  \"externalLink\": \"<string>\",\n  \"dataSources\": [\n    {\n      \"id\": \"<string>\",\n      \"type\": \"<string>\",\n      \"host\": \"<string>\",\n      \"port\": \"<string>\",\n      \"username\": \"<string>\"\n    },\n    {\n      \"id\": \"<string>\",\n      \"type\": \"<string>\",\n      \"host\": \"<string>\",\n      \"port\": \"<string>\",\n      \"username\": \"<string>\"\n    }\n  ],\n  \"state\": \"<string>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "67f23bf6-702b-4eec-a63d-4b616ee912ac",
+              "name": "The updated instance.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "instances",
+                    ":instance"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "update_mask",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "instance",
+                      "description": "(Required) Instance resource id (the segment after instances/)."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"<string>\",\n  \"title\": \"<string>\",\n  \"engine\": \"<string>\",\n  \"externalLink\": \"<string>\",\n  \"dataSources\": [\n    {\n      \"id\": \"<string>\",\n      \"type\": \"<string>\",\n      \"host\": \"<string>\",\n      \"port\": \"<string>\",\n      \"username\": \"<string>\"\n    },\n    {\n      \"id\": \"<string>\",\n      \"type\": \"<string>\",\n      \"host\": \"<string>\",\n      \"port\": \"<string>\",\n      \"username\": \"<string>\"\n    }\n  ],\n  \"state\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"name\": \"<string>\",\n  \"title\": \"<string>\",\n  \"engine\": \"<string>\",\n  \"externalLink\": \"<string>\",\n  \"dataSources\": [\n    {\n      \"id\": \"<string>\",\n      \"type\": \"<string>\",\n      \"host\": \"<string>\",\n      \"port\": \"<string>\",\n      \"username\": \"<string>\"\n    },\n    {\n      \"id\": \"<string>\",\n      \"type\": \"<string>\",\n      \"host\": \"<string>\",\n      \"port\": \"<string>\",\n      \"username\": \"<string>\"\n    }\n  ],\n  \"state\": \"<string>\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "606a453e-47d6-4252-98e1-dd28d8e631b9",
+          "name": "Delete an instance.",
+          "request": {
+            "name": "Delete an instance.",
+            "description": {},
+            "url": {
+              "path": [
+                "instances",
+                ":instance"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "instance",
+                  "description": "(Required) Instance resource id (the segment after instances/)."
+                }
+              ]
+            },
+            "method": "DELETE",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "3c6ad64c-15cb-4330-9e06-a1c17855cf2b",
+              "name": "Instance deleted.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "instances",
+                    ":instance"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "instance",
+                      "description": "(Required) Instance resource id (the segment after instances/)."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://demo.bytebase.com/v1",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "337cc529-f492-4079-a651-ac0346ac6826",
+    "name": "Bytebase Auth Instances API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Bytebase exposes a Connect/gRPC API that is also served as a RESTful HTTP API via gRPC transcoding (google.api.http annotations). Every action in the Bytebase web console is backed by this API. This document models the core RESTful HTTP surface - instances, databases, projects, issues (schema change / migration), plans, rollouts, sheets, users, roles, groups, and project webhooks. Authentication uses a short-lived access token obtained by logging in with a service account; the token is supplied as a Bearer token in the Authorization header. The server URL is the base of your own self-hosted or cloud Bytebase deployment (the public demo is shown).\n\nContact Support:\n Name: Bytebase Support",
+      "type": "text/plain"
+    }
+  }
+}

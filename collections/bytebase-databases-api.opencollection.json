@@ -1,0 +1,67 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Bytebase Auth Databases API",
+    "version": "v1"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Databases",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List databases discovered on an instance.",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://demo.bytebase.com/v1/instances/:instance/databases",
+            "params": [
+              {
+                "name": "instance",
+                "value": "",
+                "type": "path",
+                "description": "Instance resource id (the segment after instances/)."
+              }
+            ]
+          },
+          "docs": "List databases discovered on an instance."
+        },
+        {
+          "info": {
+            "name": "Get a database.",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://demo.bytebase.com/v1/instances/:instance/databases/:database",
+            "params": [
+              {
+                "name": "instance",
+                "value": "",
+                "type": "path",
+                "description": "Instance resource id (the segment after instances/)."
+              },
+              {
+                "name": "database",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a database."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

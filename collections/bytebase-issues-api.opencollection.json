@@ -1,0 +1,128 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Bytebase Auth Issues API",
+    "version": "v1"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Issues",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List issues in a project.",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://demo.bytebase.com/v1/projects/:project/issues",
+            "params": [
+              {
+                "name": "project",
+                "value": "",
+                "type": "path",
+                "description": "Project resource id (the segment after projects/)."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "page_token",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "List issues in a project."
+        },
+        {
+          "info": {
+            "name": "Create a schema-change / data-change issue.",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://demo.bytebase.com/v1/projects/:project/issues",
+            "params": [
+              {
+                "name": "project",
+                "value": "",
+                "type": "path",
+                "description": "Project resource id (the segment after projects/)."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a schema-change / data-change issue."
+        },
+        {
+          "info": {
+            "name": "Get an issue.",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://demo.bytebase.com/v1/projects/:project/issues/:issue",
+            "params": [
+              {
+                "name": "project",
+                "value": "",
+                "type": "path",
+                "description": "Project resource id (the segment after projects/)."
+              },
+              {
+                "name": "issue",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get an issue."
+        },
+        {
+          "info": {
+            "name": "Approve an issue at the current approval step.",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://demo.bytebase.com/v1/projects/:project/issues/:issue:approve",
+            "params": [
+              {
+                "name": "project",
+                "value": "",
+                "type": "path",
+                "description": "Project resource id (the segment after projects/)."
+              },
+              {
+                "name": "issue",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Approve an issue at the current approval step."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
