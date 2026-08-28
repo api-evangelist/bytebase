@@ -8,6 +8,18 @@ description: Bytebase is a database DevOps and CI/CD platform - the GitOps-style
   API exposed as both Connect/gRPC and RESTful HTTP (gRPC transcoding), authenticated
   with a service-account Bearer token. Bytebase ships as free, self-hostable open
   source (OSS) with paid Pro and Enterprise tiers.
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: false
+  label: Hosted service · you call their endpoint
+  confidence: medium
+  source:
+  - openapi
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 accessModel:
   pricing: freemium
   onboarding: self-serve
