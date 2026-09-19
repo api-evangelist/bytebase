@@ -71,6 +71,8 @@ apis:
   humanURL: https://docs.bytebase.com/integrations/api/overview
   baseURL: https://demo.bytebase.com/v1
   tags:
+  - Database
+  tags_raw:
   - Databases
   properties:
   - type: OpenAPI
