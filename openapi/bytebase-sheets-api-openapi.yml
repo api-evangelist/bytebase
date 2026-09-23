@@ -1,7 +1,7 @@
-openapi: 3.0.1
+openapi: 3.2.0
 info:
-  title: Bytebase Auth Sheets API
-  description: Bytebase exposes a Connect/gRPC API that is also served as a RESTful HTTP API via gRPC transcoding (google.api.http annotations). Every action in the Bytebase web console is backed by this API. This document models the core RESTful HTTP surface - instances, databases, projects, issues (schema change / migration), plans, rollouts, sheets, users, roles, groups, and project webhooks. Authentication uses a short-lived access token obtained by logging in with a service account; the token is supplied as a Bearer token in the Authorization header. The server URL is the base of your own self-hosted or cloud Bytebase deployment (the public demo is shown).
+  title: Bytebase Sheets API
+  description: Bytebase exposes a Connect/gRPC API that is also served as a RESTful HTTP API via gRPC transcoding (google.api.http annotations).
   termsOfService: https://www.bytebase.com/terms
   contact:
     name: Bytebase Support
@@ -20,7 +20,7 @@ paths:
       operationId: createSheet
       tags:
       - Sheets
-      summary: Create a sheet (SQL statement) in a project.
+      summary: Create a sheet (SQL statement) in a project
       parameters:
       - $ref: '#/components/parameters/ProjectPath'
       requestBody:

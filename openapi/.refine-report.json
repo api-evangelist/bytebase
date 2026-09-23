@@ -1,18 +1,7 @@
 {
   "provider": "bytebase",
   "sources": [
-    "bytebase-auth-api-openapi.yml",
-    "bytebase-databases-api-openapi.yml",
-    "bytebase-groups-api-openapi.yml",
-    "bytebase-instances-api-openapi.yml",
-    "bytebase-issues-api-openapi.yml",
-    "bytebase-plans-api-openapi.yml",
-    "bytebase-projects-api-openapi.yml",
-    "bytebase-roles-api-openapi.yml",
-    "bytebase-rollouts-api-openapi.yml",
-    "bytebase-sheets-api-openapi.yml",
-    "bytebase-users-api-openapi.yml",
-    "bytebase-webhooks-api-openapi.yml"
+    "_original/bytebase-openapi.yml"
   ],
   "outputs": [
     "bytebase-auth-api-openapi.yml",
@@ -31,6 +20,23 @@
   "archived": [],
   "errors": [],
   "warnings": [],
-  "notes": [],
-  "skipped": []
+  "notes": [
+    "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "bytebase-openapi.yml: upgraded openapi 3.0.1 -> OpenAPI 3.2.0",
+    "apis.yml register: already-registered"
+  ],
+  "skipped": [
+    "bytebase-auth-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bytebase-databases-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bytebase-groups-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bytebase-instances-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bytebase-issues-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bytebase-plans-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bytebase-projects-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bytebase-roles-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bytebase-rollouts-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bytebase-sheets-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bytebase-users-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bytebase-webhooks-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
 }

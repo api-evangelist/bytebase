@@ -1,7 +1,7 @@
-openapi: 3.0.1
+openapi: 3.2.0
 info:
-  title: Bytebase Auth Instances API
-  description: Bytebase exposes a Connect/gRPC API that is also served as a RESTful HTTP API via gRPC transcoding (google.api.http annotations). Every action in the Bytebase web console is backed by this API. This document models the core RESTful HTTP surface - instances, databases, projects, issues (schema change / migration), plans, rollouts, sheets, users, roles, groups, and project webhooks. Authentication uses a short-lived access token obtained by logging in with a service account; the token is supplied as a Bearer token in the Authorization header. The server URL is the base of your own self-hosted or cloud Bytebase deployment (the public demo is shown).
+  title: Bytebase Instances API
+  description: Bytebase exposes a Connect/gRPC API that is also served as a RESTful HTTP API via gRPC transcoding (google.api.http annotations).
   termsOfService: https://www.bytebase.com/terms
   contact:
     name: Bytebase Support
@@ -20,7 +20,7 @@ paths:
       operationId: listInstances
       tags:
       - Instances
-      summary: List database instances.
+      summary: List database instances
       parameters:
       - $ref: '#/components/parameters/PageSize'
       - $ref: '#/components/parameters/PageToken'
@@ -35,7 +35,7 @@ paths:
       operationId: createInstance
       tags:
       - Instances
-      summary: Create (register) a database instance.
+      summary: Create (register) a database instance
       parameters:
       - name: instanceId
         in: query
@@ -60,7 +60,7 @@ paths:
       operationId: getInstance
       tags:
       - Instances
-      summary: Get a single instance.
+      summary: Get a single instance
       parameters:
       - $ref: '#/components/parameters/InstancePath'
       responses:
@@ -74,7 +74,7 @@ paths:
       operationId: updateInstance
       tags:
       - Instances
-      summary: Update an instance.
+      summary: Update an instance
       parameters:
       - $ref: '#/components/parameters/InstancePath'
       - $ref: '#/components/parameters/UpdateMask'
@@ -95,7 +95,7 @@ paths:
       operationId: deleteInstance
       tags:
       - Instances
-      summary: Delete an instance.
+      summary: Delete an instance
       parameters:
       - $ref: '#/components/parameters/InstancePath'
       responses:
@@ -103,6 +103,16 @@ paths:
           description: Instance deleted.
 components:
   parameters:
+    PageToken:
+      name: page_token
+      in: query
+      schema:
+        type: string
+    PageSize:
+      name: page_size
+      in: query
+      schema:
+        type: integer
     InstancePath:
       name: instance
       in: path
@@ -110,16 +120,6 @@ components:
       schema:
         type: string
       description: Instance resource id (the segment after instances/).
-    PageSize:
-      name: page_size
-      in: query
-      schema:
-        type: integer
-    PageToken:
-      name: page_token
-      in: query
-      schema:
-        type: string
     UpdateMask:
       name: update_mask
       in: query
@@ -135,6 +135,22 @@ components:
           items:
             $ref: '#/components/schemas/Instance'
         nextPageToken:
+          type: string
+    DataSource:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum:
+          - ADMIN
+          - READ_ONLY
+        host:
+          type: string
+        port:
+          type: string
+        username:
           type: string
     Instance:
       type: object
@@ -174,22 +190,6 @@ components:
           enum:
           - ACTIVE
           - DELETED
-    DataSource:
-      type: object
-      properties:
-        id:
-          type: string
-        type:
-          type: string
-          enum:
-          - ADMIN
-          - READ_ONLY
-        host:
-          type: string
-        port:
-          type: string
-        username:
-          type: string
   securitySchemes:
     bearerAuth:
       type: http

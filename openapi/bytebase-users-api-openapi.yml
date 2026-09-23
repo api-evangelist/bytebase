@@ -1,7 +1,7 @@
-openapi: 3.0.1
+openapi: 3.2.0
 info:
-  title: Bytebase Auth Users API
-  description: Bytebase exposes a Connect/gRPC API that is also served as a RESTful HTTP API via gRPC transcoding (google.api.http annotations). Every action in the Bytebase web console is backed by this API. This document models the core RESTful HTTP surface - instances, databases, projects, issues (schema change / migration), plans, rollouts, sheets, users, roles, groups, and project webhooks. Authentication uses a short-lived access token obtained by logging in with a service account; the token is supplied as a Bearer token in the Authorization header. The server URL is the base of your own self-hosted or cloud Bytebase deployment (the public demo is shown).
+  title: Bytebase Users API
+  description: Bytebase exposes a Connect/gRPC API that is also served as a RESTful HTTP API via gRPC transcoding (google.api.http annotations).
   termsOfService: https://www.bytebase.com/terms
   contact:
     name: Bytebase Support
@@ -20,7 +20,7 @@ paths:
       operationId: listUsers
       tags:
       - Users
-      summary: List users.
+      summary: List users
       parameters:
       - $ref: '#/components/parameters/PageSize'
       - $ref: '#/components/parameters/PageToken'
@@ -35,7 +35,7 @@ paths:
       operationId: createUser
       tags:
       - Users
-      summary: Create a user (or service account).
+      summary: Create a user (or service account)
       requestBody:
         required: true
         content:
@@ -50,6 +50,17 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
 components:
+  parameters:
+    PageToken:
+      name: page_token
+      in: query
+      schema:
+        type: string
+    PageSize:
+      name: page_size
+      in: query
+      schema:
+        type: integer
   schemas:
     User:
       type: object
@@ -81,17 +92,6 @@ components:
             $ref: '#/components/schemas/User'
         nextPageToken:
           type: string
-  parameters:
-    PageSize:
-      name: page_size
-      in: query
-      schema:
-        type: integer
-    PageToken:
-      name: page_token
-      in: query
-      schema:
-        type: string
   securitySchemes:
     bearerAuth:
       type: http

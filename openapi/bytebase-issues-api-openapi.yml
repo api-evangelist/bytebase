@@ -1,7 +1,7 @@
-openapi: 3.0.1
+openapi: 3.2.0
 info:
-  title: Bytebase Auth Issues API
-  description: Bytebase exposes a Connect/gRPC API that is also served as a RESTful HTTP API via gRPC transcoding (google.api.http annotations). Every action in the Bytebase web console is backed by this API. This document models the core RESTful HTTP surface - instances, databases, projects, issues (schema change / migration), plans, rollouts, sheets, users, roles, groups, and project webhooks. Authentication uses a short-lived access token obtained by logging in with a service account; the token is supplied as a Bearer token in the Authorization header. The server URL is the base of your own self-hosted or cloud Bytebase deployment (the public demo is shown).
+  title: Bytebase Issues API
+  description: Bytebase exposes a Connect/gRPC API that is also served as a RESTful HTTP API via gRPC transcoding (google.api.http annotations).
   termsOfService: https://www.bytebase.com/terms
   contact:
     name: Bytebase Support
@@ -20,7 +20,7 @@ paths:
       operationId: listIssues
       tags:
       - Issues
-      summary: List issues in a project.
+      summary: List issues in a project
       parameters:
       - $ref: '#/components/parameters/ProjectPath'
       - $ref: '#/components/parameters/PageSize'
@@ -36,7 +36,7 @@ paths:
       operationId: createIssue
       tags:
       - Issues
-      summary: Create a schema-change / data-change issue.
+      summary: Create a schema-change / data-change issue
       parameters:
       - $ref: '#/components/parameters/ProjectPath'
       requestBody:
@@ -57,7 +57,7 @@ paths:
       operationId: getIssue
       tags:
       - Issues
-      summary: Get an issue.
+      summary: Get an issue
       parameters:
       - $ref: '#/components/parameters/ProjectPath'
       - name: issue
@@ -77,7 +77,7 @@ paths:
       operationId: approveIssue
       tags:
       - Issues
-      summary: Approve an issue at the current approval step.
+      summary: Approve an issue at the current approval step
       parameters:
       - $ref: '#/components/parameters/ProjectPath'
       - name: issue
@@ -101,24 +101,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/Issue'
 components:
-  parameters:
-    PageSize:
-      name: page_size
-      in: query
-      schema:
-        type: integer
-    PageToken:
-      name: page_token
-      in: query
-      schema:
-        type: string
-    ProjectPath:
-      name: project
-      in: path
-      required: true
-      schema:
-        type: string
-      description: Project resource id (the segment after projects/).
   schemas:
     Issue:
       type: object
@@ -157,6 +139,24 @@ components:
             $ref: '#/components/schemas/Issue'
         nextPageToken:
           type: string
+  parameters:
+    PageToken:
+      name: page_token
+      in: query
+      schema:
+        type: string
+    PageSize:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+    ProjectPath:
+      name: project
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Project resource id (the segment after projects/).
   securitySchemes:
     bearerAuth:
       type: http
