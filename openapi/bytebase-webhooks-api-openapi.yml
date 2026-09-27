@@ -37,15 +37,22 @@ paths:
               schema:
                 $ref: '#/components/schemas/Project'
 components:
-  parameters:
-    ProjectPath:
-      name: project
-      in: path
-      required: true
-      schema:
-        type: string
-      description: Project resource id (the segment after projects/).
   schemas:
+    Project:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Resource name, e.g. projects/shop.
+        title:
+          type: string
+        key:
+          type: string
+        state:
+          type: string
+          enum:
+          - ACTIVE
+          - DELETED
     Webhook:
       type: object
       properties:
@@ -69,21 +76,14 @@ components:
           type: array
           items:
             type: string
-    Project:
-      type: object
-      properties:
-        name:
-          type: string
-          description: Resource name, e.g. projects/shop.
-        title:
-          type: string
-        key:
-          type: string
-        state:
-          type: string
-          enum:
-          - ACTIVE
-          - DELETED
+  parameters:
+    ProjectPath:
+      name: project
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Project resource id (the segment after projects/).
   securitySchemes:
     bearerAuth:
       type: http

@@ -77,11 +77,6 @@ components:
       in: query
       schema:
         type: string
-    PageSize:
-      name: page_size
-      in: query
-      schema:
-        type: integer
     ProjectPath:
       name: project
       in: path
@@ -89,6 +84,11 @@ components:
       schema:
         type: string
       description: Project resource id (the segment after projects/).
+    PageSize:
+      name: page_size
+      in: query
+      schema:
+        type: integer
   schemas:
     Project:
       type: object

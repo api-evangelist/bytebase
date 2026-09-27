@@ -127,15 +127,6 @@ components:
         type: string
       description: Comma-separated list of fields to update (FieldMask).
   schemas:
-    ListInstancesResponse:
-      type: object
-      properties:
-        instances:
-          type: array
-          items:
-            $ref: '#/components/schemas/Instance'
-        nextPageToken:
-          type: string
     DataSource:
       type: object
       properties:
@@ -190,6 +181,15 @@ components:
           enum:
           - ACTIVE
           - DELETED
+    ListInstancesResponse:
+      type: object
+      properties:
+        instances:
+          type: array
+          items:
+            $ref: '#/components/schemas/Instance'
+        nextPageToken:
+          type: string
   securitySchemes:
     bearerAuth:
       type: http

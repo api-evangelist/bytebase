@@ -30,6 +30,13 @@ paths:
                 $ref: '#/components/schemas/ListGroupsResponse'
 components:
   schemas:
+    ListGroupsResponse:
+      type: object
+      properties:
+        groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/Group'
     Group:
       type: object
       properties:
@@ -42,13 +49,6 @@ components:
           type: array
           items:
             type: object
-    ListGroupsResponse:
-      type: object
-      properties:
-        groups:
-          type: array
-          items:
-            $ref: '#/components/schemas/Group'
   securitySchemes:
     bearerAuth:
       type: http

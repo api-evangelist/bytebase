@@ -102,6 +102,15 @@ paths:
                 $ref: '#/components/schemas/Issue'
 components:
   schemas:
+    ListIssuesResponse:
+      type: object
+      properties:
+        issues:
+          type: array
+          items:
+            $ref: '#/components/schemas/Issue'
+        nextPageToken:
+          type: string
     Issue:
       type: object
       properties:
@@ -130,21 +139,7 @@ components:
         rollout:
           type: string
           description: Resource name of the associated rollout.
-    ListIssuesResponse:
-      type: object
-      properties:
-        issues:
-          type: array
-          items:
-            $ref: '#/components/schemas/Issue'
-        nextPageToken:
-          type: string
   parameters:
-    PageToken:
-      name: page_token
-      in: query
-      schema:
-        type: string
     PageSize:
       name: page_size
       in: query
@@ -157,6 +152,11 @@ components:
       schema:
         type: string
       description: Project resource id (the segment after projects/).
+    PageToken:
+      name: page_token
+      in: query
+      schema:
+        type: string
   securitySchemes:
     bearerAuth:
       type: http
