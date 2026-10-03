@@ -101,16 +101,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/Issue'
 components:
+  parameters:
+    PageSize:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+    PageToken:
+      name: page_token
+      in: query
+      schema:
+        type: string
+    ProjectPath:
+      name: project
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Project resource id (the segment after projects/).
   schemas:
-    ListIssuesResponse:
-      type: object
-      properties:
-        issues:
-          type: array
-          items:
-            $ref: '#/components/schemas/Issue'
-        nextPageToken:
-          type: string
     Issue:
       type: object
       properties:
@@ -139,24 +148,15 @@ components:
         rollout:
           type: string
           description: Resource name of the associated rollout.
-  parameters:
-    PageSize:
-      name: page_size
-      in: query
-      schema:
-        type: integer
-    ProjectPath:
-      name: project
-      in: path
-      required: true
-      schema:
-        type: string
-      description: Project resource id (the segment after projects/).
-    PageToken:
-      name: page_token
-      in: query
-      schema:
-        type: string
+    ListIssuesResponse:
+      type: object
+      properties:
+        issues:
+          type: array
+          items:
+            $ref: '#/components/schemas/Issue'
+        nextPageToken:
+          type: string
   securitySchemes:
     bearerAuth:
       type: http

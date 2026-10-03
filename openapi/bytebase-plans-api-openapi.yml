@@ -37,14 +37,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/Plan'
 components:
-  parameters:
-    ProjectPath:
-      name: project
-      in: path
-      required: true
-      schema:
-        type: string
-      description: Project resource id (the segment after projects/).
   schemas:
     Plan:
       type: object
@@ -63,6 +55,14 @@ components:
                 type: array
                 items:
                   type: object
+  parameters:
+    ProjectPath:
+      name: project
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Project resource id (the segment after projects/).
   securitySchemes:
     bearerAuth:
       type: http

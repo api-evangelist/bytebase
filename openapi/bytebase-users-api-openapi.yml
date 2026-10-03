@@ -51,6 +51,15 @@ paths:
                 $ref: '#/components/schemas/User'
 components:
   schemas:
+    ListUsersResponse:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        nextPageToken:
+          type: string
     User:
       type: object
       properties:
@@ -72,26 +81,17 @@ components:
           enum:
           - ACTIVE
           - DELETED
-    ListUsersResponse:
-      type: object
-      properties:
-        users:
-          type: array
-          items:
-            $ref: '#/components/schemas/User'
-        nextPageToken:
-          type: string
   parameters:
-    PageToken:
-      name: page_token
-      in: query
-      schema:
-        type: string
     PageSize:
       name: page_size
       in: query
       schema:
         type: integer
+    PageToken:
+      name: page_token
+      in: query
+      schema:
+        type: string
   securitySchemes:
     bearerAuth:
       type: http

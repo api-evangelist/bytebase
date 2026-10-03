@@ -37,6 +37,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/Sheet'
 components:
+  parameters:
+    ProjectPath:
+      name: project
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Project resource id (the segment after projects/).
   schemas:
     Sheet:
       type: object
@@ -50,14 +58,6 @@ components:
           type: string
           format: byte
           description: The SQL statement (base64-encoded over JSON transport).
-  parameters:
-    ProjectPath:
-      name: project
-      in: path
-      required: true
-      schema:
-        type: string
-      description: Project resource id (the segment after projects/).
   securitySchemes:
     bearerAuth:
       type: http

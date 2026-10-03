@@ -52,6 +52,15 @@ paths:
                 $ref: '#/components/schemas/Database'
 components:
   schemas:
+    ListDatabasesResponse:
+      type: object
+      properties:
+        databases:
+          type: array
+          items:
+            $ref: '#/components/schemas/Database'
+        nextPageToken:
+          type: string
     Database:
       type: object
       properties:
@@ -66,15 +75,6 @@ components:
         project:
           type: string
         schemaVersion:
-          type: string
-    ListDatabasesResponse:
-      type: object
-      properties:
-        databases:
-          type: array
-          items:
-            $ref: '#/components/schemas/Database'
-        nextPageToken:
           type: string
   parameters:
     InstancePath:

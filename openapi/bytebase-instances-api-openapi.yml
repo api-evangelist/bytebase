@@ -103,11 +103,6 @@ paths:
           description: Instance deleted.
 components:
   parameters:
-    PageToken:
-      name: page_token
-      in: query
-      schema:
-        type: string
     PageSize:
       name: page_size
       in: query
@@ -120,6 +115,11 @@ components:
       schema:
         type: string
       description: Instance resource id (the segment after instances/).
+    PageToken:
+      name: page_token
+      in: query
+      schema:
+        type: string
     UpdateMask:
       name: update_mask
       in: query
