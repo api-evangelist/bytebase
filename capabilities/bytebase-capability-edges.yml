@@ -1,0 +1,25 @@
+slug: bytebase
+provider: Bytebase
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Software & Technology
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 1
+edges:
+- tag: Rollouts
+  spec_file: bytebase-rollouts-api-openapi.yml
+  capability_id: BC-4210.40
+  capability_id_l1: BC-4210
+  capability_name: Deployment Orchestration
+  confidence: 0.75
+  evidence: POST /projects/{project}/rollouts  createRollout  Create a rollout to execute a plan; getRollout  Get
+    a rollout and its stages/tasks
+  reason: Rollouts execute a change plan through staged tasks against target databases — deployment orchestration
+    of changes to production environments.

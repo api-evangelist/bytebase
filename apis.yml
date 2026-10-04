@@ -277,6 +277,9 @@ apis:
   - type: OpenCollection
     url: collections/bytebase.opencollection.json
 common:
+- type: CapabilityMap
+  url: capabilities/bytebase-capability-edges.yml
+  name: Bytebase Business Capability Map
 - type: AgenticAccess
   url: agentic-access/bytebase-agentic-access.yml
 - type: TrustCenter
