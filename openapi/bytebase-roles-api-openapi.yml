@@ -30,13 +30,6 @@ paths:
                 $ref: '#/components/schemas/ListRolesResponse'
 components:
   schemas:
-    ListRolesResponse:
-      type: object
-      properties:
-        roles:
-          type: array
-          items:
-            $ref: '#/components/schemas/Role'
     Role:
       type: object
       properties:
@@ -51,6 +44,13 @@ components:
           type: array
           items:
             type: string
+    ListRolesResponse:
+      type: object
+      properties:
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/Role'
   securitySchemes:
     bearerAuth:
       type: http

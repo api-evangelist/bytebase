@@ -101,24 +101,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/Issue'
 components:
-  parameters:
-    PageSize:
-      name: page_size
-      in: query
-      schema:
-        type: integer
-    PageToken:
-      name: page_token
-      in: query
-      schema:
-        type: string
-    ProjectPath:
-      name: project
-      in: path
-      required: true
-      schema:
-        type: string
-      description: Project resource id (the segment after projects/).
   schemas:
     Issue:
       type: object
@@ -157,6 +139,24 @@ components:
             $ref: '#/components/schemas/Issue'
         nextPageToken:
           type: string
+  parameters:
+    PageSize:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+    PageToken:
+      name: page_token
+      in: query
+      schema:
+        type: string
+    ProjectPath:
+      name: project
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Project resource id (the segment after projects/).
   securitySchemes:
     bearerAuth:
       type: http
