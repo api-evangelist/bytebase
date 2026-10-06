@@ -45,7 +45,7 @@ tags:
 - DevSecOps
 - Developer Tools
 created: '2026-06-21'
-modified: '2026-06-21'
+modified: '2026-10-06'
 specificationVersion: '0.23'
 apis:
 - aid: bytebase:bytebase-auth-api
@@ -277,6 +277,8 @@ apis:
   - type: OpenCollection
     url: collections/bytebase.opencollection.json
 common:
+- url: https://www.bytebase.com/blog/
+  type: Blog
 - type: CapabilityMap
   url: capabilities/bytebase-capability-edges.yml
   name: Bytebase Business Capability Map
