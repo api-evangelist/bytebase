@@ -37,14 +37,6 @@ paths:
                 $ref: '#/components/schemas/LoginResponse'
 components:
   schemas:
-    LoginResponse:
-      type: object
-      properties:
-        token:
-          type: string
-          description: Bearer access token used in the Authorization header.
-        mfaTempToken:
-          type: string
     LoginRequest:
       type: object
       properties:
@@ -56,6 +48,14 @@ components:
           description: The service account's service key.
         web:
           type: boolean
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: Bearer access token used in the Authorization header.
+        mfaTempToken:
+          type: string
   securitySchemes:
     bearerAuth:
       type: http

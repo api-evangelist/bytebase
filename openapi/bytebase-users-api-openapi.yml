@@ -50,17 +50,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
 components:
-  parameters:
-    PageSize:
-      name: page_size
-      in: query
-      schema:
-        type: integer
-    PageToken:
-      name: page_token
-      in: query
-      schema:
-        type: string
   schemas:
     User:
       type: object
@@ -92,6 +81,17 @@ components:
             $ref: '#/components/schemas/User'
         nextPageToken:
           type: string
+  parameters:
+    PageSize:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+    PageToken:
+      name: page_token
+      in: query
+      schema:
+        type: string
   securitySchemes:
     bearerAuth:
       type: http
