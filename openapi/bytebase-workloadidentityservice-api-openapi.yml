@@ -1,0 +1,412 @@
+openapi: 3.2.0
+info:
+  title: Bytebase API Reference Workload Identity Service API
+  description: API reference for Bytebase. Every endpoint is served by your own Bytebase instance.
+  version: 1.0.0
+security: []
+tags:
+- name: WorkloadIdentityService
+  description: WorkloadIdentityService manages workload identities for external CI/CD integrations.
+paths:
+  /v1/projects/{project}/workloadIdentities:
+    get:
+      tags:
+      - WorkloadIdentityService
+      summary: ListWorkloadIdentities
+      description: 'Lists workload identities.
+
+        For workspace-level: parent is workspaces/{id}, permission bb.workloadIdentities.list on workspace.
+
+        For project-level: parent is projects/{project}, permission bb.workloadIdentities.list on project.'
+      operationId: WorkloadIdentityService_ListWorkloadIdentities
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: "The maximum number of workload identities to return. The service may return fewer than\n this value.\n If unspecified, at most 10 workload identities will be returned.\n The maximum value is 1000; values above 1000 will be coerced to 1000."
+        schema:
+          type: integer
+          title: page_size
+          format: int32
+      - name: pageToken
+        in: query
+        description: "A page token, received from a previous `ListWorkloadIdentities` call.\n Provide this to retrieve the subsequent page.\n\n When paginating, all other parameters provided to `ListWorkloadIdentities` must match\n the call that provided the page token."
+        schema:
+          type: string
+          title: page_token
+      - name: showDeleted
+        in: query
+        description: Show deleted workload identities if specified.
+        schema:
+          type: boolean
+          title: show_deleted
+      - name: filter
+        in: query
+        description: "Filter is used to filter workload identities returned in the list.\n The syntax and semantics of CEL are documented at https://github.com/google/cel-spec\n\n Supported filter:\n - name: the workload identity name, support \"==\" and \".contains()\" operator.\n - email: the workload identity email, support \"==\" and \".contains()\" operator.\n - state: check State enum for values, support \"==\" operator.\n\n For example:\n name == \"ed\"\n name.contains(\"ed\")\n state == \"DELETED\"\n email == \"ed@workload.bytebase.com\"\n email.contains(\"ed\")"
+        schema:
+          type: string
+          title: filter
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ListWorkloadIdentitiesResponse'
+    post:
+      tags:
+      - WorkloadIdentityService
+      summary: CreateWorkloadIdentity
+      description: 'Creates a new workload identity.
+
+        For workspace-level: parent is workspaces/{id}, permission bb.workloadIdentities.create on workspace.
+
+        For project-level: parent is projects/{project}, permission bb.workloadIdentities.create on project.'
+      operationId: WorkloadIdentityService_CreateWorkloadIdentity
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: workloadIdentityId
+        in: query
+        description: "The ID to use for the workload identity, which will become the final component\n of the workload identity's email in the format: {workload_identity_id}@workload.bytebase.com\n or {workload_identity_id}@{project-id}.workload.bytebase.com"
+        required: true
+        schema:
+          type: string
+          title: workload_identity_id
+      requestBody:
+        description: The workload identity to create.
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.WorkloadIdentity'
+              title: workload_identity
+              description: The workload identity to create.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.WorkloadIdentity'
+  /v1/workloadIdentities/{workloadIdentity}:
+    get:
+      tags:
+      - WorkloadIdentityService
+      summary: GetWorkloadIdentity
+      description: 'Gets a workload identity by name.
+
+        Permissions required: bb.workloadIdentities.get'
+      operationId: WorkloadIdentityService_GetWorkloadIdentity
+      parameters:
+      - name: workloadIdentity
+        in: path
+        description: The workloadIdentity id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.WorkloadIdentity'
+    delete:
+      tags:
+      - WorkloadIdentityService
+      summary: DeleteWorkloadIdentity
+      description: 'Deletes a workload identity.
+
+        Permissions required: bb.workloadIdentities.delete'
+      operationId: WorkloadIdentityService_DeleteWorkloadIdentity
+      parameters:
+      - name: workloadIdentity
+        in: path
+        description: The workloadIdentity id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/google.protobuf.Empty'
+    patch:
+      tags:
+      - WorkloadIdentityService
+      summary: UpdateWorkloadIdentity
+      description: 'Updates a workload identity.
+
+        Permissions required: bb.workloadIdentities.update'
+      operationId: WorkloadIdentityService_UpdateWorkloadIdentity
+      parameters:
+      - name: workloadIdentity
+        in: path
+        description: The workloadIdentity id.
+        required: true
+        schema:
+          type: string
+      - name: updateMask
+        in: query
+        description: "The list of fields to update.\n Supported fields: title, workload_identity_config"
+        schema:
+          type: string
+      requestBody:
+        description: "The workload identity to update.\n\n The workload identity's `name` field is used to identify the workload identity to update.\n Format: workloadIdentities/{email}"
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.WorkloadIdentity'
+              title: workload_identity
+              description: "The workload identity to update.\n\n The workload identity's `name` field is used to identify the workload identity to update.\n Format: workloadIdentities/{email}"
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.WorkloadIdentity'
+  /v1/workloadIdentities/{workloadIdentity}:undelete:
+    post:
+      tags:
+      - WorkloadIdentityService
+      summary: UndeleteWorkloadIdentity
+      description: 'Restores a deleted workload identity.
+
+        Permissions required: bb.workloadIdentities.undelete'
+      operationId: WorkloadIdentityService_UndeleteWorkloadIdentity
+      parameters:
+      - name: workloadIdentity
+        in: path
+        description: The workloadIdentity id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.WorkloadIdentity'
+  /v1/workspaces/{workspace}/workloadIdentities:
+    get:
+      tags:
+      - WorkloadIdentityService
+      summary: ListWorkloadIdentities
+      description: 'Lists workload identities.
+
+        For workspace-level: parent is workspaces/{id}, permission bb.workloadIdentities.list on workspace.
+
+        For project-level: parent is projects/{project}, permission bb.workloadIdentities.list on project.'
+      operationId: WorkloadIdentityService_ListWorkloadIdentities2
+      parameters:
+      - name: workspace
+        in: path
+        description: The workspace id.
+        required: true
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: "The maximum number of workload identities to return. The service may return fewer than\n this value.\n If unspecified, at most 10 workload identities will be returned.\n The maximum value is 1000; values above 1000 will be coerced to 1000."
+        schema:
+          type: integer
+          title: page_size
+          format: int32
+      - name: pageToken
+        in: query
+        description: "A page token, received from a previous `ListWorkloadIdentities` call.\n Provide this to retrieve the subsequent page.\n\n When paginating, all other parameters provided to `ListWorkloadIdentities` must match\n the call that provided the page token."
+        schema:
+          type: string
+          title: page_token
+      - name: showDeleted
+        in: query
+        description: Show deleted workload identities if specified.
+        schema:
+          type: boolean
+          title: show_deleted
+      - name: filter
+        in: query
+        description: "Filter is used to filter workload identities returned in the list.\n The syntax and semantics of CEL are documented at https://github.com/google/cel-spec\n\n Supported filter:\n - name: the workload identity name, support \"==\" and \".contains()\" operator.\n - email: the workload identity email, support \"==\" and \".contains()\" operator.\n - state: check State enum for values, support \"==\" operator.\n\n For example:\n name == \"ed\"\n name.contains(\"ed\")\n state == \"DELETED\"\n email == \"ed@workload.bytebase.com\"\n email.contains(\"ed\")"
+        schema:
+          type: string
+          title: filter
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ListWorkloadIdentitiesResponse'
+    post:
+      tags:
+      - WorkloadIdentityService
+      summary: CreateWorkloadIdentity
+      description: 'Creates a new workload identity.
+
+        For workspace-level: parent is workspaces/{id}, permission bb.workloadIdentities.create on workspace.
+
+        For project-level: parent is projects/{project}, permission bb.workloadIdentities.create on project.'
+      operationId: WorkloadIdentityService_CreateWorkloadIdentity2
+      parameters:
+      - name: workspace
+        in: path
+        description: The workspace id.
+        required: true
+        schema:
+          type: string
+      - name: workloadIdentityId
+        in: query
+        description: "The ID to use for the workload identity, which will become the final component\n of the workload identity's email in the format: {workload_identity_id}@workload.bytebase.com\n or {workload_identity_id}@{project-id}.workload.bytebase.com"
+        required: true
+        schema:
+          type: string
+          title: workload_identity_id
+      requestBody:
+        description: The workload identity to create.
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.WorkloadIdentity'
+              title: workload_identity
+              description: The workload identity to create.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.WorkloadIdentity'
+components:
+  schemas:
+    google.protobuf.Timestamp:
+      type: string
+      examples:
+      - '2023-01-15T01:30:15.01Z'
+      - '2024-12-25T12:00:00Z'
+      format: date-time
+      description: A point in time in RFC 3339 format, with up to nanosecond precision. Output uses UTC (`Z`); input may use an offset from UTC.
+    bytebase.v1.WorkloadIdentityConfig:
+      type: object
+      properties:
+        providerType:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.WorkloadIdentityConfig.ProviderType'
+          title: provider_type
+          description: Provider configuration mode.
+        issuerUrl:
+          type: string
+          title: issuer_url
+          description: "HTTPS URL of the OIDC issuer. The exchange fetches\n {issuer_url}/.well-known/openid-configuration to verify a token, unless\n jwks_url names the key set directly."
+        allowedAudiences:
+          type: array
+          items:
+            type: string
+          title: allowed_audiences
+          description: "Audiences a token may be minted for. A token authenticates if its `aud`\n claim matches any entry."
+        subjectPattern:
+          type: string
+          title: subject_pattern
+          description: "The subject a token must carry, e.g. \"repo:owner/repo:ref:refs/heads/main\".\n A trailing \"*\" is a prefix match. For GitHub and GitLab subjects it must\n complete an owner or group segment, so \"repo:my-org/*\" is accepted and\n \"repo:*\" is not. Other issuers write other vocabularies, so a wildcard\n outside those two is accepted as given."
+        jwksUrl:
+          type: string
+          title: jwks_url
+          description: Optional JWKS endpoint. When empty, use OIDC discovery from issuer_url.
+      title: WorkloadIdentityConfig
+      required:
+      - providerType
+      - issuerUrl
+      - allowedAudiences
+      - subjectPattern
+      additionalProperties: false
+      description: WorkloadIdentityConfig for API layer
+    bytebase.v1.State:
+      type: string
+      title: State
+      enum:
+      - STATE_UNSPECIFIED
+      - ACTIVE
+      - DELETED
+      description: Resource lifecycle state.
+    bytebase.v1.WorkloadIdentityConfig.ProviderType:
+      type: string
+      title: ProviderType
+      enum:
+      - PROVIDER_TYPE_UNSPECIFIED
+      - GITHUB
+      - GITLAB
+      - OIDC
+      description: ProviderType identifies the workload identity configuration mode.
+    bytebase.v1.ListWorkloadIdentitiesResponse:
+      type: object
+      properties:
+        workloadIdentities:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.WorkloadIdentity'
+          title: workload_identities
+          description: The workload identities from the specified request.
+        nextPageToken:
+          type: string
+          title: next_page_token
+          description: "A token, which can be sent as `page_token` to retrieve the next page.\n If this field is omitted, there are no subsequent pages."
+      title: ListWorkloadIdentitiesResponse
+      additionalProperties: false
+      description: Response message for listing workload identities.
+    bytebase.v1.WorkloadIdentity:
+      type: object
+      properties:
+        name:
+          type: string
+          title: name
+          description: "The name of the workload identity.\n Format: workloadIdentities/{email}"
+          readOnly: true
+        state:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.State'
+          title: state
+          description: The state of the workload identity.
+        email:
+          type: string
+          title: email
+          description: "The email of the workload identity.\n For workspace-level: {name}@workload.bytebase.com\n For project-level: {name}@{project-id}.workload.bytebase.com"
+          readOnly: true
+        title:
+          type: string
+          title: title
+          maxLength: 200
+          description: The display title of the workload identity.
+        createTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: create_time
+          description: The timestamp when the workload identity was created.
+          readOnly: true
+        workloadIdentityConfig:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.WorkloadIdentityConfig'
+          title: workload_identity_config
+          description: The workload identity configuration for OIDC token validation.
+      title: WorkloadIdentity
+      required:
+      - workloadIdentityConfig
+      additionalProperties: false
+      description: WorkloadIdentity represents an external CI/CD workload identity.
+    google.protobuf.Empty:
+      type: object
+      description: An empty JSON object.

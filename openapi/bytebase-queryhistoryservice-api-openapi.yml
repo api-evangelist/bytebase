@@ -1,0 +1,223 @@
+openapi: 3.2.0
+info:
+  title: Bytebase API Reference Query History Service API
+  description: API reference for Bytebase. Every endpoint is served by your own Bytebase instance.
+  version: 1.0.0
+security: []
+tags:
+- name: QueryHistoryService
+  description: QueryHistoryService manages query history records of SQL Editor queries and exports.
+paths:
+  /v1/projects/{project}/queryHistories:
+    get:
+      tags:
+      - QueryHistoryService
+      summary: ListQueryHistories
+      description: 'ListQueryHistories lists query histories of all users in a project.
+
+        Results are ordered by create time descending (newest first).
+
+        Permissions required: bb.queryHistories.list'
+      operationId: QueryHistoryService_ListQueryHistories
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: "The maximum number of histories to return.\n The service may return fewer than this value.\n If unspecified, at most 10 history entries will be returned.\n The maximum value is 1000; values above 1000 will be coerced to 1000."
+        schema:
+          type: integer
+          title: page_size
+          format: int32
+      - name: pageToken
+        in: query
+        description: "A page token, received from a previous `ListQueryHistories` call.\n Provide this to retrieve the subsequent page."
+        schema:
+          type: string
+          title: page_token
+      - name: filter
+        in: query
+        description: "Filter is the filter to apply on the list query histories.\n The syntax and semantics of CEL are documented at https://github.com/google/cel-spec\n\n Supported filter:\n - creator: the user full name in \"users/{email}\" format, support \"==\" operator.\n\n For example:\n creator == \"users/{email}\""
+        schema:
+          type: string
+          title: filter
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ListQueryHistoriesResponse'
+  /v1/projects/{project}/queryHistories/{queryHistory}:
+    get:
+      tags:
+      - QueryHistoryService
+      summary: GetQueryHistory
+      description: 'GetQueryHistory gets a single query history for the caller.
+
+        Permissions required: None (only returns the caller''s own query history)'
+      operationId: QueryHistoryService_GetQueryHistory
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: queryHistory
+        in: path
+        description: The queryHistory id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.QueryHistory'
+  /v1/projects/{project}/queryHistories:search:
+    post:
+      tags:
+      - QueryHistoryService
+      summary: SearchQueryHistories
+      description: 'SearchQueryHistories searches query histories for the caller.
+
+        Permissions required: None (only returns caller''s own query histories)'
+      operationId: QueryHistoryService_SearchQueryHistories
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pageSize:
+                  type: integer
+                  title: page_size
+                  format: int32
+                  description: "The maximum number of histories to return.\n The service may return fewer than this value.\n If unspecified, at most 10 history entries will be returned.\n The maximum value is 1000; values above 1000 will be coerced to 1000."
+                pageToken:
+                  type: string
+                  title: page_token
+                  description: "A page token, received from a previous `ListQueryHistory` call.\n Provide this to retrieve the subsequent page."
+                filter:
+                  type: string
+                  title: filter
+                  description: "Filter is the filter to apply on the search query history\n The syntax and semantics of CEL are documented at https://github.com/google/cel-spec\n\n Supported filter:\n - project: the project full name in \"projects/{id}\" format, support \"==\" operator.\n - database: the database full name in \"instances/{id}/databases/{name}\" or \"projects/{project}/instances/{id}/databases/{name}\" format, support \"==\" operator.\n - instance: the instance full name in \"instances/{id}\" or \"projects/{project}/instances/{id}\" format, support \"==\" operator.\n - type: the type, should be \"QUERY\" or \"EXPORT\", support \"==\" operator.\n - statement: the SQL statement, support \"==\" and \".contains()\" operators.\n\n For example:\n project == \"projects/{project}\"\n database == \"instances/{instance}/databases/{database}\"\n instance == \"instances/{instance}\"\n type == \"QUERY\"\n type == \"EXPORT\"\n statement == \"SELECT 1;\"\n statement.contains(\"select\")\n type == \"QUERY\" && statement.contains(\"select\")"
+              title: SearchQueryHistoriesRequest
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.SearchQueryHistoriesResponse'
+components:
+  schemas:
+    bytebase.v1.ListQueryHistoriesResponse:
+      type: object
+      properties:
+        queryHistories:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.QueryHistory'
+          title: query_histories
+          description: The list of query histories.
+          readOnly: true
+        nextPageToken:
+          type: string
+          title: next_page_token
+          description: "A token to retrieve next page of history.\n Pass this value in the page_token field in the subsequent call to\n `ListQueryHistories` method to retrieve the next page of history."
+      title: ListQueryHistoriesResponse
+      additionalProperties: false
+    bytebase.v1.SearchQueryHistoriesResponse:
+      type: object
+      properties:
+        queryHistories:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.QueryHistory'
+          title: query_histories
+          description: The list of history.
+          readOnly: true
+        nextPageToken:
+          type: string
+          title: next_page_token
+          description: "A token to retrieve next page of history.\n Pass this value in the page_token field in the subsequent call to\n `ListQueryHistory` method to retrieve the next page of history."
+      title: SearchQueryHistoriesResponse
+      additionalProperties: false
+    google.protobuf.Timestamp:
+      type: string
+      examples:
+      - '2023-01-15T01:30:15.01Z'
+      - '2024-12-25T12:00:00Z'
+      format: date-time
+      description: A point in time in RFC 3339 format, with up to nanosecond precision. Output uses UTC (`Z`); input may use an offset from UTC.
+    bytebase.v1.QueryHistory.Type:
+      type: string
+      title: Type
+      enum:
+      - TYPE_UNSPECIFIED
+      - QUERY
+      - EXPORT
+    bytebase.v1.QueryHistory:
+      type: object
+      properties:
+        name:
+          type: string
+          title: name
+          description: "The name for the query history.\n Format: projects/{project}/queryHistories/{id}"
+          readOnly: true
+        database:
+          type: string
+          title: database
+          description: "The database name to execute the query.\n Format: instances/{instance}/databases/{databaseName} or projects/{project}/instances/{instance}/databases/{databaseName}"
+          readOnly: true
+        creator:
+          type: string
+          title: creator
+          readOnly: true
+        createTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: create_time
+          readOnly: true
+        statement:
+          type: string
+          title: statement
+          readOnly: true
+        error:
+          type:
+          - string
+          - 'null'
+          title: error
+          readOnly: true
+        duration:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Duration'
+          title: duration
+          readOnly: true
+        type:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.QueryHistory.Type'
+          title: type
+      title: QueryHistory
+      additionalProperties: false
+    google.protobuf.Duration:
+      type: string
+      format: duration
+      description: A signed duration in seconds, with up to nine fractional digits and an `s` suffix (for example, `3s` or `-0.001s`).

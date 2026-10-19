@@ -1,0 +1,1405 @@
+openapi: 3.2.0
+info:
+  title: Bytebase API Reference Issue Service API
+  description: API reference for Bytebase. Every endpoint is served by your own Bytebase instance.
+  version: 1.0.0
+security: []
+tags:
+- name: IssueService
+  description: IssueService manages issues for tracking database changes and tasks.
+paths:
+  /v1/projects/{project}/issues:
+    get:
+      tags:
+      - IssueService
+      summary: ListIssues
+      description: 'Lists issues in a project.
+
+        Permissions required: bb.issues.list'
+      operationId: IssueService_ListIssues
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: "The maximum number of issues to return. The service may return fewer than\n this value.\n If unspecified, at most 10 issues will be returned.\n The maximum value is 1000; values above 1000 will be coerced to 1000."
+        schema:
+          type: integer
+          title: page_size
+          format: int32
+      - name: pageToken
+        in: query
+        description: "A page token, received from a previous `ListIssues` call.\n Provide this to retrieve the subsequent page.\n\n When paginating, all other parameters provided to `ListIssues` must match\n the call that provided the page token."
+        schema:
+          type: string
+          title: page_token
+      - name: filter
+        in: query
+        description: "Filter is used to filter issues returned in the list.\n The syntax and semantics of CEL are documented at https://github.com/google/cel-spec\n\n Supported filters:\n - creator: issue creator full name in \"users/{email or id}\" format, support \"==\" operator.\n - status: the issue status, support \"==\" and \"in\" operator, check the IssueStatus enum for the values.\n - create_time: issue create time in \"2006-01-02T15:04:05Z07:00\" format, support \">=\" or \"<=\" operator.\n - type: the issue type, support \"==\" and \"in\" operator, check the Type enum in the Issue message for the values.\n - labels: the issue labels, support \"==\" and \"in\" operator.\n - risk_level: the issue risk level, support \"in\" operator, check the RiskLevel enum for the values.\n - approval_status: issue approval status, support \"==\" operator.\n - current_approver: the issue approver, should in \"users/{email} format\", support \"==\" operator.\n\n For example:\n creator == \"users/ed@bytebase.com\" && status in [\"OPEN\", \"DONE\"]\n status == \"CANCELED\" && type == \"DATABASE_CHANGE\"\n labels in [\"label1\", \"label2\"]\n risk_level in [\"HIGH\", \"MODERATE\"]\n create_time >= \"2025-01-02T15:04:05Z07:00\""
+        schema:
+          type: string
+          title: filter
+      - name: query
+        in: query
+        description: Query is the query statement.
+        schema:
+          type: string
+          title: query
+      - name: orderBy
+        in: query
+        description: "The order by of issues.\n Support:\n - create_time\n - update_time\n The default sorting order is ascending.\n For example:\n - order_by = \"create_time desc\"\n - order_by = \"update_time asc\""
+        schema:
+          type: string
+          title: order_by
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ListIssuesResponse'
+    post:
+      tags:
+      - IssueService
+      summary: CreateIssue
+      description: 'Creates a new issue for database changes or tasks.
+
+        Permissions required: bb.issues.create'
+      operationId: IssueService_CreateIssue
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: The issue to create.
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.Issue'
+              title: issue
+              description: The issue to create.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Issue'
+  /v1/projects/{project}/issues/{issue}:
+    get:
+      tags:
+      - IssueService
+      summary: GetIssue
+      description: 'Retrieves an issue by name.
+
+        Permissions required: bb.issues.get'
+      operationId: IssueService_GetIssue
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: issue
+        in: path
+        description: The issue id.
+        required: true
+        schema:
+          type: string
+      - name: force
+        in: query
+        description: If set to true, bypass cache and fetch the latest data.
+        schema:
+          type: boolean
+          title: force
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Issue'
+    patch:
+      tags:
+      - IssueService
+      summary: UpdateIssue
+      description: 'Updates an issue''s properties such as title, description, or labels.
+
+        Permissions required: bb.issues.update'
+      operationId: IssueService_UpdateIssue
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: issue
+        in: path
+        description: The issue id.
+        required: true
+        schema:
+          type: string
+      - name: updateMask
+        in: query
+        description: The list of fields to update.
+        required: true
+        schema:
+          type: string
+      - name: allowMissing
+        in: query
+        description: "If set to true, and the issue is not found, a new issue will be created.\n In this situation, `update_mask` is ignored."
+        schema:
+          type: boolean
+          title: allow_missing
+      requestBody:
+        description: "The issue to update.\n\n The issue's `name` field is used to identify the issue to update.\n Format: projects/{project}/issues/{issue}"
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.Issue'
+              title: issue
+              description: "The issue to update.\n\n The issue's `name` field is used to identify the issue to update.\n Format: projects/{project}/issues/{issue}"
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Issue'
+  /v1/projects/{project}/issues/{issue}/issueComments:
+    get:
+      tags:
+      - IssueService
+      summary: ListIssueComments
+      description: 'Lists comments on an issue.
+
+        Permissions required: bb.issueComments.list'
+      operationId: IssueService_ListIssueComments
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: issue
+        in: path
+        description: The issue id.
+        required: true
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: "The maximum number of issue comments to return. The service may return fewer than\n this value.\n If unspecified, at most 10 issue comments will be returned.\n The maximum value is 1000; values above 1000 will be coerced to 1000."
+        schema:
+          type: integer
+          title: page_size
+          format: int32
+      - name: pageToken
+        in: query
+        description: "A page token, received from a previous `ListIssueComments` call.\n Provide this to retrieve the subsequent page.\n\n When paginating, all other parameters provided to `ListIssueComments` must match\n the call that provided the page token."
+        schema:
+          type: string
+          title: page_token
+      - name: filter
+        in: query
+        description: "CEL filter over events, root comments, and replies.\n Supported: root == null, root == \"<comment name>\", or root in [\"<comment name>\", ...].\n Root names must belong to parent. Empty and root == null return the\n timeline (events and root comments); other filters return replies only."
+        schema:
+          type: string
+          title: filter
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ListIssueCommentsResponse'
+  /v1/projects/{project}/issues/{issue}/reviewRuns/{reviewRun}:
+    get:
+      tags:
+      - IssueService
+      summary: GetReviewRun
+      description: 'Gets the current run of one reviewer on an issue. The run carries
+
+        execution status only; review results are issue comments. A reviewer
+
+        that has never run on the issue is NOT_FOUND.
+
+        Permissions required: bb.reviewRuns.get'
+      operationId: IssueService_GetReviewRun
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: issue
+        in: path
+        description: The issue id.
+        required: true
+        schema:
+          type: string
+      - name: reviewRun
+        in: path
+        description: The reviewRun id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ReviewRun'
+  /v1/projects/{project}/issues/{issue}/reviewRuns/{reviewRun}:run:
+    post:
+      tags:
+      - IssueService
+      summary: RunReview
+      description: 'Triggers a review run. The slot is reset unconditionally: a RUNNING
+
+        execution is superseded (its completion is fenced off), the attempt
+
+        number is bumped, and the returned run is AVAILABLE.
+
+        Review results are not returned by this RPC: they are posted as issue
+
+        comments. The returned run carries execution status only, and
+
+        GetReviewRun reads it back.
+
+        The audit log is the only record of who triggered a run.
+
+        Permissions required: bb.reviewRuns.run'
+      operationId: IssueService_RunReview
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: issue
+        in: path
+        description: The issue id.
+        required: true
+        schema:
+          type: string
+      - name: reviewRun
+        in: path
+        description: The reviewRun id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ReviewRun'
+  /v1/projects/{project}/issues/{issue}:approve:
+    post:
+      tags:
+      - IssueService
+      summary: ApproveIssue
+      description: 'Approves an issue. Access determined by approval flow configuration - caller must be a designated approver for the current approval step.
+
+        Permissions required: None (determined by approval flow)'
+      operationId: IssueService_ApproveIssue
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: issue
+        in: path
+        description: The issue id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                comment:
+                  type: string
+                  title: comment
+                  description: The comment explaining the approval decision.
+              title: ApproveIssueRequest
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Issue'
+  /v1/projects/{project}/issues/{issue}:comment:
+    post:
+      tags:
+      - IssueService
+      summary: CreateIssueComment
+      description: 'Adds a comment to an issue.
+
+        Permissions required: bb.issueComments.create'
+      operationId: IssueService_CreateIssueComment
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: issue
+        in: path
+        description: The issue id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: The comment to create.
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.IssueComment'
+              title: issue_comment
+              description: The comment to create.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.IssueComment'
+    patch:
+      tags:
+      - IssueService
+      summary: UpdateIssueComment
+      description: 'Updates an existing issue comment.
+
+        Permissions required: bb.issueComments.update'
+      operationId: IssueService_UpdateIssueComment
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: issue
+        in: path
+        description: The issue id.
+        required: true
+        schema:
+          type: string
+      - name: updateMask
+        in: query
+        description: The list of fields to update.
+        required: true
+        schema:
+          type: string
+      - name: allowMissing
+        in: query
+        description: "If set to true, and the issue comment is not found, a new issue comment will be created.\n In this situation, `update_mask` is ignored."
+        schema:
+          type: boolean
+          title: allow_missing
+      requestBody:
+        description: The comment to update.
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.IssueComment'
+              title: issue_comment
+              description: The comment to update.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.IssueComment'
+  /v1/projects/{project}/issues/{issue}:reject:
+    post:
+      tags:
+      - IssueService
+      summary: RejectIssue
+      description: 'Rejects an issue. Access determined by approval flow configuration - caller must be a designated approver for the current approval step.
+
+        Permissions required: None (determined by approval flow)'
+      operationId: IssueService_RejectIssue
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: issue
+        in: path
+        description: The issue id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                comment:
+                  type: string
+                  title: comment
+                  description: The comment explaining the rejection decision.
+              title: RejectIssueRequest
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Issue'
+  /v1/projects/{project}/issues/{issue}:request:
+    post:
+      tags:
+      - IssueService
+      summary: RequestIssue
+      description: 'Requests changes on an issue. Access determined by approval flow configuration - caller must be a designated approver for the current approval step.
+
+        Permissions required: None (determined by approval flow)'
+      operationId: IssueService_RequestIssue
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: issue
+        in: path
+        description: The issue id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                comment:
+                  type: string
+                  title: comment
+                  description: The comment explaining the request.
+              title: RequestIssueRequest
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Issue'
+  /v1/projects/{project}/issues/{issue}:retryApproval:
+    post:
+      tags:
+      - IssueService
+      summary: RetryIssueApproval
+      description: 'Re-runs approval-template finding for an issue stuck in CHECKING.
+
+        Useful when the synchronous post-create finding errored (e.g. against
+
+        a malformed workspace approval rule) and the operator has since
+
+        corrected it — without this, the issue would remain in CHECKING
+
+        indefinitely because there is no other retry path for non-DATABASE_CHANGE
+
+        issue types. Idempotent: returns the existing issue unchanged when
+
+        approval-finding has already completed.
+
+        Permissions required: None (caller must be the issue creator;
+
+        mirrors RequestIssue''s authorization model).'
+      operationId: IssueService_RetryIssueApproval
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: issue
+        in: path
+        description: The issue id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Issue'
+  /v1/projects/{project}/issues:batchUpdateStatus:
+    post:
+      tags:
+      - IssueService
+      summary: BatchUpdateIssuesStatus
+      description: 'Updates the status of multiple issues in a single operation.
+
+        Permissions required: bb.issues.update'
+      operationId: IssueService_BatchUpdateIssuesStatus
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                issues:
+                  type: array
+                  items:
+                    type: string
+                  title: issues
+                  description: "The list of issues to update.\n Format: projects/{project}/issues/{issue}"
+                status:
+                  allOf:
+                  - $ref: '#/components/schemas/bytebase.v1.IssueStatus'
+                  title: status
+                  description: The new status.
+                reason:
+                  type: string
+                  title: reason
+                  description: The reason for the status change.
+              title: BatchUpdateIssuesStatusRequest
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.BatchUpdateIssuesStatusResponse'
+  /v1/projects/{project}/issues:search:
+    post:
+      tags:
+      - IssueService
+      summary: SearchIssues
+      description: 'Search for issues that the caller has the bb.issues.get permission on and also satisfy the specified filter & query.
+
+        Permissions required: bb.issues.get'
+      operationId: IssueService_SearchIssues
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pageSize:
+                  type: integer
+                  title: page_size
+                  format: int32
+                  description: "The maximum number of issues to return. The service may return fewer than\n this value.\n If unspecified, at most 10 issues will be returned.\n The maximum value is 1000; values above 1000 will be coerced to 1000."
+                pageToken:
+                  type: string
+                  title: page_token
+                  description: "A page token, received from a previous `SearchIssues` call.\n Provide this to retrieve the subsequent page.\n\n When paginating, all other parameters provided to `SearchIssues` must match\n the call that provided the page token."
+                filter:
+                  type: string
+                  title: filter
+                  description: "Filter is used to filter issues returned in the list.\n Check the filter field in the ListIssuesRequest message."
+                query:
+                  type: string
+                  title: query
+                  description: Query is the query statement.
+                orderBy:
+                  type: string
+                  title: order_by
+                  description: "The order by of issues.\n Support:\n - create_time\n - update_time\n The default sorting order is ascending.\n For example:\n - order_by = \"create_time desc\"\n - order_by = \"update_time asc\""
+              title: SearchIssuesRequest
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.SearchIssuesResponse'
+components:
+  schemas:
+    bytebase.v1.StatementAnchor:
+      type: object
+      properties:
+        spec:
+          type: string
+          title: spec
+          description: The Plan.Spec.id in the issue's plan; may no longer resolve after deletion.
+        sheetSha256:
+          type: string
+          title: sheet_sha256
+          description: SHA256 of the saved sheet, as 64 lowercase hexadecimal characters.
+        startPosition:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.Position'
+          title: start_position
+          description: "One-based lines and Unicode code-point columns. When both columns are zero,\n the range covers whole lines, including the end line. Otherwise both columns\n must be positive, start_position is inclusive, and end_position is exclusive."
+        endPosition:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.Position'
+          title: end_position
+      title: StatementAnchor
+      additionalProperties: false
+      description: "The saved statement revision and range referenced by a comment.\n Source currency is derived by comparing the spec and hash with the current plan.\n Historical SQL is available through SheetService.GetSheet with this hash."
+    bytebase.v1.IssueComment.ReviewSubmission:
+      type: object
+      title: ReviewSubmission
+      additionalProperties: false
+      description: Review submission event information.
+    bytebase.v1.RoleGrant:
+      type: object
+      properties:
+        role:
+          type: string
+          title: role
+          description: "The requested role.\n Format: roles/EXPORTER."
+        user:
+          type: string
+          title: user
+          description: "The user to be granted.\n Format: users/{email}."
+        condition:
+          allOf:
+          - $ref: '#/components/schemas/google.type.Expr'
+          title: condition
+          description: The condition for the role. Same as the condition in IAM Binding message.
+        expiration:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Duration'
+          title: expiration
+          description: The duration for which the grant is valid.
+      title: RoleGrant
+      additionalProperties: false
+    bytebase.v1.ApprovalTemplate:
+      type: object
+      properties:
+        flow:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.ApprovalFlow'
+          title: flow
+          description: The approval flow definition.
+        title:
+          type: string
+          title: title
+          description: The title of the approval template.
+        description:
+          type: string
+          title: description
+          description: The description of the approval template.
+      title: ApprovalTemplate
+      additionalProperties: false
+    bytebase.v1.ApprovalFlow:
+      type: object
+      properties:
+        roles:
+          type: array
+          items:
+            type: string
+          title: roles
+          description: The roles required for approval in order.
+      title: ApprovalFlow
+      additionalProperties: false
+    bytebase.v1.Plan.ChangeDatabaseConfig:
+      type: object
+      properties:
+        targets:
+          type: array
+          items:
+            type: string
+          title: targets
+          description: "The list of targets.\n Multi-database format: [instances/{instance-id}/databases/{database-name}].\n Single database group format: [projects/{project}/databaseGroups/{databaseGroup}]."
+        sheet:
+          type: string
+          title: sheet
+          description: "The resource name of the sheet.\n Format: projects/{project}/sheets/{sheet}"
+        release:
+          type: string
+          title: release
+          description: "The resource name of the release.\n Format: projects/{project}/releases/{release}"
+        enablePriorBackup:
+          type: boolean
+          title: enable_prior_backup
+          description: If set, a backup of the modified data will be created automatically before any changes are applied.
+      title: ChangeDatabaseConfig
+      additionalProperties: false
+    bytebase.v1.ListIssuesResponse:
+      type: object
+      properties:
+        issues:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.Issue'
+          title: issues
+          description: The issues from the specified request.
+        nextPageToken:
+          type: string
+          title: next_page_token
+          description: "A token, which can be sent as `page_token` to retrieve the next page.\n If this field is omitted, there are no subsequent pages."
+      title: ListIssuesResponse
+      additionalProperties: false
+    bytebase.v1.ReviewRun.Status:
+      type: string
+      title: Status
+      enum:
+      - STATUS_UNSPECIFIED
+      - AVAILABLE
+      - RUNNING
+      - DONE
+      - FAILED
+      description: "States follow task_run, minus PENDING (review needs no admission\n control) and minus CANCELED (runs are side-effect-free until the fenced\n completion transaction, so re-running supersedes instead of canceling)."
+    bytebase.v1.ReviewRun.Type:
+      type: string
+      title: Type
+      enum:
+      - TYPE_UNSPECIFIED
+      - RULE
+      - AI
+    google.type.Expr:
+      type: object
+      properties:
+        expression:
+          type: string
+          title: expression
+          description: "Textual representation of an expression in Common Expression Language\n syntax."
+        title:
+          type: string
+          title: title
+          description: "Optional. Title for the expression, i.e. a short string describing\n its purpose. This can be used e.g. in UIs which allow to enter the\n expression."
+        description:
+          type: string
+          title: description
+          description: "Optional. Description of the expression. This is a longer text which\n describes the expression, e.g. when hovered over it in a UI."
+        location:
+          type: string
+          title: location
+          description: "Optional. String indicating the location of the expression for error\n reporting, e.g. a file name and a position in the file."
+      title: Expr
+      additionalProperties: false
+      description: "Represents a textual expression in the Common Expression Language (CEL)\n syntax. CEL is a C-like expression language. The syntax and semantics of CEL\n are documented at https://github.com/google/cel-spec.\n\n Example (Comparison):\n\n     title: \"Summary size limit\"\n     description: \"Determines if a summary is less than 100 chars\"\n     expression: \"document.summary.size() < 100\"\n\n Example (Equality):\n\n     title: \"Requestor is owner\"\n     description: \"Determines if requestor is the document owner\"\n     expression: \"document.owner == request.auth.claims.email\"\n\n Example (Logic):\n\n     title: \"Public documents\"\n     description: \"Determine whether the document should be publicly visible\"\n     expression: \"document.type != 'private' && document.type != 'internal'\"\n\n Example (Data Manipulation):\n\n     title: \"Notification string\"\n     description: \"Create a notification string with a timestamp.\"\n     expression: \"'New message received at ' + string(document.create_time)\"\n\n The exact variables and functions that may be referenced within an expression\n are determined by the service that evaluates it. See the service\n documentation for additional information."
+    bytebase.v1.ReviewRuleType:
+      type: string
+      title: ReviewRuleType
+      enum:
+      - REVIEW_RULE_TYPE_UNSPECIFIED
+      - SYNTAX
+      - WALK_THROUGH
+      - ONLINE_MIGRATION
+      - PRIOR_BACKUP
+      - REQUIRE_IS_NULL
+      - REQUIRE_WHERE
+      - DISALLOW_DROP_OBJECT
+      - DISALLOW_TRUNCATE
+      - DISALLOW_DROP_CONSTRAINT
+      - DISALLOW_RENAME
+      - REQUIRE_PRIMARY_KEY
+      description: "ReviewRuleType is the standard review rule set. The rules are fixed:\n every project gets them without configuration, and the only setting is a\n switch (see ReviewRulePolicy).\n\n A rule id names what the rule examines. An execution check is named for\n what it checks; a rule about the SQL itself carries REQUIRE or DISALLOW so\n the id says which way it cuts. DISALLOW on a P1 rule means the operation\n needs a person's acceptance, not that it is forbidden."
+    bytebase.v1.IssueComment.Approval:
+      type: object
+      properties:
+        status:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.IssueComment.Approval.Status'
+          title: status
+          description: The approval status.
+      title: Approval
+      additionalProperties: false
+      description: Approval event information.
+    bytebase.v1.IssueComment.Approval.Status:
+      type: string
+      title: Status
+      enum:
+      - STATUS_UNSPECIFIED
+      - PENDING
+      - APPROVED
+      - REJECTED
+      description: Approval status values.
+    bytebase.v1.Plan.Spec:
+      type: object
+      anyOf:
+      - type: object
+        properties:
+          changeDatabaseConfig:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.Plan.ChangeDatabaseConfig'
+            title: change_database_config
+        title: change_database_config
+      - type: object
+        properties:
+          createDatabaseConfig:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.Plan.CreateDatabaseConfig'
+            title: create_database_config
+        title: create_database_config
+      unevaluatedProperties: false
+      not:
+        allOf:
+        - anyOf:
+          - required:
+            - changeDatabaseConfig
+          - required:
+            - createDatabaseConfig
+        - not:
+            oneOf:
+            - required:
+              - changeDatabaseConfig
+            - required:
+              - createDatabaseConfig
+      properties:
+        id:
+          type: string
+          title: id
+          description: A UUID4 string that uniquely identifies the Spec.
+      title: Spec
+    bytebase.v1.IssueComment.ReviewMetadata.Priority:
+      type: string
+      title: Priority
+      enum:
+      - PRIORITY_UNSPECIFIED
+      - P0
+      - P1
+      - P2
+      description: "Priority says what resolving the thread means. It has no bearing on\n blocking, which thread_state alone decides."
+    bytebase.v1.ListIssueCommentsResponse:
+      type: object
+      properties:
+        issueComments:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.IssueComment'
+          title: issue_comments
+          description: The issue comments from the specified request.
+        nextPageToken:
+          type: string
+          title: next_page_token
+          description: "A token, which can be sent as `page_token` to retrieve the next page.\n If this field is omitted, there are no subsequent pages."
+      title: ListIssueCommentsResponse
+      additionalProperties: false
+    bytebase.v1.Issue.Type:
+      type: string
+      title: Type
+      enum:
+      - TYPE_UNSPECIFIED
+      - DATABASE_CHANGE
+      - ROLE_GRANT
+      - ACCESS_GRANT
+      description: The type of issue.
+    bytebase.v1.BatchUpdateIssuesStatusResponse:
+      type: object
+      title: BatchUpdateIssuesStatusResponse
+      additionalProperties: false
+    bytebase.v1.SearchIssuesResponse:
+      type: object
+      properties:
+        issues:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.Issue'
+          title: issues
+          description: The issues from the specified request.
+        nextPageToken:
+          type: string
+          title: next_page_token
+          description: "A token, which can be sent as `page_token` to retrieve the next page.\n If this field is omitted, there are no subsequent pages."
+      title: SearchIssuesResponse
+      additionalProperties: false
+    bytebase.v1.IssueComment.ThreadState:
+      type: string
+      title: ThreadState
+      enum:
+      - THREAD_STATE_UNSPECIFIED
+      - OPEN
+      - RESOLVED
+    google.protobuf.Timestamp:
+      type: string
+      examples:
+      - '2023-01-15T01:30:15.01Z'
+      - '2024-12-25T12:00:00Z'
+      format: date-time
+      description: A point in time in RFC 3339 format, with up to nanosecond precision. Output uses UTC (`Z`); input may use an offset from UTC.
+    bytebase.v1.Issue.Approver:
+      type: object
+      properties:
+        status:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.Issue.Approver.Status'
+          title: status
+          description: The new status.
+        principal:
+          type: string
+          title: principal
+          description: 'Format: users/hello@world.com'
+      title: Approver
+      additionalProperties: false
+      description: Approvers and their approval status for the issue.
+    bytebase.v1.IssueComment.IssueUpdate:
+      type: object
+      properties:
+        fromTitle:
+          type:
+          - string
+          - 'null'
+          title: from_title
+        toTitle:
+          type:
+          - string
+          - 'null'
+          title: to_title
+        fromDescription:
+          type:
+          - string
+          - 'null'
+          title: from_description
+        toDescription:
+          type:
+          - string
+          - 'null'
+          title: to_description
+        fromStatus:
+          oneOf:
+          - $ref: '#/components/schemas/bytebase.v1.IssueStatus'
+          - type: 'null'
+          title: from_status
+        toStatus:
+          oneOf:
+          - $ref: '#/components/schemas/bytebase.v1.IssueStatus'
+          - type: 'null'
+          title: to_status
+        fromLabels:
+          type: array
+          items:
+            type: string
+          title: from_labels
+        toLabels:
+          type: array
+          items:
+            type: string
+          title: to_labels
+      title: IssueUpdate
+      additionalProperties: false
+      description: Issue update event information.
+    bytebase.v1.Issue:
+      type: object
+      properties:
+        name:
+          type: string
+          title: name
+          description: "The name of the issue.\n Format: projects/{project}/issues/{issue}"
+        title:
+          type: string
+          title: title
+          maxLength: 200
+          description: The title of the issue.
+        description:
+          type: string
+          title: description
+          maxLength: 10000
+          description: The description of the issue.
+        type:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.Issue.Type'
+          title: type
+        status:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.IssueStatus'
+          title: status
+          description: The status of the issue.
+        approvers:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.Issue.Approver'
+          title: approvers
+        approvalTemplate:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.ApprovalTemplate'
+          title: approval_template
+          description: The approval template for the issue.
+        creator:
+          type: string
+          title: creator
+          description: 'Format: users/hello@world.com'
+          readOnly: true
+        createTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: create_time
+          readOnly: true
+        updateTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: update_time
+          readOnly: true
+        plan:
+          type: string
+          title: plan
+          description: "The plan associated with the issue.\n Can be empty.\n Format: projects/{project}/plans/{plan}"
+        roleGrant:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.RoleGrant'
+          title: role_grant
+          description: Used if the issue type is ROLE_GRANT.
+        riskLevel:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.RiskLevel'
+          title: risk_level
+          description: The risk level of the issue.
+        labels:
+          type: array
+          items:
+            type: string
+          title: labels
+          description: Labels attached to the issue for categorization and filtering.
+        approvalStatus:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.ApprovalStatus'
+          title: approval_status
+          description: The overall approval status for the issue.
+          readOnly: true
+        accessGrant:
+          type: string
+          title: access_grant
+          description: "The access grant associated with this issue.\n Format: projects/{project}/accessGrants/{access_grant}"
+          readOnly: true
+        draft:
+          type: boolean
+          title: draft
+          description: (OPTIONAL) Whether this issue is a Draft Review Issue.
+      title: Issue
+      additionalProperties: false
+    bytebase.v1.IssueComment.ReviewMetadata:
+      type: object
+      properties:
+        runType:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.ReviewRun.Type'
+          title: run_type
+          description: The reviewer that posted the result.
+        ruleType:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.ReviewRuleType'
+          title: rule_type
+          description: The rule judged against. Set if and only if run_type is RULE.
+        priority:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.IssueComment.ReviewMetadata.Priority'
+          title: priority
+        targets:
+          type: array
+          items:
+            type: string
+          title: targets
+          description: "Every database the result applies to, sorted.\n Format: instances/{instance}/databases/{database}"
+      title: ReviewMetadata
+      additionalProperties: false
+      description: What a review result carries beyond its text.
+    bytebase.v1.RiskLevel:
+      type: string
+      title: RiskLevel
+      enum:
+      - RISK_LEVEL_UNSPECIFIED
+      - LOW
+      - MODERATE
+      - HIGH
+      description: RiskLevel is the risk level.
+    bytebase.v1.Plan.CreateDatabaseConfig:
+      type: object
+      properties:
+        target:
+          type: string
+          title: target
+          description: "The resource name of the instance on which the database is created.\n Format: instances/{instance} or projects/{project}/instances/{instance}"
+        database:
+          type: string
+          title: database
+          description: The name of the database to create.
+        table:
+          type: string
+          title: table
+          description: "(OPTIONAL) table is the name of the table, if it is not empty, Bytebase should create a table after creating the database.\n For example, in MongoDB, it only creates the database when we first store data in that database."
+        characterSet:
+          type: string
+          title: character_set
+          description: (OPTIONAL) character_set is the character set of the database.
+        collation:
+          type: string
+          title: collation
+          description: (OPTIONAL) collation is the collation of the database.
+        cluster:
+          type: string
+          title: cluster
+          description: (OPTIONAL) cluster is the cluster of the database. This is only applicable to ClickHouse for "ON CLUSTER <<cluster>>".
+        owner:
+          type: string
+          title: owner
+          description: (OPTIONAL) owner is the owner of the database. This is only applicable to Postgres for "WITH OWNER <<owner>>".
+        environment:
+          type: string
+          title: environment
+          description: "(OPTIONAL) The environment resource.\n Format: environments/prod where prod is the environment resource ID."
+      title: CreateDatabaseConfig
+      required:
+      - target
+      - database
+      additionalProperties: false
+    bytebase.v1.IssueStatus:
+      type: string
+      title: IssueStatus
+      enum:
+      - ISSUE_STATUS_UNSPECIFIED
+      - OPEN
+      - DONE
+      - CANCELED
+      description: "The status of an issue.\n Lives at the top level so both plan_service.proto and issue_service.proto\n can reference it without a circular import."
+    bytebase.v1.IssueComment.PlanUpdate:
+      type: object
+      properties:
+        fromSpecs:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.Plan.Spec'
+          title: from_specs
+        toSpecs:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.Plan.Spec'
+          title: to_specs
+      title: PlanUpdate
+      additionalProperties: false
+      description: "Plan update event information (snapshot of plan.config.specs before\n and after a PlanService.UpdatePlan call that mutated specs)."
+    bytebase.v1.ApprovalStatus:
+      type: string
+      title: ApprovalStatus
+      enum:
+      - APPROVAL_STATUS_UNSPECIFIED
+      - CHECKING
+      - PENDING
+      - APPROVED
+      - REJECTED
+      - SKIPPED
+      description: "Approval workflow status for an issue or a plan.\n Lives at the top level so both plan_service.proto and issue_service.proto\n can reference it without a circular import."
+    google.protobuf.Duration:
+      type: string
+      format: duration
+      description: A signed duration in seconds, with up to nine fractional digits and an `s` suffix (for example, `3s` or `-0.001s`).
+    bytebase.v1.ReviewRun:
+      type: object
+      properties:
+        name:
+          type: string
+          title: name
+          description: "Format: projects/{project}/issues/{issue}/reviewRuns/{reviewRun}\n The {reviewRun} id is the reviewer: \"rule\" or \"ai\". The name\n addresses a slot, not an execution."
+        type:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.ReviewRun.Type'
+          title: type
+          description: Derived from the name.
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.ReviewRun.Status'
+          title: status
+          readOnly: true
+        createTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: create_time
+          description: When the current run was triggered. Reset on every re-run.
+          readOnly: true
+        endTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: end_time
+          description: "When the run reached a terminal status. Unset while AVAILABLE or\n RUNNING."
+          readOnly: true
+        error:
+          type: string
+          title: error
+          description: "Fatal execution error, set if and only if status is FAILED: the review\n failed to execute (a platform problem, never the SQL — SQL problems are\n review results on a DONE run)."
+          readOnly: true
+      title: ReviewRun
+      additionalProperties: false
+    bytebase.v1.Position:
+      type: object
+      properties:
+        line:
+          type: integer
+          title: line
+          format: int32
+          description: "Line position in a text (one-based).\n First line of the text is line 1.\n A value of 0 indicates the line information is unknown."
+        column:
+          type: integer
+          title: column
+          format: int32
+          description: "Column position in a text (one-based).\n Column is measured in Unicode code points (characters/runes), not bytes or grapheme clusters.\n First character of the line is column 1.\n A value of 0 indicates the column information is unknown.\n\n Examples:\n - \"SELECT * FROM t\" - column 8 is '*'\n - \"SELECT 你好 FROM t\" - column 8 is '你' (even though it's at byte offset 7)\n - \"SELECT \U0001F600 FROM t\" - column 8 is '\U0001F600' (even though it's 4 bytes in UTF-8)"
+      title: Position
+      additionalProperties: false
+      description: "Position in a text expressed as one-based line and one-based column.\n We use 1-based numbering to match the majority of industry standards:\n - Monaco Editor uses 1-based (https://microsoft.github.io/monaco-editor/typedoc/interfaces/IPosition.html)\n - GitHub Actions uses 1-based (https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-error-message)\n - Most text editors display 1-based positions to users\n Note: LSP uses 0-based (https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#position),\n but we follow the canonical user-facing standards.\n\n Handling unknown positions:\n - If the entire position is unknown, leave this field as nil/undefined\n - If only line is known, set line and leave column as 0 (e.g., line=5, column=0)\n - If only column is known (rare), set column and leave line as 0\n Frontends should check for nil/undefined/zero values and handle them appropriately."
+    bytebase.v1.Issue.Approver.Status:
+      type: string
+      title: Status
+      enum:
+      - STATUS_UNSPECIFIED
+      - PENDING
+      - APPROVED
+      - REJECTED
+      description: The approval status of an approver.
+    bytebase.v1.IssueComment:
+      type: object
+      anyOf:
+      - type: object
+        properties:
+          approval:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.IssueComment.Approval'
+            title: approval
+            description: Approval event.
+        title: approval
+      - type: object
+        properties:
+          issueUpdate:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.IssueComment.IssueUpdate'
+            title: issue_update
+            description: Issue update event.
+        title: issue_update
+      - type: object
+        properties:
+          planUpdate:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.IssueComment.PlanUpdate'
+            title: plan_update
+            description: Plan update event.
+        title: plan_update
+      - type: object
+        properties:
+          reviewSubmission:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.IssueComment.ReviewSubmission'
+            title: review_submission
+            description: Review submission event.
+        title: review_submission
+      unevaluatedProperties: false
+      not:
+        allOf:
+        - anyOf:
+          - required:
+            - approval
+          - required:
+            - issueUpdate
+          - required:
+            - planUpdate
+          - required:
+            - reviewSubmission
+        - not:
+            oneOf:
+            - required:
+              - approval
+            - required:
+              - issueUpdate
+            - required:
+              - planUpdate
+            - required:
+              - reviewSubmission
+      properties:
+        name:
+          type: string
+          title: name
+          description: 'Format: projects/{project}/issues/{issue}/issueComments/{issueComment-uid}'
+        comment:
+          type: string
+          title: comment
+          maxLength: 65536
+          description: The text content of the comment.
+        payload:
+          type: string
+          title: payload
+          description: 'TODO: use struct message instead.'
+        createTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: create_time
+          readOnly: true
+        updateTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: update_time
+          readOnly: true
+        creator:
+          type: string
+          title: creator
+          description: 'Format: users/{email}'
+          readOnly: true
+        root:
+          type:
+          - string
+          - 'null'
+          title: root
+          description: "(IMMUTABLE) The thread root's name, set only on replies. Immutable after creation.\n Format: projects/{project}/issues/{issue}/issueComments/{issueComment}\n Must name a thread root in the same issue, never a general comment or reply."
+        threadState:
+          oneOf:
+          - $ref: '#/components/schemas/bytebase.v1.IssueComment.ThreadState'
+          - type: 'null'
+          title: thread_state
+          description: "Present only on thread roots. Set OPEN on create to start a thread; an\n anchored root starts one without it. Omit root, thread_state, and\n statement_anchor to create a general comment.\n Update through the thread_state field mask to resolve or reopen.\n Adding a reply does not reopen a resolved thread."
+        statementAnchor:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.StatementAnchor'
+          title: statement_anchor
+          description: "(IMMUTABLE) Optional source context on a root or reply. A reply's anchor must share\n the root's spec and sheet_sha256; it may narrow the range.\n Cannot be set on events. Immutable after creation."
+        reviewMetadata:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.IssueComment.ReviewMetadata'
+          title: review_metadata
+          description: "Present on review results, the comments the review executor posts.\n Never accepted on create or update."
+          readOnly: true
+      title: IssueComment
+      description: A comment on an issue.

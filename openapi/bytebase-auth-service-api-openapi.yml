@@ -1,0 +1,819 @@
+openapi: 3.2.0
+info:
+  title: Bytebase API Reference Auth Service API
+  description: API reference for Bytebase. Every endpoint is served by your own Bytebase instance.
+  version: 1.0.0
+security: []
+tags:
+- name: Auth Service
+  description: AuthService handles user authentication operations.
+paths:
+  /v1/auth/info:
+    get:
+      tags:
+      - Auth Service
+      summary: GetAuthenticationInfo
+      description: 'Gets everything the login page renders: the sign-in restrictions and the
+
+        identity providers it offers.
+
+        Permissions required: None'
+      operationId: AuthService_GetAuthenticationInfo
+      parameters:
+      - name: workspace
+        in: query
+        description: "Optional. The workspace whose authentication policy should be returned.\n Format: workspaces/{workspace}\n When unset, self-hosted resolves the singleton workspace and SaaS uses\n the deployment-level defaults."
+        schema:
+          type: string
+          title: workspace
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.AuthenticationInfo'
+  /v1/auth/login:
+    post:
+      tags:
+      - Auth Service
+      summary: Login
+      description: 'Authenticates a user and returns access tokens.
+
+        Permissions required: None'
+      operationId: AuthService_Login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/bytebase.v1.LoginRequest'
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.LoginResponse'
+  /v1/auth/logout:
+    post:
+      tags:
+      - Auth Service
+      summary: Logout
+      description: 'Logs out the current user session.
+
+        Permissions required: None'
+      operationId: AuthService_Logout
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/bytebase.v1.LogoutRequest'
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/google.protobuf.Empty'
+  /v1/auth/refresh:
+    post:
+      tags:
+      - Auth Service
+      summary: Refresh
+      description: 'Refreshes the access token using the refresh token cookie.
+
+        Permissions required: None (validates via refresh token cookie)'
+      operationId: AuthService_Refresh
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/bytebase.v1.RefreshRequest'
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.RefreshResponse'
+  /v1/auth/signup:
+    post:
+      tags:
+      - Auth Service
+      summary: Signup
+      description: 'Registers a new user account. Creates a principal and assigns a workspace:
+
+        - If the user''s email was pre-invited to a workspace, joins that workspace.
+
+        - Otherwise, creates a new workspace with the user as admin.
+
+        Returns access tokens so the user is logged in immediately after signup.'
+      operationId: AuthService_Signup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/bytebase.v1.SignupRequest'
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.LoginResponse'
+  /v1/auth:exchangeToken:
+    post:
+      tags:
+      - Auth Service
+      summary: ExchangeToken
+      description: 'Exchanges an external OIDC token for a Bytebase access token.
+
+        Used by CI/CD pipelines with Workload Identity Federation.
+
+        Permissions required: None (validates via OIDC token)'
+      operationId: AuthService_ExchangeToken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/bytebase.v1.ExchangeTokenRequest'
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ExchangeTokenResponse'
+  /v1/auth:requestPasswordReset:
+    post:
+      tags:
+      - Auth Service
+      summary: RequestPasswordReset
+      description: 'Requests a password reset email for the given email address.
+
+        Always returns success to avoid leaking whether the email exists.
+
+        Requires the workspace''s SMTP mail delivery setting; without it the
+
+        recovery route is an admin password reset.
+
+        Permissions required: None'
+      operationId: AuthService_RequestPasswordReset
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/bytebase.v1.RequestPasswordResetRequest'
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/google.protobuf.Empty'
+  /v1/auth:resetPassword:
+    post:
+      tags:
+      - Auth Service
+      summary: ResetPassword
+      description: 'Resets the user''s password using a password reset token from email.
+
+        Permissions required: None (validates via token)'
+      operationId: AuthService_ResetPassword
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/bytebase.v1.ResetPasswordRequest'
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/google.protobuf.Empty'
+  /v1/auth:sendEmailLoginCode:
+    post:
+      tags:
+      - Auth Service
+      summary: SendEmailLoginCode
+      description: 'Sends a 6-digit verification code to the email for login/signup.
+
+        Always returns success (no email enumeration). Enforces 60-sec resend cooldown.
+
+        The signed-in counterpart is UserService.RequestReauthCode; LOGIN and
+
+        REAUTH codes are not interchangeable.
+
+        Permissions required: None'
+      operationId: AuthService_SendEmailLoginCode
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/bytebase.v1.SendEmailLoginCodeRequest'
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/google.protobuf.Empty'
+  /v1/auth:switchWorkspace:
+    post:
+      tags:
+      - Auth Service
+      summary: SwitchWorkspace
+      description: 'Switches the current user''s active workspace and issues new tokens.
+
+        The user must be a member of the target workspace.'
+      operationId: AuthService_SwitchWorkspace
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/bytebase.v1.SwitchWorkspaceRequest'
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.LoginResponse'
+  /v1/workspaces/{workspace}/auth/info:
+    get:
+      tags:
+      - Auth Service
+      summary: GetAuthenticationInfo
+      description: 'Gets everything the login page renders: the sign-in restrictions and the
+
+        identity providers it offers.
+
+        Permissions required: None'
+      operationId: AuthService_GetAuthenticationInfo2
+      parameters:
+      - name: workspace
+        in: path
+        description: The workspace id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.AuthenticationInfo'
+components:
+  schemas:
+    bytebase.v1.AuthenticationInfo:
+      type: object
+      properties:
+        workspace:
+          type: string
+          title: workspace
+          description: "The workspace used for authentication, when one can be resolved.\n Format: workspaces/{workspace}"
+          readOnly: true
+        restriction:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.Restriction'
+          title: restriction
+          description: The effective authentication restrictions.
+          readOnly: true
+        identityProviders:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.LoginIdentityProvider'
+          title: identity_providers
+          description: The identity providers the login page renders, in display order.
+          readOnly: true
+      title: AuthenticationInfo
+      additionalProperties: false
+    bytebase.v1.WorkspaceProfileSetting.PasswordRestriction:
+      type: object
+      properties:
+        minLength:
+          type: integer
+          title: min_length
+          format: int32
+          description: min_length is the minimum length for password, should no less than 8.
+        requireNumber:
+          type: boolean
+          title: require_number
+          description: require_number requires the password must contains at least one number.
+        requireLetter:
+          type: boolean
+          title: require_letter
+          description: require_letter requires the password must contains at least one letter, regardless of upper case or lower case
+        requireUppercaseLetter:
+          type: boolean
+          title: require_uppercase_letter
+          description: require_uppercase_letter requires the password must contains at least one upper case letter.
+        requireSpecialCharacter:
+          type: boolean
+          title: require_special_character
+          description: require_special_character requires the password must contains at least one special character.
+        requireResetPasswordForFirstLogin:
+          type: boolean
+          title: require_reset_password_for_first_login
+          description: require_reset_password_for_first_login requires users to reset their password after the 1st login.
+        passwordRotation:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Duration'
+          title: password_rotation
+          description: password_rotation requires users to reset their password after the duration.
+      title: PasswordRestriction
+      additionalProperties: false
+    bytebase.v1.State:
+      type: string
+      title: State
+      enum:
+      - STATE_UNSPECIFIED
+      - ACTIVE
+      - DELETED
+      description: Resource lifecycle state.
+    bytebase.v1.ExchangeTokenResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          title: access_token
+          description: Bytebase access token.
+      title: ExchangeTokenResponse
+      additionalProperties: false
+    bytebase.v1.OAuth2IdentityProviderContext:
+      type: object
+      properties:
+        code:
+          type: string
+          title: code
+          maxLength: 4096
+          description: Authorization code from OAuth2 provider.
+      title: OAuth2IdentityProviderContext
+      additionalProperties: false
+      description: OAuth2 authentication context.
+    google.protobuf.Empty:
+      type: object
+      description: An empty JSON object.
+    bytebase.v1.Restriction:
+      type: object
+      properties:
+        disallowSignup:
+          type: boolean
+          title: disallow_signup
+          description: Whether self-service user signup is disabled.
+          readOnly: true
+        disallowPasswordSignin:
+          type: boolean
+          title: disallow_password_signin
+          description: Whether password sign-in is disabled for all end users.
+          readOnly: true
+        passwordRestriction:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.WorkspaceProfileSetting.PasswordRestriction'
+          title: password_restriction
+          description: Password complexity and restriction requirements.
+          readOnly: true
+        allowEmailCodeSignin:
+          type: boolean
+          title: allow_email_code_signin
+          description: Whether email + 6-digit code signin is enabled for this workspace.
+          readOnly: true
+        passwordResetEnabled:
+          type: boolean
+          title: password_reset_enabled
+          description: "Whether password reset via email is available for this workspace.\n True when the workspace (or deployment) has an email setting configured."
+          readOnly: true
+      title: Restriction
+      additionalProperties: false
+    bytebase.v1.OIDCIdentityProviderContext:
+      type: object
+      properties:
+        code:
+          type: string
+          title: code
+          maxLength: 4096
+          description: Authorization code from OIDC provider.
+      title: OIDCIdentityProviderContext
+      additionalProperties: false
+      description: OpenID Connect authentication context.
+    bytebase.v1.IdentityProviderType:
+      type: string
+      title: IdentityProviderType
+      enum:
+      - IDENTITY_PROVIDER_TYPE_UNSPECIFIED
+      - OAUTH2
+      - OIDC
+      - LDAP
+    bytebase.v1.LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          title: token
+          description: "Access token for authenticated requests.\n Only returned when web=false. For web=true, the token is set as an HTTP-only cookie."
+        mfaTempToken:
+          type:
+          - string
+          - 'null'
+          title: mfa_temp_token
+          description: Temporary token for MFA verification.
+        requireResetPassword:
+          type: boolean
+          title: require_reset_password
+          description: Whether user must reset password before continuing.
+        user:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.User'
+          title: user
+          description: The user from the successful login.
+      title: LoginResponse
+      additionalProperties: false
+    bytebase.v1.ExchangeTokenRequest:
+      type: object
+      properties:
+        token:
+          type: string
+          title: token
+          maxLength: 65536
+          description: External OIDC token (JWT) from CI/CD platform.
+        email:
+          type: string
+          title: email
+          maxLength: 254
+          description: "Workload Identity email for identifying which identity to authenticate as.\n Format: {name}@workload.bytebase.com"
+      title: ExchangeTokenRequest
+      additionalProperties: false
+    bytebase.v1.LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          title: email
+          maxLength: 254
+          description: "User's email address.\n Bounded so an oversized identity is refused at the edge before any\n handler runs; the login-attempt lockout keys rows by this value."
+        password:
+          type: string
+          title: password
+          description: "User's password for authentication. Bounded for abuse only: LDAP\n directories may accept passwords beyond bcrypt's 72-byte limit, and the\n local-password path rejects longer inputs itself.\nstring.max_bytes = 512\n"
+        web:
+          type: boolean
+          title: web
+          description: "If true, sets access token and refresh token as HTTP-only cookies instead of\n returning the token in the response body. Use for browser-based clients."
+        idpName:
+          type: string
+          title: idp_name
+          maxLength: 256
+          description: "The name of the identity provider.\n Format: idps/{idp}"
+        idpContext:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.IdentityProviderContext'
+          title: idp_context
+          description: The idp_context is used to get the user information from identity provider.
+        otpCode:
+          type:
+          - string
+          - 'null'
+          title: otp_code
+          maxLength: 64
+          description: The otp_code is used to verify the user's identity by MFA.
+        recoveryCode:
+          type:
+          - string
+          - 'null'
+          title: recovery_code
+          maxLength: 64
+          description: The recovery_code is used to recovery the user's identity with MFA.
+        mfaTempToken:
+          type:
+          - string
+          - 'null'
+          title: mfa_temp_token
+          maxLength: 4096
+          description: The mfa_temp_token is used to verify the user's identity by MFA.
+        emailCode:
+          type:
+          - string
+          - 'null'
+          title: email_code
+          maxLength: 64
+          description: "6-digit code from email for passwordless login/signup.\n Pairs with `email`. Mutually exclusive with `password` and `idp_name`."
+        workspace:
+          type:
+          - string
+          - 'null'
+          title: workspace
+          maxLength: 256
+          description: "Preferred workspace to land in after login. If the user is a member of this\n workspace, the token is issued for it; otherwise falls back to the default\n resolution (last login workspace → first membership). Typically populated\n from the ?workspace= query parameter in invite links.\n Format: workspaces/{workspace}"
+      title: LoginRequest
+      additionalProperties: false
+    google.protobuf.Timestamp:
+      type: string
+      examples:
+      - '2023-01-15T01:30:15.01Z'
+      - '2024-12-25T12:00:00Z'
+      format: date-time
+      description: A point in time in RFC 3339 format, with up to nanosecond precision. Output uses UTC (`Z`); input may use an offset from UTC.
+    bytebase.v1.ResetPasswordRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          title: email
+          maxLength: 254
+          description: "The email address of the account.\n Bounded so an oversized identity is refused at the edge before any\n handler runs; the login-attempt lockout keys rows by this value."
+        code:
+          type: string
+          title: code
+          maxLength: 64
+          description: The 6-digit code from the reset email.
+        newPassword:
+          type: string
+          title: new_password
+          description: 'The new password to set.
+
+            string.max_bytes = 72
+
+            '
+      title: ResetPasswordRequest
+      additionalProperties: false
+    bytebase.v1.SwitchWorkspaceRequest:
+      type: object
+      properties:
+        workspace:
+          type: string
+          title: workspace
+          maxLength: 256
+          description: "The target workspace to switch to.\n Format: workspaces/{workspace}"
+        web:
+          type: boolean
+          title: web
+          description: If true, sets tokens as HTTP-only cookies (browser clients).
+        otpCode:
+          type:
+          - string
+          - 'null'
+          title: otp_code
+          maxLength: 64
+          description: OTP code for MFA verification. Required if the target workspace enforces MFA.
+        recoveryCode:
+          type:
+          - string
+          - 'null'
+          title: recovery_code
+          maxLength: 64
+          description: Recovery code for MFA verification (alternative to otp_code).
+        mfaTempToken:
+          type:
+          - string
+          - 'null'
+          title: mfa_temp_token
+          maxLength: 4096
+          description: Temporary MFA token from a previous SwitchWorkspace call that returned mfa_temp_token.
+      title: SwitchWorkspaceRequest
+      additionalProperties: false
+    bytebase.v1.RefreshResponse:
+      type: object
+      title: RefreshResponse
+      additionalProperties: false
+      description: Response from refreshing the access token.
+    bytebase.v1.User.Profile:
+      type: object
+      properties:
+        lastLoginTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: last_login_time
+          description: The last time the user successfully logged in.
+        lastChangePasswordTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: last_change_password_time
+          description: The last time the user changed their password.
+        source:
+          type: string
+          title: source
+          description: source means where the user comes from. For now we support Entra ID SCIM sync, so the source could be Entra ID.
+      title: Profile
+      additionalProperties: false
+    bytebase.v1.SendEmailLoginCodeRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          title: email
+          maxLength: 254
+          description: "The email address to send the code to.\n Bounded so an oversized identity is refused at the edge before any\n handler runs; the login-attempt lockout keys rows by this value."
+        workspace:
+          type:
+          - string
+          - 'null'
+          title: workspace
+          maxLength: 256
+          description: "Optional workspace context captured at send time, used to locate the EMAIL setting,\n and later (at verify time) for signup gate checks and workspace assignment.\n Unset for SaaS brand-new signup (no workspace exists yet).\n Format: workspaces/{workspace}"
+      title: SendEmailLoginCodeRequest
+      additionalProperties: false
+    bytebase.v1.IdentityProviderContext:
+      type: object
+      anyOf:
+      - type: object
+        properties:
+          oauth2Context:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.OAuth2IdentityProviderContext'
+            title: oauth2_context
+            description: OAuth2 authentication context.
+        title: oauth2_context
+      - type: object
+        properties:
+          oidcContext:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.OIDCIdentityProviderContext'
+            title: oidc_context
+            description: OpenID Connect authentication context.
+        title: oidc_context
+      unevaluatedProperties: false
+      not:
+        allOf:
+        - anyOf:
+          - required:
+            - oauth2Context
+          - required:
+            - oidcContext
+        - not:
+            oneOf:
+            - required:
+              - oauth2Context
+            - required:
+              - oidcContext
+      title: IdentityProviderContext
+      description: Context for identity provider authentication.
+    bytebase.v1.User:
+      type: object
+      properties:
+        name:
+          type: string
+          title: name
+          description: "The name of the user.\n Format: users/{email}"
+          readOnly: true
+        state:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.State'
+          title: state
+          description: The lifecycle state of the user account.
+        email:
+          type: string
+          title: email
+          maxLength: 254
+          description: The email address of the user, used for login and notifications.
+        title:
+          type: string
+          title: title
+          maxLength: 200
+          description: The display title or full name of the user.
+        password:
+          type: string
+          title: password
+          description: 'The password for authentication. Only used during user creation or password updates.
+
+            string.max_bytes = 72
+
+            '
+          writeOnly: true
+        mfaEnabled:
+          type: boolean
+          title: mfa_enabled
+          description: "Whether the user has a live MFA factor. Set by ConfirmRecoveryCodes and\n DisableMFA, never by an update."
+          readOnly: true
+        phone:
+          type: string
+          title: phone
+          description: "Should be a valid E.164 compliant phone number.\n Could be empty."
+        profile:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.User.Profile'
+          title: profile
+          description: User profile metadata.
+        groups:
+          type: array
+          items:
+            type: string
+            readOnly: true
+          title: groups
+          description: "The groups for the user.\n Format: groups/{email}"
+          readOnly: true
+        workspace:
+          type: string
+          title: workspace
+          description: "The current workspace.\n Format: workspaces/{id}"
+          readOnly: true
+      title: User
+      additionalProperties: false
+    bytebase.v1.RefreshRequest:
+      type: object
+      title: RefreshRequest
+      additionalProperties: false
+      description: Request to refresh the access token.
+    bytebase.v1.LogoutRequest:
+      type: object
+      title: LogoutRequest
+      additionalProperties: false
+      description: Request to logout current user session.
+    google.protobuf.Duration:
+      type: string
+      format: duration
+      description: A signed duration in seconds, with up to nine fractional digits and an `s` suffix (for example, `3s` or `-0.001s`).
+    bytebase.v1.AuthorizationRequest:
+      type: object
+      properties:
+        endpoint:
+          type: string
+          title: endpoint
+          description: "The OAuth2 auth_url, or the authorization endpoint from the OIDC issuer's\n discovery document."
+        clientId:
+          type: string
+          title: client_id
+          description: The OAuth2 or OIDC client identifier.
+        scopes:
+          type: array
+          items:
+            type: string
+          title: scopes
+          description: The scopes to request.
+      title: AuthorizationRequest
+      additionalProperties: false
+      description: AuthorizationRequest is what a browser needs to start an SSO redirect.
+    bytebase.v1.RequestPasswordResetRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          title: email
+          maxLength: 254
+          description: "The email address of the account to reset.\n Bounded so an oversized identity is refused at the edge before any\n handler runs; the login-attempt lockout keys rows by this value."
+        workspace:
+          type:
+          - string
+          - 'null'
+          title: workspace
+          maxLength: 256
+          description: "Optional workspace context captured at send time, used to locate the EMAIL setting,\n and later (at verify time) for signup gate checks and workspace assignment.\n Unset for SaaS brand-new signup (no workspace exists yet).\n Format: workspaces/{workspace}"
+      title: RequestPasswordResetRequest
+      additionalProperties: false
+    bytebase.v1.LoginIdentityProvider:
+      type: object
+      properties:
+        name:
+          type: string
+          title: name
+          description: "The name of the identity provider.\n Format: idps/{idp}"
+        type:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.IdentityProviderType'
+          title: type
+          description: The type of identity provider protocol.
+        title:
+          type: string
+          title: title
+          description: The display title of the identity provider.
+        authorizationRequest:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.AuthorizationRequest'
+          title: authorization_request
+          description: "The parameters the browser needs to start the authorization redirect.\n Set for OAUTH2 and OIDC, absent for LDAP, whose bind happens server-side."
+      title: LoginIdentityProvider
+      additionalProperties: false
+      description: "LoginIdentityProvider is an identity provider as the login page sees it.\n Deliberately not a view of IdentityProvider: this message is served without\n a credential, so every field it exposes is published by hand and no\n provider configuration reaches it by default."
+    bytebase.v1.SignupRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          title: email
+          maxLength: 254
+          description: "The email for the new account.\n Bounded so an oversized identity is refused at the edge before any\n handler runs; the login-attempt lockout keys rows by this value."
+        password:
+          type: string
+          title: password
+          description: 'The password for the new account.
+
+            string.max_bytes = 72
+
+            '
+        title:
+          type: string
+          title: title
+          maxLength: 200
+          description: The display name of the user.
+      title: SignupRequest
+      additionalProperties: false

@@ -1,0 +1,422 @@
+openapi: 3.2.0
+info:
+  title: Bytebase API Reference Audit Log Service API
+  description: API reference for Bytebase. Every endpoint is served by your own Bytebase instance.
+  version: 1.0.0
+security: []
+tags:
+- name: AuditLogService
+  description: AuditLogService manages audit logs for system activities and API calls.
+paths:
+  /v1/auditLogs:export:
+    post:
+      tags:
+      - AuditLogService
+      summary: ExportAuditLogs
+      description: 'Exports audit logs in a specified format for external analysis.
+
+        Permissions required: bb.auditLogs.export'
+      operationId: AuditLogService_ExportAuditLogs2
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/bytebase.v1.ExportAuditLogsRequest'
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ExportAuditLogsResponse'
+  /v1/auditLogs:search:
+    post:
+      tags:
+      - AuditLogService
+      summary: SearchAuditLogs
+      description: 'Searches audit logs with optional filtering and pagination.
+
+        Permissions required: bb.auditLogs.search'
+      operationId: AuditLogService_SearchAuditLogs2
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/bytebase.v1.SearchAuditLogsRequest'
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.SearchAuditLogsResponse'
+  /v1/projects/{project}/auditLogs:export:
+    post:
+      tags:
+      - AuditLogService
+      summary: ExportAuditLogs
+      description: 'Exports audit logs in a specified format for external analysis.
+
+        Permissions required: bb.auditLogs.export'
+      operationId: AuditLogService_ExportAuditLogs
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                filter:
+                  type: string
+                  title: filter
+                  description: "The filter of the log. It should be a valid CEL expression.\n Check the filter field in the SearchAuditLogsRequest message."
+                orderBy:
+                  type: string
+                  title: order_by
+                  description: "The order by of the log.\n Only support order by create_time. The default sorting order is ascending.\n For example:\n  - order_by = \"create_time asc\"\n  - order_by = \"create_time desc\""
+                format:
+                  allOf:
+                  - $ref: '#/components/schemas/bytebase.v1.ExportFormat'
+                  title: format
+                  description: The export format.
+                pageSize:
+                  type: integer
+                  title: page_size
+                  format: int32
+                  description: "The maximum number of logs to return.\n The service may return fewer than this value.\n If unspecified, at most 10 log entries will be returned.\n The maximum value is 5000; values above 5000 will be coerced to 5000."
+                pageToken:
+                  type: string
+                  title: page_token
+                  description: "A page token, received from a previous `ExportAuditLogs` call.\n Provide this to retrieve the subsequent page."
+              title: ExportAuditLogsRequest
+              additionalProperties: false
+              description: Request message for exporting audit logs.
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ExportAuditLogsResponse'
+  /v1/projects/{project}/auditLogs:search:
+    post:
+      tags:
+      - AuditLogService
+      summary: SearchAuditLogs
+      description: 'Searches audit logs with optional filtering and pagination.
+
+        Permissions required: bb.auditLogs.search'
+      operationId: AuditLogService_SearchAuditLogs
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                filter:
+                  type: string
+                  title: filter
+                  description: "The filter of the log. It should be a valid CEL expression.\n The syntax and semantics of CEL are documented at https://github.com/google/cel-spec\n\n Supported filter:\n - method: the API name, can be found in the docs. Usually \"/bytebase.v1.…\", for example \"/bytebase.v1.UserService/CreateUser\"; entries written outside the v1 API carry their own prefix, such as \"/bytebase.mcp.Session/Authorize\" or \"/bytebase.cli.Recovery/ResetUserPassword\". Support \"==\" operator.\n - resource: the resource the entry is about, support \"==\" operator.\n - severity: support \"==\" operator, check Severity enum in AuditLog message for values.\n - actor: the actor, in users/{email}, serviceAccounts/{email}, or\n   workloadIdentities/{email} format. Support \"==\" operator.\n - create_time: support \">=\" and \"<=\" operator.\n - mcp: true selects the entries MCP produced, false the rest. A boolean, not a string. Support \"==\" operator.\n - mcp_correlation_id: the MCP session an entry belongs to, taken from an entry's mcp_delegation.correlation_id. Support \"==\" operator. Entries MCP produced outside a session — a refused connection or consent — carry none and match no value here.\n\n For example:\n  - filter = \"method == '/bytebase.v1.SQLService/Query'\"\n  - filter = \"method == '/bytebase.v1.SQLService/Query' && severity == 'ERROR'\"\n  - filter = \"method == '/bytebase.v1.SQLService/Query' && severity == 'ERROR' && actor == 'users/bb@bytebase.com'\"\n  - filter = \"method == '/bytebase.v1.SQLService/Query' && severity == 'ERROR' && create_time <= '2021-01-01T00:00:00Z' && create_time >= '2020-01-01T00:00:00Z'\"\n  - filter = \"mcp == true\"\n  - filter = \"mcp_correlation_id == '0b7f1a3c-1d2e-4f56-8a90-1b2c3d4e5f60'\""
+                orderBy:
+                  type: string
+                  title: order_by
+                  description: "The order by of the log.\n Only support order by create_time. The default sorting order is ascending.\n For example:\n  - order_by = \"create_time asc\"\n  - order_by = \"create_time desc\""
+                pageSize:
+                  type: integer
+                  title: page_size
+                  format: int32
+                  description: "The maximum number of logs to return.\n The service may return fewer than this value.\n If unspecified, at most 10 log entries will be returned.\n The maximum value is 5000; values above 5000 will be coerced to 5000."
+                pageToken:
+                  type: string
+                  title: page_token
+                  description: "A page token, received from a previous `SearchLogs` call.\n Provide this to retrieve the subsequent page."
+              title: SearchAuditLogsRequest
+              additionalProperties: false
+              description: Request message for searching audit logs.
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.SearchAuditLogsResponse'
+components:
+  schemas:
+    bytebase.v1.SearchAuditLogsRequest:
+      type: object
+      properties:
+        parent:
+          type: string
+          title: parent
+        filter:
+          type: string
+          title: filter
+          description: "The filter of the log. It should be a valid CEL expression.\n The syntax and semantics of CEL are documented at https://github.com/google/cel-spec\n\n Supported filter:\n - method: the API name, can be found in the docs. Usually \"/bytebase.v1.…\", for example \"/bytebase.v1.UserService/CreateUser\"; entries written outside the v1 API carry their own prefix, such as \"/bytebase.mcp.Session/Authorize\" or \"/bytebase.cli.Recovery/ResetUserPassword\". Support \"==\" operator.\n - resource: the resource the entry is about, support \"==\" operator.\n - severity: support \"==\" operator, check Severity enum in AuditLog message for values.\n - actor: the actor, in users/{email}, serviceAccounts/{email}, or\n   workloadIdentities/{email} format. Support \"==\" operator.\n - create_time: support \">=\" and \"<=\" operator.\n - mcp: true selects the entries MCP produced, false the rest. A boolean, not a string. Support \"==\" operator.\n - mcp_correlation_id: the MCP session an entry belongs to, taken from an entry's mcp_delegation.correlation_id. Support \"==\" operator. Entries MCP produced outside a session — a refused connection or consent — carry none and match no value here.\n\n For example:\n  - filter = \"method == '/bytebase.v1.SQLService/Query'\"\n  - filter = \"method == '/bytebase.v1.SQLService/Query' && severity == 'ERROR'\"\n  - filter = \"method == '/bytebase.v1.SQLService/Query' && severity == 'ERROR' && actor == 'users/bb@bytebase.com'\"\n  - filter = \"method == '/bytebase.v1.SQLService/Query' && severity == 'ERROR' && create_time <= '2021-01-01T00:00:00Z' && create_time >= '2020-01-01T00:00:00Z'\"\n  - filter = \"mcp == true\"\n  - filter = \"mcp_correlation_id == '0b7f1a3c-1d2e-4f56-8a90-1b2c3d4e5f60'\""
+        orderBy:
+          type: string
+          title: order_by
+          description: "The order by of the log.\n Only support order by create_time. The default sorting order is ascending.\n For example:\n  - order_by = \"create_time asc\"\n  - order_by = \"create_time desc\""
+        pageSize:
+          type: integer
+          title: page_size
+          format: int32
+          description: "The maximum number of logs to return.\n The service may return fewer than this value.\n If unspecified, at most 10 log entries will be returned.\n The maximum value is 5000; values above 5000 will be coerced to 5000."
+        pageToken:
+          type: string
+          title: page_token
+          description: "A page token, received from a previous `SearchLogs` call.\n Provide this to retrieve the subsequent page."
+      title: SearchAuditLogsRequest
+      required:
+      - parent
+      additionalProperties: false
+      description: Request message for searching audit logs.
+    google.protobuf.Timestamp:
+      type: string
+      examples:
+      - '2023-01-15T01:30:15.01Z'
+      - '2024-12-25T12:00:00Z'
+      format: date-time
+      description: A point in time in RFC 3339 format, with up to nanosecond precision. Output uses UTC (`Z`); input may use an offset from UTC.
+    bytebase.v1.ExportAuditLogsResponse:
+      type: object
+      properties:
+        content:
+          type: string
+          title: content
+          format: byte
+          description: The exported audit log content in the requested format.
+        nextPageToken:
+          type: string
+          title: next_page_token
+          description: "A token to retrieve next page of log entities.\n Pass this value in the page_token field in the subsequent call\n to retrieve the next page of log entities."
+      title: ExportAuditLogsResponse
+      additionalProperties: false
+      description: Response message for exporting audit logs.
+    bytebase.v1.AuditLog:
+      type: object
+      properties:
+        name:
+          type: string
+          title: name
+          description: "The name of the log.\n Formats:\n - projects/{project}/auditLogs/{uid}\n - workspaces/{workspace}/auditLogs/{uid}"
+          readOnly: true
+        createTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: create_time
+          description: The timestamp when the audit log was created.
+          readOnly: true
+        actor:
+          type: string
+          title: actor
+          description: "The principal who performed the action.\n Formats: users/{email}, serviceAccounts/{email}, or workloadIdentities/{email}"
+        method:
+          type: string
+          title: method
+          description: "The method or action being audited.\n For example: /bytebase.v1.SQLService/Query or bb.project.repository.push"
+        severity:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.AuditLog.Severity'
+          title: severity
+          description: The severity level of this audit log entry.
+        resource:
+          type: string
+          title: resource
+          description: The resource associated with this audit log.
+        request:
+          type: string
+          title: request
+          description: The request payload in JSON format.
+        response:
+          type: string
+          title: response
+          description: "The response payload in JSON format.\n Some fields may be omitted if they are too large or contain sensitive information."
+        status:
+          allOf:
+          - $ref: '#/components/schemas/google.rpc.Status'
+          title: status
+          description: The status of the operation.
+        latency:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Duration'
+          title: latency
+          description: The duration of the operation.
+        serviceData:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Any'
+          title: service_data
+          description: Service-specific metadata about the request, response, and activities.
+        requestMetadata:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.RequestMetadata'
+          title: request_metadata
+          description: Metadata about the request context.
+        mcpDelegation:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.MCPDelegation'
+          title: mcp_delegation
+          description: "MCP delegation provenance. Present exactly when the audited call arrived\n through the MCP server's delegated credential; never set for public API\n calls. Presence of this message is the MCP-origin marker."
+          readOnly: true
+      title: AuditLog
+      additionalProperties: false
+      description: Audit log entry recording system activity or API call.
+    bytebase.v1.AuditLog.Severity:
+      type: string
+      title: Severity
+      enum:
+      - SEVERITY_UNSPECIFIED
+      - DEBUG
+      - INFO
+      - NOTICE
+      - WARNING
+      - ERROR
+      - CRITICAL
+      - ALERT
+      - EMERGENCY
+      description: Severity level for audit log entries.
+    bytebase.v1.ExportFormat:
+      type: string
+      title: ExportFormat
+      enum:
+      - FORMAT_UNSPECIFIED
+      - CSV
+      - JSON
+      - SQL
+      - XLSX
+      description: Data export format.
+    google.rpc.Status:
+      type: object
+      properties:
+        code:
+          type: integer
+          title: code
+          format: int32
+          description: "The status code, which should be an enum value of\n [google.rpc.Code][google.rpc.Code]."
+        message:
+          type: string
+          title: message
+          description: "A developer-facing error message, which should be in English. Any\n user-facing error message should be localized and sent in the\n [google.rpc.Status.details][google.rpc.Status.details] field, or localized\n by the client."
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/google.protobuf.Any'
+          title: details
+          description: "A list of messages that carry the error details.  There is a common set of\n message types for APIs to use."
+      title: Status
+      additionalProperties: false
+      description: "The `Status` type defines a logical error model that is suitable for\n different programming environments, including REST APIs and RPC APIs. It is\n used by [gRPC](https://github.com/grpc). Each `Status` message contains\n three pieces of data: error code, error message, and error details.\n\n You can find out more about this error model and how to work with it in the\n [API Design Guide](https://cloud.google.com/apis/design/errors)."
+    google.protobuf.Duration:
+      type: string
+      format: duration
+      description: A signed duration in seconds, with up to nine fractional digits and an `s` suffix (for example, `3s` or `-0.001s`).
+    bytebase.v1.ExportAuditLogsRequest:
+      type: object
+      properties:
+        parent:
+          type: string
+          title: parent
+        filter:
+          type: string
+          title: filter
+          description: "The filter of the log. It should be a valid CEL expression.\n Check the filter field in the SearchAuditLogsRequest message."
+        orderBy:
+          type: string
+          title: order_by
+          description: "The order by of the log.\n Only support order by create_time. The default sorting order is ascending.\n For example:\n  - order_by = \"create_time asc\"\n  - order_by = \"create_time desc\""
+        format:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.ExportFormat'
+          title: format
+          description: The export format.
+        pageSize:
+          type: integer
+          title: page_size
+          format: int32
+          description: "The maximum number of logs to return.\n The service may return fewer than this value.\n If unspecified, at most 10 log entries will be returned.\n The maximum value is 5000; values above 5000 will be coerced to 5000."
+        pageToken:
+          type: string
+          title: page_token
+          description: "A page token, received from a previous `ExportAuditLogs` call.\n Provide this to retrieve the subsequent page."
+      title: ExportAuditLogsRequest
+      required:
+      - parent
+      additionalProperties: false
+      description: Request message for exporting audit logs.
+    bytebase.v1.SearchAuditLogsResponse:
+      type: object
+      properties:
+        auditLogs:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.AuditLog'
+          title: audit_logs
+        nextPageToken:
+          type: string
+          title: next_page_token
+          description: "A token to retrieve next page of log entities.\n Pass this value in the page_token field in the subsequent call\n to retrieve the next page of log entities."
+      title: SearchAuditLogsResponse
+      additionalProperties: false
+      description: Response message for searching audit logs.
+    bytebase.v1.MCPDelegation:
+      type: object
+      properties:
+        scope:
+          type: string
+          title: scope
+          description: "The OAuth2 grant's consented scope, e.g. \"mcp:read-only\".\n Empty when the grant recorded no scope."
+        resource:
+          type: string
+          title: resource
+          description: "The grant's stored MCP resource URI.\n Empty for pre-grant legacy sessions."
+        clientId:
+          type: string
+          title: client_id
+          description: "The OAuth2 client the grant was consented to.\n Empty for legacy web-session tokens at /mcp."
+        correlationId:
+          type: string
+          title: correlation_id
+          description: "Correlates the audit rows an MCP session produces. Minted at the /mcp\n boundary and session-scoped: the MCP SDK hands tool handlers the\n initialize-time context, so one MCP session carries one correlation ID\n across all of its tool calls."
+      title: MCPDelegation
+      additionalProperties: false
+      description: "Provenance of a call that reached the API through the MCP (Model Context\n Protocol) server's delegated credential. The values are copied verbatim from\n the verified credential's grant state; empty fields record that the grant\n stored nothing (legacy sessions), never a resolved or synthesized value."
+    bytebase.v1.RequestMetadata:
+      type: object
+      properties:
+        callerIp:
+          type: string
+          title: caller_ip
+          description: The IP address of the request originator.
+        callerSuppliedUserAgent:
+          type: string
+          title: caller_supplied_user_agent
+          description: "The user agent string provided by the caller.\n This is supplied by the client and is not authenticated."
+      title: RequestMetadata
+      additionalProperties: false
+      description: Metadata about the incoming request.
+    google.protobuf.Any:
+      type: object
+      properties:
+        type:
+          type: string
+        value:
+          type: string
+          format: binary
+      additionalProperties: true
+      description: An arbitrary message with a type URL identifying the encoded message type.

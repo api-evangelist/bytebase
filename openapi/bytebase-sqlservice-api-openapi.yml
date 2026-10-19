@@ -1,0 +1,1326 @@
+openapi: 3.2.0
+info:
+  title: Bytebase API Reference SQL Service API
+  description: API reference for Bytebase. Every endpoint is served by your own Bytebase instance.
+  version: 1.0.0
+security: []
+tags:
+- name: SQLService
+  description: SQLService executes SQL queries and manages query operations.
+paths:
+  /bytebase.v1.SQLService/GetQueryHistory:
+    post:
+      tags:
+      - SQLService
+      summary: GetQueryHistory
+      description: 'Deprecated: use QueryHistoryService.GetQueryHistory instead.
+
+        Delegating alias kept for upgrade transition; will be removed in a future release.
+
+        No HTTP binding: the REST route is served by QueryHistoryService.
+
+        Permissions required: None (only returns the caller''s own query history)'
+      operationId: SQLService_GetQueryHistory
+      parameters:
+      - name: Connect-Protocol-Version
+        in: header
+        description: Define the version of the Connect protocol
+        schema:
+          $ref: '#/components/schemas/connect-protocol-version'
+        example: 1
+      - name: Connect-Timeout-Ms
+        in: header
+        description: Define the timeout, in ms
+        schema:
+          $ref: '#/components/schemas/connect-timeout-header'
+        example: 1000
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/bytebase.v1.GetQueryHistoryRequest'
+        required: true
+      responses:
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/connect.error'
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.QueryHistory'
+      deprecated: true
+  /bytebase.v1.SQLService/ListQueryHistories:
+    post:
+      tags:
+      - SQLService
+      summary: ListQueryHistories
+      description: 'Deprecated: use QueryHistoryService.ListQueryHistories instead.
+
+        Delegating alias kept for upgrade transition; will be removed in a future release.
+
+        No HTTP binding: the REST route is served by QueryHistoryService.
+
+        Permissions required: bb.queryHistories.list'
+      operationId: SQLService_ListQueryHistories
+      parameters:
+      - name: Connect-Protocol-Version
+        in: header
+        description: Define the version of the Connect protocol
+        schema:
+          $ref: '#/components/schemas/connect-protocol-version'
+        example: 1
+      - name: Connect-Timeout-Ms
+        in: header
+        description: Define the timeout, in ms
+        schema:
+          $ref: '#/components/schemas/connect-timeout-header'
+        example: 1000
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/bytebase.v1.ListQueryHistoriesRequest'
+        required: true
+      responses:
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/connect.error'
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ListQueryHistoriesResponse'
+      deprecated: true
+  /bytebase.v1.SQLService/SearchQueryHistories:
+    post:
+      tags:
+      - SQLService
+      summary: SearchQueryHistories
+      description: 'Deprecated: use QueryHistoryService.SearchQueryHistories instead.
+
+        Delegating alias kept for upgrade transition; will be removed in a future release.
+
+        No HTTP binding: the REST route is served by QueryHistoryService.
+
+        Permissions required: None (only returns caller''s own query histories)'
+      operationId: SQLService_SearchQueryHistories
+      parameters:
+      - name: Connect-Protocol-Version
+        in: header
+        description: Define the version of the Connect protocol
+        schema:
+          $ref: '#/components/schemas/connect-protocol-version'
+        example: 1
+      - name: Connect-Timeout-Ms
+        in: header
+        description: Define the timeout, in ms
+        schema:
+          $ref: '#/components/schemas/connect-timeout-header'
+        example: 1000
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/bytebase.v1.SearchQueryHistoriesRequest'
+        required: true
+      responses:
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/connect.error'
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.SearchQueryHistoriesResponse'
+      deprecated: true
+  /v1/instances/{instance}/databases/{database}:export:
+    post:
+      tags:
+      - SQLService
+      summary: Export
+      description: 'Exports query results to a file format.
+
+        Permissions required: bb.databases.get'
+      operationId: SQLService_Export
+      parameters:
+      - name: instance
+        in: path
+        description: The instance id.
+        required: true
+        schema:
+          type: string
+      - name: database
+        in: path
+        description: The database id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statement:
+                  type: string
+                  title: statement
+                  description: The SQL statement to execute.
+                limit:
+                  type: integer
+                  title: limit
+                  format: int32
+                  description: The maximum number of rows to return.
+                format:
+                  allOf:
+                  - $ref: '#/components/schemas/bytebase.v1.ExportFormat'
+                  title: format
+                  description: The export format.
+                admin:
+                  type: boolean
+                  title: admin
+                  description: "The admin is used for workspace owner and DBA for exporting data from SQL\n Editor Admin mode. The exported data is not masked."
+                password:
+                  type: string
+                  title: password
+                  description: The zip password provide by users.
+                dataSourceId:
+                  type: string
+                  title: data_source_id
+                  description: "The id of data source.\n If omitted, Export resolves the data source server-side by using the\n single read-only data source when exactly one exists, or the admin data\n source otherwise. It can also be set explicitly to export from the admin\n data source or a specific read-only data source."
+                schema:
+                  type:
+                  - string
+                  - 'null'
+                  title: schema
+                  description: "The default schema to search objects. Equals to the current schema in\n Oracle and search path in Postgres."
+                container:
+                  type:
+                  - string
+                  - 'null'
+                  title: container
+                  description: "Container is the container name to execute the query against, used for\n CosmosDB only."
+              title: ExportRequest
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ExportResponse'
+  /v1/instances/{instance}/databases/{database}:query:
+    post:
+      tags:
+      - SQLService
+      summary: Query
+      description: 'Executes a read-only SQL query against a database.
+
+        Permissions required: bb.databases.get'
+      operationId: SQLService_Query
+      parameters:
+      - name: instance
+        in: path
+        description: The instance id.
+        required: true
+        schema:
+          type: string
+      - name: database
+        in: path
+        description: The database id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statement:
+                  type: string
+                  title: statement
+                  description: The SQL statement to execute.
+                limit:
+                  type: integer
+                  title: limit
+                  format: int32
+                  description: The maximum number of rows to return.
+                dataSourceId:
+                  type: string
+                  title: data_source_id
+                  description: "The id of data source.\n If omitted, Query resolves the data source server-side by using the single\n read-only data source when exactly one exists, or the admin data source\n otherwise. It can also be set explicitly to query the admin data source or\n a specific read-only data source."
+                explain:
+                  type: boolean
+                  title: explain
+                  description: Explain the statement.
+                schema:
+                  type:
+                  - string
+                  - 'null'
+                  title: schema
+                  description: "The default schema to search objects. Equals to the current schema in\n Oracle and search path in Postgres."
+                queryOption:
+                  allOf:
+                  - $ref: '#/components/schemas/bytebase.v1.QueryOption'
+                  title: query_option
+                container:
+                  type:
+                  - string
+                  - 'null'
+                  title: container
+                  description: "Container is the container name to execute the query against, used for\n CosmosDB only."
+              title: QueryRequest
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.QueryResponse'
+  /v1/projects/{project}/instances/{instance}/databases/{database}:export:
+    post:
+      tags:
+      - SQLService
+      summary: Export
+      description: 'Exports query results to a file format.
+
+        Permissions required: bb.databases.get'
+      operationId: SQLService_Export2
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: instance
+        in: path
+        description: The instance id.
+        required: true
+        schema:
+          type: string
+      - name: database
+        in: path
+        description: The database id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statement:
+                  type: string
+                  title: statement
+                  description: The SQL statement to execute.
+                limit:
+                  type: integer
+                  title: limit
+                  format: int32
+                  description: The maximum number of rows to return.
+                format:
+                  allOf:
+                  - $ref: '#/components/schemas/bytebase.v1.ExportFormat'
+                  title: format
+                  description: The export format.
+                admin:
+                  type: boolean
+                  title: admin
+                  description: "The admin is used for workspace owner and DBA for exporting data from SQL\n Editor Admin mode. The exported data is not masked."
+                password:
+                  type: string
+                  title: password
+                  description: The zip password provide by users.
+                dataSourceId:
+                  type: string
+                  title: data_source_id
+                  description: "The id of data source.\n If omitted, Export resolves the data source server-side by using the\n single read-only data source when exactly one exists, or the admin data\n source otherwise. It can also be set explicitly to export from the admin\n data source or a specific read-only data source."
+                schema:
+                  type:
+                  - string
+                  - 'null'
+                  title: schema
+                  description: "The default schema to search objects. Equals to the current schema in\n Oracle and search path in Postgres."
+                container:
+                  type:
+                  - string
+                  - 'null'
+                  title: container
+                  description: "Container is the container name to execute the query against, used for\n CosmosDB only."
+              title: ExportRequest
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ExportResponse'
+  /v1/projects/{project}/instances/{instance}/databases/{database}:query:
+    post:
+      tags:
+      - SQLService
+      summary: Query
+      description: 'Executes a read-only SQL query against a database.
+
+        Permissions required: bb.databases.get'
+      operationId: SQLService_Query2
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: instance
+        in: path
+        description: The instance id.
+        required: true
+        schema:
+          type: string
+      - name: database
+        in: path
+        description: The database id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statement:
+                  type: string
+                  title: statement
+                  description: The SQL statement to execute.
+                limit:
+                  type: integer
+                  title: limit
+                  format: int32
+                  description: The maximum number of rows to return.
+                dataSourceId:
+                  type: string
+                  title: data_source_id
+                  description: "The id of data source.\n If omitted, Query resolves the data source server-side by using the single\n read-only data source when exactly one exists, or the admin data source\n otherwise. It can also be set explicitly to query the admin data source or\n a specific read-only data source."
+                explain:
+                  type: boolean
+                  title: explain
+                  description: Explain the statement.
+                schema:
+                  type:
+                  - string
+                  - 'null'
+                  title: schema
+                  description: "The default schema to search objects. Equals to the current schema in\n Oracle and search path in Postgres."
+                queryOption:
+                  allOf:
+                  - $ref: '#/components/schemas/bytebase.v1.QueryOption'
+                  title: query_option
+                container:
+                  type:
+                  - string
+                  - 'null'
+                  title: container
+                  description: "Container is the container name to execute the query against, used for\n CosmosDB only."
+              title: QueryRequest
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.QueryResponse'
+  /v1:adminExecute:
+    get:
+      tags:
+      - SQLService
+      summary: AdminExecute
+      description: 'Executes SQL with admin privileges via streaming connection.
+
+        Permissions required: bb.sql.admin'
+      operationId: SQLService_AdminExecute
+      parameters:
+      - name: name
+        in: query
+        description: "The name is the instance name to execute the query against.\n Format: instances/{instance}/databases/{databaseName} or\n projects/{project}/instances/{instance}/databases/{databaseName}"
+        required: true
+        schema:
+          type: string
+          title: name
+      - name: statement
+        in: query
+        description: The SQL statement to execute.
+        schema:
+          type: string
+          title: statement
+      - name: limit
+        in: query
+        description: The maximum number of rows to return.
+        schema:
+          type: integer
+          title: limit
+          format: int32
+      - name: schema
+        in: query
+        description: "The default schema to execute the statement. Equals to the current schema\n in Oracle and search path in Postgres."
+        schema:
+          type: string
+          title: schema
+      - name: container
+        in: query
+        description: "Container is the container name to execute the query against, used for\n CosmosDB only."
+        schema:
+          type: string
+          title: container
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.AdminExecuteResponse'
+components:
+  schemas:
+    bytebase.v1.ListQueryHistoriesResponse:
+      type: object
+      properties:
+        queryHistories:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.QueryHistory'
+          title: query_histories
+          description: The list of query histories.
+          readOnly: true
+        nextPageToken:
+          type: string
+          title: next_page_token
+          description: "A token to retrieve next page of history.\n Pass this value in the page_token field in the subsequent call to\n `ListQueryHistories` method to retrieve the next page of history."
+      title: ListQueryHistoriesResponse
+      additionalProperties: false
+    google.protobuf.Value:
+      oneOf:
+      - type: 'null'
+      - type: number
+      - type: string
+      - type: boolean
+      - type: array
+      - type: object
+        additionalProperties: true
+      description: 'Any JSON value: `null`, number, string, boolean, array, or object.'
+    bytebase.v1.QueryResult.PostgresError:
+      type: object
+      properties:
+        severity:
+          type: string
+          title: severity
+        code:
+          type: string
+          title: code
+        message:
+          type: string
+          title: message
+        detail:
+          type: string
+          title: detail
+        hint:
+          type: string
+          title: hint
+        position:
+          type: integer
+          title: position
+          format: int32
+        internalPosition:
+          type: integer
+          title: internal_position
+          format: int32
+        internalQuery:
+          type: string
+          title: internal_query
+        where:
+          type: string
+          title: where
+        schemaName:
+          type: string
+          title: schema_name
+        tableName:
+          type: string
+          title: table_name
+        columnName:
+          type: string
+          title: column_name
+        dataTypeName:
+          type: string
+          title: data_type_name
+        constraintName:
+          type: string
+          title: constraint_name
+        file:
+          type: string
+          title: file
+        line:
+          type: integer
+          title: line
+          format: int32
+        routine:
+          type: string
+          title: routine
+      title: PostgresError
+      additionalProperties: false
+      description: "refer https://www.postgresql.org/docs/11/protocol-error-fields.html\n for field description."
+    connect-protocol-version:
+      type: number
+      examples:
+      - 1
+      title: Connect-Protocol-Version
+      description: Define the version of the Connect protocol
+      const: 1
+    bytebase.v1.QueryOption.ExplainFormat:
+      type: string
+      title: ExplainFormat
+      enum:
+      - EXPLAIN_FORMAT_UNSPECIFIED
+      - TEXT
+      - JSON
+      - XML
+      - YAML
+      description: The output format of a query plan.
+    google.protobuf.NullValue:
+      type: string
+      title: NullValue
+      enum:
+      - NULL_VALUE
+      description: "`NullValue` is a singleton enumeration to represent the null value for the\n `Value` type union.\n\n The JSON representation for `NullValue` is JSON `null`."
+    bytebase.v1.SearchQueryHistoriesRequest:
+      type: object
+      properties:
+        parent:
+          type: string
+          title: parent
+          description: "The parent project to search query histories in.\n Format: projects/{project}\n The AIP-159 wildcard \"projects/-\" is not supported; use\n ListQueryHistories for cross-project reads."
+        pageSize:
+          type: integer
+          title: page_size
+          format: int32
+          description: "The maximum number of histories to return.\n The service may return fewer than this value.\n If unspecified, at most 10 history entries will be returned.\n The maximum value is 1000; values above 1000 will be coerced to 1000."
+        pageToken:
+          type: string
+          title: page_token
+          description: "A page token, received from a previous `ListQueryHistory` call.\n Provide this to retrieve the subsequent page."
+        filter:
+          type: string
+          title: filter
+          description: "Filter is the filter to apply on the search query history\n The syntax and semantics of CEL are documented at https://github.com/google/cel-spec\n\n Supported filter:\n - project: the project full name in \"projects/{id}\" format, support \"==\" operator.\n - database: the database full name in \"instances/{id}/databases/{name}\" or \"projects/{project}/instances/{id}/databases/{name}\" format, support \"==\" operator.\n - instance: the instance full name in \"instances/{id}\" or \"projects/{project}/instances/{id}\" format, support \"==\" operator.\n - type: the type, should be \"QUERY\" or \"EXPORT\", support \"==\" operator.\n - statement: the SQL statement, support \"==\" and \".contains()\" operators.\n\n For example:\n project == \"projects/{project}\"\n database == \"instances/{instance}/databases/{database}\"\n instance == \"instances/{instance}\"\n type == \"QUERY\"\n type == \"EXPORT\"\n statement == \"SELECT 1;\"\n statement.contains(\"select\")\n type == \"QUERY\" && statement.contains(\"select\")"
+      title: SearchQueryHistoriesRequest
+      required:
+      - parent
+      additionalProperties: false
+    bytebase.v1.QueryRow:
+      type: object
+      properties:
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.RowValue'
+          title: values
+          description: Row values of the query result.
+      title: QueryRow
+      additionalProperties: false
+    connect.error:
+      type: object
+      properties:
+        code:
+          type: string
+          examples:
+          - not_found
+          enum:
+          - canceled
+          - unknown
+          - invalid_argument
+          - deadline_exceeded
+          - not_found
+          - already_exists
+          - permission_denied
+          - resource_exhausted
+          - failed_precondition
+          - aborted
+          - out_of_range
+          - unimplemented
+          - internal
+          - unavailable
+          - data_loss
+          - unauthenticated
+          description: The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
+        message:
+          type: string
+          description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/connect.error_details.Any'
+          description: A list of messages that carry the error details. There is no limit on the number of messages.
+      title: Connect Error
+      additionalProperties: true
+      description: 'Error type returned by Connect: https://connectrpc.com/docs/go/errors/#http-representation'
+    bytebase.v1.QueryOption:
+      type: object
+      properties:
+        redisRunCommandsOn:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.QueryOption.RedisRunCommandsOn'
+          title: redis_run_commands_on
+        explainFormat:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.QueryOption.ExplainFormat'
+          title: explain_format
+          description: "Which explain output the caller wants, for an explain request.\n\n Leave it unspecified for the engine's own default, which is the only\n output most engines have. Naming a format an engine cannot produce is\n INVALID_ARGUMENT rather than a silent fallback, as is any explain request\n against an engine that has no explain at all."
+      title: QueryOption
+      additionalProperties: false
+    bytebase.v1.QueryHistory.Type:
+      type: string
+      title: Type
+      enum:
+      - TYPE_UNSPECIFIED
+      - QUERY
+      - EXPORT
+    bytebase.v1.QueryHistory:
+      type: object
+      properties:
+        name:
+          type: string
+          title: name
+          description: "The name for the query history.\n Format: projects/{project}/queryHistories/{id}"
+          readOnly: true
+        database:
+          type: string
+          title: database
+          description: "The database name to execute the query.\n Format: instances/{instance}/databases/{databaseName} or projects/{project}/instances/{instance}/databases/{databaseName}"
+          readOnly: true
+        creator:
+          type: string
+          title: creator
+          readOnly: true
+        createTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: create_time
+          readOnly: true
+        statement:
+          type: string
+          title: statement
+          readOnly: true
+        error:
+          type:
+          - string
+          - 'null'
+          title: error
+          readOnly: true
+        duration:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Duration'
+          title: duration
+          readOnly: true
+        type:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.QueryHistory.Type'
+          title: type
+      title: QueryHistory
+      additionalProperties: false
+    bytebase.v1.QueryResult.Message.Level:
+      type: string
+      title: Level
+      enum:
+      - LEVEL_UNSPECIFIED
+      - INFO
+      - WARNING
+      - DEBUG
+      - LOG
+      - NOTICE
+      - EXCEPTION
+    bytebase.v1.PermissionDeniedDetail:
+      type: object
+      properties:
+        method:
+          type: string
+          title: method
+          description: The API method that was called.
+        requiredPermissions:
+          type: array
+          items:
+            type: string
+          title: required_permissions
+          description: The permissions required but not granted to the user.
+        resources:
+          type: array
+          items:
+            type: string
+          title: resources
+          description: The resources the user was trying to access.
+      title: PermissionDeniedDetail
+      additionalProperties: false
+      description: "PermissionDeniedDetail provides structured information about permission failures.\n Used as error detail when returning CodePermissionDenied errors."
+    bytebase.v1.QueryResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.QueryResult'
+          title: results
+          description: The query results.
+        appliedAccessGrant:
+          type: string
+          title: applied_access_grant
+          description: "The just-in-time access grant applied to this query, if any.\n Format: projects/{project}/accessGrants/{accessGrant}.\n Empty when the user was authorized through normal ACL rather than a grant."
+      title: QueryResponse
+      additionalProperties: false
+    bytebase.v1.AdminExecuteResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.QueryResult'
+          title: results
+          description: The query results.
+      title: AdminExecuteResponse
+      additionalProperties: false
+    bytebase.v1.SearchQueryHistoriesResponse:
+      type: object
+      properties:
+        queryHistories:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.QueryHistory'
+          title: query_histories
+          description: The list of history.
+          readOnly: true
+        nextPageToken:
+          type: string
+          title: next_page_token
+          description: "A token to retrieve next page of history.\n Pass this value in the page_token field in the subsequent call to\n `ListQueryHistory` method to retrieve the next page of history."
+      title: SearchQueryHistoriesResponse
+      additionalProperties: false
+    google.protobuf.Timestamp:
+      type: string
+      examples:
+      - '2023-01-15T01:30:15.01Z'
+      - '2024-12-25T12:00:00Z'
+      format: date-time
+      description: A point in time in RFC 3339 format, with up to nanosecond precision. Output uses UTC (`Z`); input may use an offset from UTC.
+    bytebase.v1.QueryResult.SyntaxError:
+      type: object
+      properties:
+        startPosition:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.Position'
+          title: start_position
+          description: Position information for highlighting in editor
+      title: SyntaxError
+      additionalProperties: false
+      description: Syntax error with position information for editor highlighting
+    bytebase.v1.RowValue:
+      type: object
+      anyOf:
+      - type: object
+        properties:
+          boolValue:
+            type: boolean
+            title: bool_value
+        title: bool_value
+      - type: object
+        properties:
+          bytesValue:
+            type: string
+            title: bytes_value
+            format: byte
+        title: bytes_value
+      - type: object
+        properties:
+          doubleValue:
+            type: number
+            title: double_value
+            format: double
+        title: double_value
+      - type: object
+        properties:
+          floatValue:
+            type: number
+            title: float_value
+            format: float
+        title: float_value
+      - type: object
+        properties:
+          int32Value:
+            type: integer
+            title: int32_value
+            format: int32
+        title: int32_value
+      - type: object
+        properties:
+          int64Value:
+            type: string
+            title: int64_value
+            format: int64
+        title: int64_value
+      - type: object
+        properties:
+          nullValue:
+            allOf:
+            - $ref: '#/components/schemas/google.protobuf.NullValue'
+            title: null_value
+        title: null_value
+      - type: object
+        properties:
+          stringValue:
+            type: string
+            title: string_value
+        title: string_value
+      - type: object
+        properties:
+          timestampTzValue:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.RowValue.TimestampTZ'
+            title: timestamp_tz_value
+            description: "timestamp_tz_value is used for the timestamptz data type, which\n accurately represents the timestamp with location information."
+        title: timestamp_tz_value
+      - type: object
+        properties:
+          timestampValue:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.RowValue.Timestamp'
+            title: timestamp_value
+            description: "timestamp_value is used for the timestamp without time zone data type,\n meaning it only includes the timestamp without any time zone or location\n info. Although it may be expressed as a UTC value, it should be seen as a\n timestamp missing location context."
+        title: timestamp_value
+      - type: object
+        properties:
+          uint32Value:
+            type: integer
+            title: uint32_value
+        title: uint32_value
+      - type: object
+        properties:
+          uint64Value:
+            type: string
+            title: uint64_value
+            format: int64
+        title: uint64_value
+      - type: object
+        properties:
+          valueValue:
+            allOf:
+            - $ref: '#/components/schemas/google.protobuf.Value'
+            title: value_value
+            description: value_value is used for Spanner and TUPLE ARRAY MAP in Clickhouse only.
+        title: value_value
+      unevaluatedProperties: false
+      not:
+        allOf:
+        - anyOf:
+          - required:
+            - boolValue
+          - required:
+            - bytesValue
+          - required:
+            - doubleValue
+          - required:
+            - floatValue
+          - required:
+            - int32Value
+          - required:
+            - int64Value
+          - required:
+            - nullValue
+          - required:
+            - stringValue
+          - required:
+            - timestampTzValue
+          - required:
+            - timestampValue
+          - required:
+            - uint32Value
+          - required:
+            - uint64Value
+          - required:
+            - valueValue
+        - not:
+            oneOf:
+            - required:
+              - boolValue
+            - required:
+              - bytesValue
+            - required:
+              - doubleValue
+            - required:
+              - floatValue
+            - required:
+              - int32Value
+            - required:
+              - int64Value
+            - required:
+              - nullValue
+            - required:
+              - stringValue
+            - required:
+              - timestampTzValue
+            - required:
+              - timestampValue
+            - required:
+              - uint32Value
+            - required:
+              - uint64Value
+            - required:
+              - valueValue
+      title: RowValue
+    connect-timeout-header:
+      type: number
+      examples:
+      - 1000
+      title: Connect-Timeout-Ms
+      description: Define the timeout, in ms
+    bytebase.v1.QueryResult.CommandError.Type:
+      type: string
+      title: Type
+      enum:
+      - TYPE_UNSPECIFIED
+      - DDL
+      - DML
+      - NON_READ_ONLY
+    bytebase.v1.ExportResponse:
+      type: object
+      properties:
+        content:
+          type: string
+          title: content
+          format: byte
+          description: The export file content.
+        appliedAccessGrant:
+          type: string
+          title: applied_access_grant
+          description: "The just-in-time access grant applied to this export, if any.\n Format: projects/{project}/accessGrants/{accessGrant}.\n Empty when the user was authorized through normal ACL rather than a grant."
+      title: ExportResponse
+      additionalProperties: false
+    bytebase.v1.MaskingReason:
+      type: object
+      properties:
+        semanticTypeId:
+          type: string
+          title: semantic_type_id
+          description: The semantic type that triggered masking (e.g., "SSN", "email", "phone").
+        semanticTypeTitle:
+          type: string
+          title: semantic_type_title
+          description: Human-readable semantic type title.
+        maskingRuleId:
+          type: string
+          title: masking_rule_id
+          description: The masking rule ID that matched (if applicable).
+        algorithm:
+          type: string
+          title: algorithm
+          description: The masking algorithm used.
+        context:
+          type: string
+          title: context
+          description: 'Additional context (e.g., "Matched global rule: PII Protection").'
+        classificationLevel:
+          type: integer
+          title: classification_level
+          format: int32
+          description: The classification level that triggered masking.
+        semanticTypeIcon:
+          type: string
+          title: semantic_type_icon
+          description: Icon associated with the semantic type (if any).
+      title: MaskingReason
+      additionalProperties: false
+    bytebase.v1.QueryResult.Message:
+      type: object
+      properties:
+        level:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.QueryResult.Message.Level'
+          title: level
+        content:
+          type: string
+          title: content
+      title: Message
+      additionalProperties: false
+    connect.error_details.Any:
+      type: object
+      properties:
+        type:
+          type: string
+          description: 'A URL that acts as a globally unique identifier for the type of the serialized message. For example: `type.googleapis.com/google.rpc.ErrorInfo`.'
+        value:
+          type: string
+          format: byte
+          description: The Protobuf message, serialized as bytes and base64-encoded. The specific message type is identified by the `type` field.
+        debug:
+          type: object
+          title: Debug
+          additionalProperties: true
+          description: Deserialized error detail payload. The 'type' field indicates the schema. This field is for easier debugging and should not be relied upon for application logic.
+      additionalProperties: true
+      description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message, with an additional debug field for ConnectRPC error details.
+    bytebase.v1.RowValue.Timestamp:
+      type: object
+      properties:
+        googleTimestamp:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: google_timestamp
+        accuracy:
+          type: integer
+          title: accuracy
+          format: int32
+          description: The accuracy is the number of digits after the decimal point.
+      title: Timestamp
+      additionalProperties: false
+    bytebase.v1.QueryOption.RedisRunCommandsOn:
+      type: string
+      title: RedisRunCommandsOn
+      enum:
+      - REDIS_RUN_COMMANDS_ON_UNSPECIFIED
+      - SINGLE_NODE
+      - ALL_NODES
+    bytebase.v1.QueryResult.QueryPlan:
+      type: object
+      properties:
+        format:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.QueryOption.ExplainFormat'
+          title: format
+        executed:
+          type: boolean
+          title: executed
+          description: "Whether producing the plan executed the statement, as EXPLAIN ANALYZE\n does."
+      title: QueryPlan
+      additionalProperties: false
+      description: A query plan held in the result's rows.
+    bytebase.v1.QueryResult.CommandError:
+      type: object
+      properties:
+        commandType:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.QueryResult.CommandError.Type'
+          title: command_type
+          description: Disallowed command_type.
+      title: CommandError
+      additionalProperties: false
+      description: "Permission denied with resource information or disallowed command_type.\n Either resources or command_type is available."
+    bytebase.v1.QueryResult:
+      type: object
+      anyOf:
+      - type: object
+        properties:
+          commandError:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.QueryResult.CommandError'
+            title: command_error
+        title: command_error
+      - type: object
+        properties:
+          permissionDenied:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.PermissionDeniedDetail'
+            title: permission_denied
+        title: permission_denied
+      - type: object
+        properties:
+          postgresError:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.QueryResult.PostgresError'
+            title: postgres_error
+        title: postgres_error
+      - type: object
+        properties:
+          syntaxError:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.QueryResult.SyntaxError'
+            title: syntax_error
+        title: syntax_error
+      unevaluatedProperties: false
+      not:
+        allOf:
+        - anyOf:
+          - required:
+            - commandError
+          - required:
+            - permissionDenied
+          - required:
+            - postgresError
+          - required:
+            - syntaxError
+        - not:
+            oneOf:
+            - required:
+              - commandError
+            - required:
+              - permissionDenied
+            - required:
+              - postgresError
+            - required:
+              - syntaxError
+      properties:
+        columnNames:
+          type: array
+          items:
+            type: string
+          title: column_names
+          description: Column names of the query result.
+        columnTypeNames:
+          type: array
+          items:
+            type: string
+          title: column_type_names
+          description: "Column types of the query result.\n The types come from the Golang SQL driver."
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.QueryRow'
+          title: rows
+          description: Rows of the query result.
+        rowsCount:
+          type: string
+          title: rows_count
+          format: int64
+        error:
+          type: string
+          title: error
+          description: The error message if the query failed.
+        latency:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Duration'
+          title: latency
+          description: The time it takes to execute the query.
+        statement:
+          type: string
+          title: statement
+          description: The query statement for the result.
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.QueryResult.Message'
+          title: messages
+          description: "Informational or debug messages returned by the database engine during query execution.\n Examples include PostgreSQL's RAISE NOTICE, MSSQL's PRINT, or Oracle's DBMS_OUTPUT.PUT_LINE."
+        masked:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.MaskingReason'
+          title: masked
+          description: Masking reasons for each column (empty for non-masked columns).
+        queryPlan:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.QueryResult.QueryPlan'
+          title: query_plan
+          description: Set when the result is a query plan. Unset for any other result.
+      title: QueryResult
+    bytebase.v1.ListQueryHistoriesRequest:
+      type: object
+      properties:
+        parent:
+          type: string
+          title: parent
+          description: "The parent project whose query histories are listed.\n Format: projects/{project}\n Use \"projects/-\" to list query histories across all projects\n (https://google.aip.dev/159); this requires the bb.queryHistories.list\n permission on the workspace."
+        pageSize:
+          type: integer
+          title: page_size
+          format: int32
+          description: "The maximum number of histories to return.\n The service may return fewer than this value.\n If unspecified, at most 10 history entries will be returned.\n The maximum value is 1000; values above 1000 will be coerced to 1000."
+        pageToken:
+          type: string
+          title: page_token
+          description: "A page token, received from a previous `ListQueryHistories` call.\n Provide this to retrieve the subsequent page."
+        filter:
+          type: string
+          title: filter
+          description: "Filter is the filter to apply on the list query histories.\n The syntax and semantics of CEL are documented at https://github.com/google/cel-spec\n\n Supported filter:\n - creator: the user full name in \"users/{email}\" format, support \"==\" operator.\n\n For example:\n creator == \"users/{email}\""
+      title: ListQueryHistoriesRequest
+      required:
+      - parent
+      additionalProperties: false
+    google.protobuf.Duration:
+      type: string
+      format: duration
+      description: A signed duration in seconds, with up to nine fractional digits and an `s` suffix (for example, `3s` or `-0.001s`).
+    bytebase.v1.Position:
+      type: object
+      properties:
+        line:
+          type: integer
+          title: line
+          format: int32
+          description: "Line position in a text (one-based).\n First line of the text is line 1.\n A value of 0 indicates the line information is unknown."
+        column:
+          type: integer
+          title: column
+          format: int32
+          description: "Column position in a text (one-based).\n Column is measured in Unicode code points (characters/runes), not bytes or grapheme clusters.\n First character of the line is column 1.\n A value of 0 indicates the column information is unknown.\n\n Examples:\n - \"SELECT * FROM t\" - column 8 is '*'\n - \"SELECT 你好 FROM t\" - column 8 is '你' (even though it's at byte offset 7)\n - \"SELECT \U0001F600 FROM t\" - column 8 is '\U0001F600' (even though it's 4 bytes in UTF-8)"
+      title: Position
+      additionalProperties: false
+      description: "Position in a text expressed as one-based line and one-based column.\n We use 1-based numbering to match the majority of industry standards:\n - Monaco Editor uses 1-based (https://microsoft.github.io/monaco-editor/typedoc/interfaces/IPosition.html)\n - GitHub Actions uses 1-based (https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-error-message)\n - Most text editors display 1-based positions to users\n Note: LSP uses 0-based (https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#position),\n but we follow the canonical user-facing standards.\n\n Handling unknown positions:\n - If the entire position is unknown, leave this field as nil/undefined\n - If only line is known, set line and leave column as 0 (e.g., line=5, column=0)\n - If only column is known (rare), set column and leave line as 0\n Frontends should check for nil/undefined/zero values and handle them appropriately."
+    bytebase.v1.GetQueryHistoryRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          title: name
+          description: "The name of the query history to retrieve.\n Format: projects/{project}/queryHistories/{id}"
+      title: GetQueryHistoryRequest
+      required:
+      - name
+      additionalProperties: false
+    bytebase.v1.RowValue.TimestampTZ:
+      type: object
+      properties:
+        googleTimestamp:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: google_timestamp
+        zone:
+          type: string
+          title: zone
+          description: "Zone is the time zone abbreviations in timezone database such as \"PDT\",\n \"PST\". https://en.wikipedia.org/wiki/List_of_tz_database_time_zones We\n retrieve the time zone information from the timestamptz field in the\n database. A timestamp is in UTC or epoch time, and with zone info, we can\n convert it to a local time string. Zone and offset are returned by\n time.Time.Zone()"
+        offset:
+          type: integer
+          title: offset
+          format: int32
+          description: The offset is in seconds east of UTC
+        accuracy:
+          type: integer
+          title: accuracy
+          format: int32
+      title: TimestampTZ
+      additionalProperties: false
+    bytebase.v1.ExportFormat:
+      type: string
+      title: ExportFormat
+      enum:
+      - FORMAT_UNSPECIFIED
+      - CSV
+      - JSON
+      - SQL
+      - XLSX
+      description: Data export format.

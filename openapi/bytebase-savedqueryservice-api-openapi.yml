@@ -1,0 +1,663 @@
+openapi: 3.2.0
+info:
+  title: Bytebase API Reference Saved Query Service API
+  description: API reference for Bytebase. Every endpoint is served by your own Bytebase instance.
+  version: 1.0.0
+security: []
+tags:
+- name: SavedQueryService
+  description: 'SavedQueryService manages saved queries in the SQL Editor.
+
+
+    A saved query is private to its creator until shared. Permissions come from
+
+    three places:
+
+    - The creator owns the saved query and holds every permission on it.
+
+    - A VIEWER binding grants bb.savedQueries.get and getIamPolicy; an EDITOR
+
+    binding adds update.
+
+    - Permissions granted on the project or workspace apply to every saved
+
+    query in the project, private ones included.
+
+    A caller without a method''s permission gets NotFound, not
+
+    PermissionDenied, so private names stay unprobeable. Running a saved query
+
+    is governed by the SQL Editor''s database permissions, not by this service.'
+paths:
+  /v1/projects/{project}/savedQueries:
+    get:
+      tags:
+      - SavedQueryService
+      summary: ListSavedQueries
+      description: 'List saved queries for auditing. The permission alone grants reading
+
+        every matched saved query with full content, private ones included;
+
+        bindings are ignored. Use parent "projects/-" for all projects.
+
+        Results default to title ascending; see `order_by`.
+
+        Permissions required: bb.savedQueries.list on the project, or on the
+
+        workspace when the parent is "projects/-"'
+      operationId: SavedQueryService_ListSavedQueries
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: filter
+        in: query
+        description: "Filter the result, in CEL. See https://github.com/google/cel-spec\n\n Supported fields:\n - creator: the creator in \"users/{email}\" format. Supports \"==\" and \"!=\".\n\n For example:\n creator == \"users/alice@example.com\""
+        schema:
+          type: string
+          title: filter
+      - name: pageSize
+        in: query
+        description: "The maximum number of saved queries to return. The service may return\n fewer. Defaults to 10; values above 1000 are coerced to 1000."
+        schema:
+          type: integer
+          title: page_size
+          format: int32
+      - name: pageToken
+        in: query
+        description: "A page token from a previous ListSavedQueries call. Keep every other\n parameter the same as the call that returned it."
+        schema:
+          type: string
+          title: page_token
+      - name: orderBy
+        in: query
+        description: "Sort the results, per https://google.aip.dev/132#ordering. Supported\n fields: `update_time`, `create_time`, `title`; append \" desc\" for\n descending, e.g. \"update_time desc\" for most recently modified first.\n A modification is a title, content, database, or folder write; sharing\n and stars do not count, and a never-modified saved query counts its\n create time. Empty means `title` ascending. `resource_id` is always\n appended as a final tiebreak so pages stay stable."
+        schema:
+          type: string
+          title: order_by
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ListSavedQueriesResponse'
+    post:
+      tags:
+      - SavedQueryService
+      summary: CreateSavedQuery
+      description: 'Create a saved query. The creator becomes the owner and the saved query
+
+        starts private.
+
+        Permissions required: bb.savedQueries.create on the project'
+      operationId: SavedQueryService_CreateSavedQuery
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: The saved query to create.
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.SavedQuery'
+              title: saved_query
+              description: The saved query to create.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.SavedQuery'
+  /v1/projects/{project}/savedQueries/{savedQuery}:
+    get:
+      tags:
+      - SavedQueryService
+      summary: GetSavedQuery
+      description: 'Get a saved query with its full content.
+
+        Permissions required: bb.savedQueries.get (creator, VIEWER/EDITOR
+
+        binding, or project-level grant)'
+      operationId: SavedQueryService_GetSavedQuery
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: savedQuery
+        in: path
+        description: The savedQuery id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.SavedQuery'
+    delete:
+      tags:
+      - SavedQueryService
+      summary: DeleteSavedQuery
+      description: 'Delete a saved query and every user''s stars on it. An EDITOR binding
+
+        cannot delete.
+
+        Permissions required: bb.savedQueries.delete (creator or project-level
+
+        grant)'
+      operationId: SavedQueryService_DeleteSavedQuery
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: savedQuery
+        in: path
+        description: The savedQuery id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/google.protobuf.Empty'
+    patch:
+      tags:
+      - SavedQueryService
+      summary: UpdateSavedQuery
+      description: 'Update a saved query. `database` must belong to the saved query''s project.
+
+        Permissions required: bb.savedQueries.update (creator, EDITOR binding, or
+
+        project-level grant)'
+      operationId: SavedQueryService_UpdateSavedQuery
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: savedQuery
+        in: path
+        description: The savedQuery id.
+        required: true
+        schema:
+          type: string
+      - name: updateMask
+        in: query
+        description: "Fields to update, relative to the saved query (`title`, not\n `saved_query.title`). Supported: `title`, `content`, `database`, `folder`.\n At least one path is required."
+        schema:
+          type: string
+      requestBody:
+        description: "`saved_query.name` identifies the saved query to update.\n Format: projects/{project}/savedQueries/{savedQuery}"
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.SavedQuery'
+              title: saved_query
+              description: "`saved_query.name` identifies the saved query to update.\n Format: projects/{project}/savedQueries/{savedQuery}"
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.SavedQuery'
+  /v1/projects/{project}/savedQueries/{savedQuery}:getPolicy:
+    get:
+      tags:
+      - SavedQueryService
+      summary: GetSavedQueryPolicy
+      description: 'Get a saved query''s sharing policy: who it is shared with, at what level.
+
+        Permissions required: bb.savedQueries.getIamPolicy (creator, VIEWER/EDITOR
+
+        binding, or project-level grant)'
+      operationId: SavedQueryService_GetSavedQueryPolicy
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: savedQuery
+        in: path
+        description: The savedQuery id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.SavedQueryPolicy'
+  /v1/projects/{project}/savedQueries/{savedQuery}:setPolicy:
+    post:
+      tags:
+      - SavedQueryService
+      summary: SetSavedQueryPolicy
+      description: 'Replace a saved query''s sharing policy in full. `policy.etag` must match
+
+        the stored policy; a mismatch fails with ABORTED.
+
+        Permissions required: bb.savedQueries.setIamPolicy (creator or
+
+        project-level grant; no predefined role carries it)'
+      operationId: SavedQueryService_SetSavedQueryPolicy
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: savedQuery
+        in: path
+        description: The savedQuery id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                policy:
+                  allOf:
+                  - $ref: '#/components/schemas/bytebase.v1.SavedQueryPolicy'
+                  title: policy
+                  description: "The new policy, replacing the stored one in full. Empty `bindings` makes\n the saved query private again."
+              title: SetSavedQueryPolicyRequest
+              required:
+              - policy
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.SavedQueryPolicy'
+  /v1/projects/{project}/savedQueries/{savedQuery}:updateStar:
+    post:
+      tags:
+      - SavedQueryService
+      summary: UpdateSavedQueryStar
+      description: 'Star or unstar a saved query for the caller. Stars are personal: nobody
+
+        else sees them and they grant nothing. The caller can star any saved
+
+        query they can read. When access is lost the star is hidden, not
+
+        deleted; it comes back if access returns.
+
+        Permissions required: bb.savedQueries.get (creator, VIEWER/EDITOR
+
+        binding, or project-level grant)'
+      operationId: SavedQueryService_UpdateSavedQueryStar
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: savedQuery
+        in: path
+        description: The savedQuery id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                starred:
+                  type: boolean
+                  title: starred
+                  description: Whether the caller stars the saved query.
+              title: UpdateSavedQueryStarRequest
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.SavedQuery'
+  /v1/projects/{project}/savedQueries:moveMy:
+    post:
+      tags:
+      - SavedQueryService
+      summary: MoveMySavedQueries
+      description: 'Move the caller''s saved queries filed under `source_folder`, descendants
+
+        included, into `target_folder`: renaming "a/b" to "a/c" also moves
+
+        "a/b/deep". Only the caller''s own saved queries move; the response counts
+
+        how many did. Re-filing a single saved query is UpdateSavedQuery''s
+
+        `folder` field.
+
+        Permissions required: creator'
+      operationId: SavedQueryService_MoveMySavedQueries
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sourceFolder:
+                  type: string
+                  title: source_folder
+                  maxLength: 256
+                  minLength: 1
+                  description: The folder to move, descendants included, e.g. "a/b".
+                targetFolder:
+                  type: string
+                  title: target_folder
+                  maxLength: 256
+                  description: "Where it lands. A path like \"a/b/c\"; empty drops the `source_folder`\n prefix, promoting the folder's contents toward the root."
+              title: MoveMySavedQueriesRequest
+              required:
+              - sourceFolder
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.MoveMySavedQueriesResponse'
+  /v1/projects/{project}/savedQueries:search:
+    post:
+      tags:
+      - SavedQueryService
+      summary: SearchSavedQueries
+      description: 'Search saved queries in one project. Returns content previews of the
+
+        saved queries the caller can read, the same access rule as GetSavedQuery.
+
+        Permissions required: bb.savedQueries.search on the project'
+      operationId: SavedQueryService_SearchSavedQueries
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                filter:
+                  type: string
+                  title: filter
+                  description: "Filter the result, in CEL. See https://github.com/google/cel-spec\n\n Supported fields:\n - name: the saved query name. Supports \"==\" and \"in [...]\".\n - title: the title. Supports \"contains\".\n - creator: the creator in \"users/{email}\" format. Supports \"==\" and \"!=\".\n - shared: whether a binding shares the saved query with the caller. Their\n   own saved queries, and ones visible only through a project-level\n   bb.savedQueries.get, are not \"shared\". Supports \"==\".\n - starred: whether the caller starred it. Supports \"==\".\n - folder: the exact folder path. Supports \"==\".\n\n Use `creator == \"users/{me}\"` for a My view and `shared == true` for a\n Shared view. Prefer `shared` over `creator !=`: with a project-level\n bb.savedQueries.get, `creator !=` also matches saved queries nobody\n shared with the caller.\n\n For example:\n creator == \"users/alice@example.com\"\n shared == true\n starred == true\n title.contains(\"weekly report\")\n folder == \"foo/bar\""
+                pageSize:
+                  type: integer
+                  title: page_size
+                  format: int32
+                  description: "The maximum number of saved queries to return. The service may return\n fewer. Defaults to 10; values above 1000 are coerced to 1000."
+                pageToken:
+                  type: string
+                  title: page_token
+                  description: "A page token from a previous SearchSavedQueries call. Keep every other\n parameter the same as the call that returned it."
+              title: SearchSavedQueriesRequest
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.SearchSavedQueriesResponse'
+  /v1/projects/{project}/savedQueries:searchFolders:
+    post:
+      tags:
+      - SavedQueryService
+      summary: SearchSavedQueryFolders
+      description: 'Search folder paths. A path is returned when it holds at least one saved
+
+        query the caller can read, the same access rule as SearchSavedQueries.
+
+        Permissions required: bb.savedQueries.search on the project'
+      operationId: SavedQueryService_SearchSavedQueryFolders
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                filter:
+                  type: string
+                  title: filter
+                  description: "Filter folders by the saved queries they hold. Takes the same fields and\n syntax as SearchSavedQueries.filter, except `title`. A folder is returned\n when at least one saved query the caller can read matches."
+              title: SearchSavedQueryFoldersRequest
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.SearchSavedQueryFoldersResponse'
+components:
+  schemas:
+    google.protobuf.Timestamp:
+      type: string
+      examples:
+      - '2023-01-15T01:30:15.01Z'
+      - '2024-12-25T12:00:00Z'
+      format: date-time
+      description: A point in time in RFC 3339 format, with up to nanosecond precision. Output uses UTC (`Z`); input may use an offset from UTC.
+    bytebase.v1.SearchSavedQueriesResponse:
+      type: object
+      properties:
+        savedQueries:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.SavedQuery'
+          title: saved_queries
+        nextPageToken:
+          type: string
+          title: next_page_token
+          description: "Pass to the next SearchSavedQueries call to fetch the following page.\n Empty on the last page."
+      title: SearchSavedQueriesResponse
+      additionalProperties: false
+    bytebase.v1.SearchSavedQueryFoldersResponse:
+      type: object
+      properties:
+        folders:
+          type: array
+          items:
+            type: string
+          title: folders
+          description: "Folder paths, every ancestor prefix included, sorted. A folder is a path\n on saved queries (\"a/b/c\"), so empty folders cannot exist."
+      title: SearchSavedQueryFoldersResponse
+      additionalProperties: false
+    bytebase.v1.SavedQueryPolicy:
+      type: object
+      properties:
+        bindings:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.SavedQueryBinding'
+          title: bindings
+          description: "At most one binding per level. A member listed under two levels is\n rejected rather than resolved to the higher one."
+        etag:
+          type: string
+          title: etag
+          description: "The etag of the policy as read. SetSavedQueryPolicy requires it and fails\n with ABORTED when it no longer matches."
+      title: SavedQueryPolicy
+      additionalProperties: false
+      description: "Who a saved query is shared with, and at what level. No bindings means\n private. The creator is never a binding member; ownership cannot be granted."
+    bytebase.v1.SavedQueryBinding:
+      type: object
+      properties:
+        level:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.SavedQueryBinding.Level'
+          title: level
+        members:
+          type: array
+          items:
+            type: string
+          title: members
+          minItems: 1
+          description: "The members granted `level`: \"user:{email}\" or \"group:{email}\" only.\n\n Service accounts cannot be grantees — they reach their own saved queries\n as the creator. Naming one under \"user:\" grants nothing rather than\n failing. Groups are stored as references, so membership stays live."
+      title: SavedQueryBinding
+      required:
+      - level
+      - members
+      additionalProperties: false
+      description: Binds members to one access level on one saved query.
+    bytebase.v1.SavedQueryBinding.Level:
+      type: string
+      title: Level
+      enum:
+      - LEVEL_UNSPECIFIED
+      - VIEWER
+      - EDITOR
+      description: "Nested to avoid colliding with the package-scoped EDITOR in\n DatabaseChangeMode."
+    bytebase.v1.MoveMySavedQueriesResponse:
+      type: object
+      properties:
+        movedCount:
+          type: integer
+          title: moved_count
+          format: int32
+          description: How many moved.
+      title: MoveMySavedQueriesResponse
+      additionalProperties: false
+    bytebase.v1.SavedQuery:
+      type: object
+      properties:
+        name:
+          type: string
+          title: name
+          description: "(IMMUTABLE) Server-generated.\n Format: projects/{project}/savedQueries/{savedQuery}"
+        project:
+          type: string
+          title: project
+          description: 'Format: projects/{project}'
+          readOnly: true
+        database:
+          type: string
+          title: database
+          description: "The connected database, which must belong to the saved query's own\n project. Empty when none is connected, or when the database no longer\n exists.\n Format: instances/{instance}/databases/{database} or projects/{project}/instances/{instance}/databases/{database}"
+        title:
+          type: string
+          title: title
+          maxLength: 200
+          description: The title of the saved query.
+        creator:
+          type: string
+          title: creator
+          description: "The owner. Ownership does not transfer.\n Format: users/{email}"
+          readOnly: true
+        createTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: create_time
+          readOnly: true
+        updateTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: update_time
+          readOnly: true
+        content:
+          type: string
+          title: content
+          format: byte
+          description: "The SQL text. SearchSavedQueries returns a truncated preview;\n GetSavedQuery returns the full text."
+        contentSize:
+          type: string
+          title: content_size
+          format: int64
+          description: The full size of the content, which may exceed the `content` returned.
+          readOnly: true
+        starred:
+          type: boolean
+          title: starred
+          description: Whether the calling user starred it.
+          readOnly: true
+        folder:
+          type: string
+          title: folder
+          maxLength: 256
+          description: "The folder holding this saved query. A path like \"a/b/c\"; empty means\n unfiled."
+      title: SavedQuery
+      required:
+      - name
+      - title
+      - content
+      additionalProperties: false
+    google.protobuf.Empty:
+      type: object
+      description: An empty JSON object.
+    bytebase.v1.ListSavedQueriesResponse:
+      type: object
+      properties:
+        savedQueries:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.SavedQuery'
+          title: saved_queries
+        nextPageToken:
+          type: string
+          title: next_page_token
+          description: "Pass to the next ListSavedQueries call to fetch the following page. Empty\n on the last page."
+      title: ListSavedQueriesResponse
+      additionalProperties: false

@@ -1,0 +1,798 @@
+openapi: 3.2.0
+info:
+  title: Bytebase API Reference User Service API
+  description: API reference for Bytebase. Every endpoint is served by your own Bytebase instance.
+  version: 1.0.0
+security: []
+tags:
+- name: UserService
+  description: UserService manages user accounts and authentication.
+paths:
+  /v1/users:
+    get:
+      tags:
+      - UserService
+      summary: ListUsers
+      description: 'List all users.
+
+        Any authenticated user can list users.
+
+        Permissions required: bb.users.list'
+      operationId: UserService_ListUsers
+      parameters:
+      - name: pageSize
+        in: query
+        description: "The maximum number of users to return. The service may return fewer than\n this value.\n If unspecified, at most 10 users will be returned.\n The maximum value is 1000; values above 1000 will be coerced to 1000."
+        schema:
+          type: integer
+          title: page_size
+          format: int32
+      - name: pageToken
+        in: query
+        description: "A page token, received from a previous `ListUsers` call.\n Provide this to retrieve the subsequent page.\n\n When paginating, all other parameters provided to `ListUsers` must match\n the call that provided the page token."
+        schema:
+          type: string
+          title: page_token
+      - name: showDeleted
+        in: query
+        description: Show deleted users if specified.
+        schema:
+          type: boolean
+          title: show_deleted
+      - name: filter
+        in: query
+        description: "Filter is used to filter users returned in the list.\n The syntax and semantics of CEL are documented at https://github.com/google/cel-spec\n\n Supported filter:\n - name: the user name, support \"==\" and \".contains()\" operator.\n - email: the user email, support \"==\" and \".contains()\" operator.\n - state: check State enum for values, support \"==\" operator.\n - project: the project full name in \"projects/{id}\" format, support \"==\" operator.\n\n For example:\n name == \"ed\"\n name.contains(\"ed\")\n email == \"ed@bytebase.com\"\n email.contains(\"ed\")\n state == \"DELETED\"\n project == \"projects/sample-project\"\n You can combine filter conditions like:\n name.contains(\"ed\") && project == \"projects/sample-project\"\n (name == \"ed\" || email == \"ed@bytebase.com\") && project == \"projects/sample-project\""
+        schema:
+          type: string
+          title: filter
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ListUsersResponse'
+    post:
+      tags:
+      - UserService
+      summary: CreateUser
+      description: 'Creates a user in the caller''s workspace (admin action, self-hosted only).
+
+        In SaaS mode, admins should add users via workspace IAM policy instead.
+
+        Permissions required: bb.users.create'
+      operationId: UserService_CreateUser
+      requestBody:
+        description: The user to create.
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.User'
+              title: user
+              description: The user to create.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.User'
+  /v1/users/me:
+    get:
+      tags:
+      - UserService
+      summary: GetCurrentUser
+      description: 'Get the current authenticated user.
+
+        Permissions required: None'
+      operationId: UserService_GetCurrentUser
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.User'
+  /v1/users/{user}:
+    get:
+      tags:
+      - UserService
+      summary: GetUser
+      description: 'Get the user.
+
+        Any authenticated user can get the user.
+
+        Permissions required: bb.users.get'
+      operationId: UserService_GetUser
+      parameters:
+      - name: user
+        in: path
+        description: The user id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.User'
+    delete:
+      tags:
+      - UserService
+      summary: DeleteUser
+      description: 'Deletes a user. Requires bb.users.delete permission with additional validation: the last remaining workspace admin cannot be deleted.
+
+        Permissions required: bb.users.delete'
+      operationId: UserService_DeleteUser
+      parameters:
+      - name: user
+        in: path
+        description: The user id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/google.protobuf.Empty'
+    patch:
+      tags:
+      - UserService
+      summary: UpdateUser
+      description: 'Updates a user. Users can update their own profile, or users with bb.users.update permission can update any user.
+
+        Note: Email updates are not supported through this API. Use UpdateEmail instead.
+
+        Permissions required: bb.users.update (or self)'
+      operationId: UserService_UpdateUser
+      parameters:
+      - name: user
+        in: path
+        description: The user id.
+        required: true
+        schema:
+          type: string
+      - name: updateMask
+        in: query
+        description: The list of fields to update.
+        schema:
+          type: string
+      - name: allowMissing
+        in: query
+        description: "If set to true, and the user is not found, a new user will be created.\n In this situation, `update_mask` is ignored."
+        schema:
+          type: boolean
+          title: allow_missing
+      requestBody:
+        description: "The user to update.\n\n The user's `name` field is used to identify the user to update.\n Format: users/{email}"
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.User'
+              title: user
+              description: "The user to update.\n\n The user's `name` field is used to identify the user to update.\n Format: users/{email}"
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.User'
+  /v1/users/{user}:changePassword:
+    post:
+      tags:
+      - UserService
+      summary: ChangePassword
+      description: 'Changes the caller''s own password. An administrator resetting someone
+
+        else''s password uses UpdateUser with the `password` mask instead — that
+
+        is a different operation with a different audit story, even though both
+
+        end in a new password hash.
+
+        Permissions required: None beyond being signed in as `name`.'
+      operationId: UserService_ChangePassword
+      parameters:
+      - name: user
+        in: path
+        description: The user id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                newPassword:
+                  type: string
+                  title: new_password
+                  description: 'string.max_bytes = 72
+
+                    '
+                credential:
+                  allOf:
+                  - $ref: '#/components/schemas/bytebase.v1.CredentialProof'
+                  title: credential
+              title: ChangePasswordRequest
+              required:
+              - newPassword
+              - credential
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.User'
+  /v1/users/{user}:confirmRecoveryCodes:
+    post:
+      tags:
+      - UserService
+      summary: ConfirmRecoveryCodes
+      description: 'Promotes the pending recovery codes. During first-time enrollment this is
+
+        also where the pending TOTP secret goes live, so the factor and the codes
+
+        that recover it start existing in the same write.
+
+        Permissions required: None beyond being signed in as `name`.'
+      operationId: UserService_ConfirmRecoveryCodes
+      parameters:
+      - name: user
+        in: path
+        description: The user id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pendingVersion:
+                  allOf:
+                  - $ref: '#/components/schemas/google.protobuf.Timestamp'
+                  title: pending_version
+                  description: "The pending_version of the codes being confirmed. Confirming promotes\n exactly the set this version identifies, or nothing."
+                credential:
+                  allOf:
+                  - $ref: '#/components/schemas/bytebase.v1.CredentialProof'
+                  title: credential
+                otpCode:
+                  type: string
+                  title: otp_code
+                  maxLength: 64
+                  description: "(OPTIONAL) Required for first-time enrollment, rejected otherwise. A *fresh* code,\n not the one EnableMFA took."
+              title: ConfirmRecoveryCodesRequest
+              required:
+              - pendingVersion
+              - credential
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.User'
+  /v1/users/{user}:disableMFA:
+    post:
+      tags:
+      - UserService
+      summary: DisableMFA
+      description: 'Turns MFA off, clearing the entire MFA config — live and pending state
+
+        alike. Callers may disable their own; an administrator may disable
+
+        another user''s with bb.users.update, which is how a locked-out user is
+
+        recovered.
+
+        Permissions required: bb.users.update, unless `name` is the caller''s own.'
+      operationId: UserService_DisableMFA
+      parameters:
+      - name: user
+        in: path
+        description: The user id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                credential:
+                  allOf:
+                  - $ref: '#/components/schemas/bytebase.v1.CredentialProof'
+                  title: credential
+                  description: "(OPTIONAL) Required for a self-service call against a live factor, and then only\n otp_code or recovery_code. Unused on an admin-assisted call."
+              title: DisableMFARequest
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.User'
+  /v1/users/{user}:enableMFA:
+    post:
+      tags:
+      - UserService
+      summary: EnableMFA
+      description: 'Verifies an otp_code against the pending enrollment. Nothing is written:
+
+        this is the step that catches a mistyped authenticator before the caller
+
+        is shown recovery codes, and promotion happens at ConfirmRecoveryCodes so
+
+        an account is never MFA-required with codes its owner never saved.
+
+        Permissions required: None beyond being signed in as `name`.
+
+        It writes nothing itself, but it is a required step of installing a
+
+        factor on the account, which is why it is denied on the same grounds as
+
+        the promotion it precedes.'
+      operationId: UserService_EnableMFA
+      parameters:
+      - name: user
+        in: path
+        description: The user id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                otpCode:
+                  type: string
+                  title: otp_code
+                  maxLength: 64
+                  description: A code from the authenticator the pending secret was just added to.
+                pendingVersion:
+                  allOf:
+                  - $ref: '#/components/schemas/google.protobuf.Timestamp'
+                  title: pending_version
+                  description: The pending_version this enrollment was minted with.
+                credential:
+                  allOf:
+                  - $ref: '#/components/schemas/bytebase.v1.CredentialProof'
+                  title: credential
+                  description: "(OPTIONAL) Proof of the *existing* factor, not the new device above. Required for a\n rotation, and for first-time enrollment on an account with a password."
+              title: EnableMFARequest
+              required:
+              - otpCode
+              - pendingVersion
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.User'
+  /v1/users/{user}:regenerateRecoveryCodes:
+    post:
+      tags:
+      - UserService
+      summary: RegenerateRecoveryCodes
+      description: 'Mints a pending recovery-code set beside the live one and returns it.
+
+        The old codes keep working until ConfirmRecoveryCodes promotes these, so
+
+        a caller who closes the page mid-way is not left without any.
+
+        Permissions required: None beyond being signed in as `name`.'
+      operationId: UserService_RegenerateRecoveryCodes
+      parameters:
+      - name: user
+        in: path
+        description: The user id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.RegenerateRecoveryCodesResponse'
+  /v1/users/{user}:requestReauthCode:
+    post:
+      tags:
+      - UserService
+      summary: RequestReauthCode
+      description: 'Sends a one-time code to the caller''s own email, usable as
+
+        CredentialProof.email_code. Bytebase Cloud only, and only while the
+
+        account has no live MFA factor. Not AuthService.SendEmailLoginCode: that
+
+        one starts a session, this one proves an existing one.
+
+        Permissions required: None beyond being signed in as `name`.'
+      operationId: UserService_RequestReauthCode
+      parameters:
+      - name: user
+        in: path
+        description: The user id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/google.protobuf.Empty'
+  /v1/users/{user}:startMFAEnrollment:
+    post:
+      tags:
+      - UserService
+      summary: StartMFAEnrollment
+      description: 'Mints a pending TOTP secret and recovery codes for the caller''s own
+
+        account and returns them. Nothing goes live until ConfirmRecoveryCodes,
+
+        so an abandoned enrollment leaves the account exactly as it was.
+
+        Permissions required: None beyond being signed in as `name`.'
+      operationId: UserService_StartMFAEnrollment
+      parameters:
+      - name: user
+        in: path
+        description: The user id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.StartMFAEnrollmentResponse'
+  /v1/users/{user}:undelete:
+    post:
+      tags:
+      - UserService
+      summary: UndeleteUser
+      description: 'Restores a deleted user.
+
+        Permissions required: bb.users.undelete'
+      operationId: UserService_UndeleteUser
+      parameters:
+      - name: user
+        in: path
+        description: The user id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.User'
+  /v1/users/{user}:updateEmail:
+    post:
+      tags:
+      - UserService
+      summary: UpdateEmail
+      description: 'Updates a user''s email address.
+
+        Permissions required: bb.users.updateEmail'
+      operationId: UserService_UpdateEmail
+      parameters:
+      - name: user
+        in: path
+        description: The user id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  title: email
+                  maxLength: 254
+                  description: The new email address.
+              title: UpdateEmailRequest
+              required:
+              - email
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.User'
+  /v1/users:batchGet:
+    get:
+      tags:
+      - UserService
+      summary: BatchGetUsers
+      description: 'Get the users in batch.
+
+        Any authenticated user can batch get users.
+
+        One resource per requested name, in request order. The first name that
+
+        does not resolve fails the whole call (AIP-231: no partial response).
+
+        Permissions required: bb.users.get'
+      operationId: UserService_BatchGetUsers
+      parameters:
+      - name: names
+        in: query
+        description: "The user names to retrieve.\n Format: users/{email}"
+        required: true
+        schema:
+          type: array
+          items:
+            type: string
+          title: names
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.BatchGetUsersResponse'
+components:
+  schemas:
+    bytebase.v1.User:
+      type: object
+      properties:
+        name:
+          type: string
+          title: name
+          description: "The name of the user.\n Format: users/{email}"
+          readOnly: true
+        state:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.State'
+          title: state
+          description: The lifecycle state of the user account.
+        email:
+          type: string
+          title: email
+          maxLength: 254
+          description: The email address of the user, used for login and notifications.
+        title:
+          type: string
+          title: title
+          maxLength: 200
+          description: The display title or full name of the user.
+        password:
+          type: string
+          title: password
+          description: 'The password for authentication. Only used during user creation or password updates.
+
+            string.max_bytes = 72
+
+            '
+          writeOnly: true
+        mfaEnabled:
+          type: boolean
+          title: mfa_enabled
+          description: "Whether the user has a live MFA factor. Set by ConfirmRecoveryCodes and\n DisableMFA, never by an update."
+          readOnly: true
+        phone:
+          type: string
+          title: phone
+          description: "Should be a valid E.164 compliant phone number.\n Could be empty."
+        profile:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.User.Profile'
+          title: profile
+          description: User profile metadata.
+        groups:
+          type: array
+          items:
+            type: string
+            readOnly: true
+          title: groups
+          description: "The groups for the user.\n Format: groups/{email}"
+          readOnly: true
+        workspace:
+          type: string
+          title: workspace
+          description: "The current workspace.\n Format: workspaces/{id}"
+          readOnly: true
+      title: User
+      additionalProperties: false
+    google.protobuf.Timestamp:
+      type: string
+      examples:
+      - '2023-01-15T01:30:15.01Z'
+      - '2024-12-25T12:00:00Z'
+      format: date-time
+      description: A point in time in RFC 3339 format, with up to nanosecond precision. Output uses UTC (`Z`); input may use an offset from UTC.
+    bytebase.v1.CredentialProof:
+      type: object
+      anyOf:
+      - type: object
+        properties:
+          currentPassword:
+            type: string
+            title: current_password
+            description: "The account's current password. Refused by a factor-touching method\n while a live MFA factor exists.\nstring.max_bytes = 72\n"
+        title: current_password
+      - type: object
+        properties:
+          emailCode:
+            type: string
+            title: email_code
+            maxLength: 64
+            description: "A one-time code from RequestReauthCode. Bytebase Cloud only, and only\n while the account has no live MFA factor."
+        title: email_code
+      - type: object
+        properties:
+          otpCode:
+            type: string
+            title: otp_code
+            maxLength: 64
+            description: A live code from the account's enrolled TOTP authenticator.
+        title: otp_code
+      - type: object
+        properties:
+          recoveryCode:
+            type: string
+            title: recovery_code
+            maxLength: 64
+            description: A single-use MFA recovery code.
+        title: recovery_code
+      unevaluatedProperties: false
+      not:
+        allOf:
+        - anyOf:
+          - required:
+            - currentPassword
+          - required:
+            - emailCode
+          - required:
+            - otpCode
+          - required:
+            - recoveryCode
+        - not:
+            oneOf:
+            - required:
+              - currentPassword
+            - required:
+              - emailCode
+            - required:
+              - otpCode
+            - required:
+              - recoveryCode
+      title: CredentialProof
+      description: "One proof that the caller currently controls a credential on the account.\n Exactly one field must be set; enforced in the handler."
+    bytebase.v1.BatchGetUsersResponse:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.User'
+          title: users
+          description: One user per requested name, in the same order as `names`.
+      title: BatchGetUsersResponse
+      additionalProperties: false
+    bytebase.v1.User.Profile:
+      type: object
+      properties:
+        lastLoginTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: last_login_time
+          description: The last time the user successfully logged in.
+        lastChangePasswordTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: last_change_password_time
+          description: The last time the user changed their password.
+        source:
+          type: string
+          title: source
+          description: source means where the user comes from. For now we support Entra ID SCIM sync, so the source could be Entra ID.
+      title: Profile
+      additionalProperties: false
+    bytebase.v1.State:
+      type: string
+      title: State
+      enum:
+      - STATE_UNSPECIFIED
+      - ACTIVE
+      - DELETED
+      description: Resource lifecycle state.
+    bytebase.v1.ListUsersResponse:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.User'
+          title: users
+          description: The users from the specified request.
+        nextPageToken:
+          type: string
+          title: next_page_token
+          description: "A token, which can be sent as `page_token` to retrieve the next page.\n If this field is omitted, there are no subsequent pages."
+      title: ListUsersResponse
+      additionalProperties: false
+    bytebase.v1.RegenerateRecoveryCodesResponse:
+      type: object
+      properties:
+        recoveryCodes:
+          type: array
+          items:
+            type: string
+          title: recovery_codes
+          description: The pending recovery codes, shown once for the caller to save.
+        pendingVersion:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: pending_version
+          description: Identifies this mint; see StartMFAEnrollmentResponse.pending_version.
+      title: RegenerateRecoveryCodesResponse
+      additionalProperties: false
+    bytebase.v1.StartMFAEnrollmentResponse:
+      type: object
+      properties:
+        otpSecret:
+          type: string
+          title: otp_secret
+          description: "The pending TOTP secret. The only response that carries it — it is never\n readable from the User resource."
+        recoveryCodes:
+          type: array
+          items:
+            type: string
+          title: recovery_codes
+          description: The pending recovery codes, shown once for the caller to save.
+        expireTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: expire_time
+          description: When this enrollment stops being confirmable.
+        pendingVersion:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: pending_version
+          description: "Identifies this mint. Echo it back to EnableMFA and\n ConfirmRecoveryCodes; a mint from another tab or device replaces the\n pending state, and those methods refuse a version that is no longer the\n pending one rather than promoting something this caller never saw."
+      title: StartMFAEnrollmentResponse
+      additionalProperties: false
+    google.protobuf.Empty:
+      type: object
+      description: An empty JSON object.

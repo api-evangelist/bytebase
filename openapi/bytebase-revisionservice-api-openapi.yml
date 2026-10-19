@@ -1,0 +1,478 @@
+openapi: 3.2.0
+info:
+  title: Bytebase API Reference Revision Service API
+  description: API reference for Bytebase. Every endpoint is served by your own Bytebase instance.
+  version: 1.0.0
+security: []
+tags:
+- name: RevisionService
+  description: RevisionService manages schema revision history.
+paths:
+  /v1/instances/{instance}/databases/{database}/revisions:
+    get:
+      tags:
+      - RevisionService
+      summary: ListRevisions
+      description: 'Lists schema revisions for a database.
+
+        Permissions required: bb.revisions.list'
+      operationId: RevisionService_ListRevisions
+      parameters:
+      - name: instance
+        in: path
+        description: The instance id.
+        required: true
+        schema:
+          type: string
+      - name: database
+        in: path
+        description: The database id.
+        required: true
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: "The maximum number of revisions to return. The service may return fewer\n than this value. If unspecified, at most 10 revisions will be returned. The\n maximum value is 1000; values above 1000 will be coerced to 1000."
+        schema:
+          type: integer
+          title: page_size
+          format: int32
+      - name: pageToken
+        in: query
+        description: "A page token, received from a previous `ListRevisions` call.\n Provide this to retrieve the subsequent page.\n\n When paginating, all other parameters provided to `ListRevisions` must\n match the call that provided the page token."
+        schema:
+          type: string
+          title: page_token
+      - name: showDeleted
+        in: query
+        description: Whether to include deleted revisions in the results.
+        schema:
+          type: boolean
+          title: show_deleted
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ListRevisionsResponse'
+  /v1/instances/{instance}/databases/{database}/revisions/{revision}:
+    get:
+      tags:
+      - RevisionService
+      summary: GetRevision
+      description: 'Retrieves a schema revision by name.
+
+        Permissions required: bb.revisions.get'
+      operationId: RevisionService_GetRevision
+      parameters:
+      - name: instance
+        in: path
+        description: The instance id.
+        required: true
+        schema:
+          type: string
+      - name: database
+        in: path
+        description: The database id.
+        required: true
+        schema:
+          type: string
+      - name: revision
+        in: path
+        description: The revision id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Revision'
+    delete:
+      tags:
+      - RevisionService
+      summary: DeleteRevision
+      description: 'Deletes a schema revision.
+
+        Permissions required: bb.revisions.delete'
+      operationId: RevisionService_DeleteRevision
+      parameters:
+      - name: instance
+        in: path
+        description: The instance id.
+        required: true
+        schema:
+          type: string
+      - name: database
+        in: path
+        description: The database id.
+        required: true
+        schema:
+          type: string
+      - name: revision
+        in: path
+        description: The revision id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/google.protobuf.Empty'
+  /v1/instances/{instance}/databases/{database}/revisions:batchCreate:
+    post:
+      tags:
+      - RevisionService
+      summary: BatchCreateRevisions
+      description: 'Creates multiple schema revisions in a single operation.
+
+        Permissions required: bb.revisions.create'
+      operationId: RevisionService_BatchCreateRevisions
+      parameters:
+      - name: instance
+        in: path
+        description: The instance id.
+        required: true
+        schema:
+          type: string
+      - name: database
+        in: path
+        description: The database id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                requests:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/bytebase.v1.CreateRevisionRequest'
+                  title: requests
+                  description: "The request message specifying the revisions to create.\n A maximum of 100 revisions can be created in a batch."
+              title: BatchCreateRevisionsRequest
+              required:
+              - requests
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.BatchCreateRevisionsResponse'
+  /v1/projects/{project}/instances/{instance}/databases/{database}/revisions:
+    get:
+      tags:
+      - RevisionService
+      summary: ListRevisions
+      description: 'Lists schema revisions for a database.
+
+        Permissions required: bb.revisions.list'
+      operationId: RevisionService_ListRevisions2
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: instance
+        in: path
+        description: The instance id.
+        required: true
+        schema:
+          type: string
+      - name: database
+        in: path
+        description: The database id.
+        required: true
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: "The maximum number of revisions to return. The service may return fewer\n than this value. If unspecified, at most 10 revisions will be returned. The\n maximum value is 1000; values above 1000 will be coerced to 1000."
+        schema:
+          type: integer
+          title: page_size
+          format: int32
+      - name: pageToken
+        in: query
+        description: "A page token, received from a previous `ListRevisions` call.\n Provide this to retrieve the subsequent page.\n\n When paginating, all other parameters provided to `ListRevisions` must\n match the call that provided the page token."
+        schema:
+          type: string
+          title: page_token
+      - name: showDeleted
+        in: query
+        description: Whether to include deleted revisions in the results.
+        schema:
+          type: boolean
+          title: show_deleted
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ListRevisionsResponse'
+  /v1/projects/{project}/instances/{instance}/databases/{database}/revisions/{revision}:
+    get:
+      tags:
+      - RevisionService
+      summary: GetRevision
+      description: 'Retrieves a schema revision by name.
+
+        Permissions required: bb.revisions.get'
+      operationId: RevisionService_GetRevision2
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: instance
+        in: path
+        description: The instance id.
+        required: true
+        schema:
+          type: string
+      - name: database
+        in: path
+        description: The database id.
+        required: true
+        schema:
+          type: string
+      - name: revision
+        in: path
+        description: The revision id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Revision'
+    delete:
+      tags:
+      - RevisionService
+      summary: DeleteRevision
+      description: 'Deletes a schema revision.
+
+        Permissions required: bb.revisions.delete'
+      operationId: RevisionService_DeleteRevision2
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: instance
+        in: path
+        description: The instance id.
+        required: true
+        schema:
+          type: string
+      - name: database
+        in: path
+        description: The database id.
+        required: true
+        schema:
+          type: string
+      - name: revision
+        in: path
+        description: The revision id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/google.protobuf.Empty'
+  /v1/projects/{project}/instances/{instance}/databases/{database}/revisions:batchCreate:
+    post:
+      tags:
+      - RevisionService
+      summary: BatchCreateRevisions
+      description: 'Creates multiple schema revisions in a single operation.
+
+        Permissions required: bb.revisions.create'
+      operationId: RevisionService_BatchCreateRevisions2
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: instance
+        in: path
+        description: The instance id.
+        required: true
+        schema:
+          type: string
+      - name: database
+        in: path
+        description: The database id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                requests:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/bytebase.v1.CreateRevisionRequest'
+                  title: requests
+                  description: "The request message specifying the revisions to create.\n A maximum of 100 revisions can be created in a batch."
+              title: BatchCreateRevisionsRequest
+              required:
+              - requests
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.BatchCreateRevisionsResponse'
+components:
+  schemas:
+    google.protobuf.Timestamp:
+      type: string
+      examples:
+      - '2023-01-15T01:30:15.01Z'
+      - '2024-12-25T12:00:00Z'
+      format: date-time
+      description: A point in time in RFC 3339 format, with up to nanosecond precision. Output uses UTC (`Z`); input may use an offset from UTC.
+    bytebase.v1.BatchCreateRevisionsResponse:
+      type: object
+      properties:
+        revisions:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.Revision'
+          title: revisions
+          description: The created revisions.
+      title: BatchCreateRevisionsResponse
+      additionalProperties: false
+    bytebase.v1.ListRevisionsResponse:
+      type: object
+      properties:
+        revisions:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.Revision'
+          title: revisions
+          description: The revisions from the specified request.
+        nextPageToken:
+          type: string
+          title: next_page_token
+          description: "A token, which can be sent as `page_token` to retrieve the next page.\n If this field is omitted, there are no subsequent pages."
+      title: ListRevisionsResponse
+      additionalProperties: false
+    bytebase.v1.CreateRevisionRequest:
+      type: object
+      properties:
+        parent:
+          type: string
+          title: parent
+          description: 'Format: instances/{instance}/databases/{database} or projects/{project}/instances/{instance}/databases/{database}'
+        revision:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.Revision'
+          title: revision
+          description: The revision to create.
+      title: CreateRevisionRequest
+      required:
+      - parent
+      - revision
+      additionalProperties: false
+    google.protobuf.Empty:
+      type: object
+      description: An empty JSON object.
+    bytebase.v1.Revision.Type:
+      type: string
+      title: Type
+      enum:
+      - TYPE_UNSPECIFIED
+      - VERSIONED
+      - DECLARATIVE
+      description: The type of schema revision.
+    bytebase.v1.Revision:
+      type: object
+      properties:
+        name:
+          type: string
+          title: name
+          description: 'Format: instances/{instance}/databases/{database}/revisions/{revision} or projects/{project}/instances/{instance}/databases/{database}/revisions/{revision}'
+        release:
+          type: string
+          title: release
+          description: "Format: projects/{project}/releases/{release}\n Can be empty."
+        createTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: create_time
+          readOnly: true
+        deleter:
+          type: string
+          title: deleter
+          description: "Format: users/hello@world.com\n Can be empty."
+          readOnly: true
+        deleteTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: delete_time
+          description: Can be empty.
+          readOnly: true
+        file:
+          type: string
+          title: file
+          description: "Format: projects/{project}/releases/{release}/files/{file_path}\n The file_path segment is URL-encoded since file paths may contain \"/\".\n Can be empty."
+        version:
+          type: string
+          title: version
+          description: The schema version string for this revision.
+        sheet:
+          type: string
+          title: sheet
+          description: "The sheet that holds the content.\n Format: projects/{project}/sheets/{sheet}"
+        sheetSha256:
+          type: string
+          title: sheet_sha256
+          description: The SHA256 hash value of the sheet.
+          readOnly: true
+        taskRun:
+          type: string
+          title: task_run
+          description: "The task run associated with the revision.\n Can be empty.\n Format: projects/{project}/plans/{plan}/rollout/stages/{stage}/tasks/{task}/taskRuns/{taskRun}"
+        type:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.Revision.Type'
+          title: type
+          description: The type of the revision.
+      title: Revision
+      additionalProperties: false

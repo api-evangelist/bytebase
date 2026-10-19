@@ -1,0 +1,362 @@
+openapi: 3.2.0
+info:
+  title: Bytebase API Reference Access Grant Service API
+  description: API reference for Bytebase. Every endpoint is served by your own Bytebase instance.
+  version: 1.0.0
+security: []
+tags:
+- name: AccessGrantService
+  description: AccessGrantService manages temporary access grants within projects.
+paths:
+  /v1/projects/{project}/accessGrants:
+    get:
+      tags:
+      - AccessGrantService
+      summary: ListAccessGrants
+      description: Lists access grants in a project.
+      operationId: AccessGrantService_ListAccessGrants
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: The maximum number of access grants to return.
+        schema:
+          type: integer
+          title: page_size
+          format: int32
+      - name: pageToken
+        in: query
+        description: A page token from a previous ListAccessGrants call.
+        schema:
+          type: string
+          title: page_token
+      - name: filter
+        in: query
+        description: "Filter expression using AIP-160 syntax.\n Supported fields:\n - name: the fullname in \"projects/{project}/accessGrants/{access_grant}\" format, support \"==\" operator.\n - creator: the creator name in \"users/{email}\" format, support \"==\" operator.\n - status: the access status, support \"==\" and \"in\" operator.\n - issue: the access issue fullname, support \"==\" operator.\n - expire_time: the access expire time in \"2006-01-02T15:04:05Z07:00\" format, support \">=\", \">\", \"<=\" and \"<\" operator.\n - create_time: the access creation time in \"2006-01-02T15:04:05Z07:00\" format, support \">=\", \">\", \"<=\" and \"<\" operator.\n - query: the access query, support \"==\" and \".contains(xx)\" operator.\n   Equality trims only boundary ASCII space, tab, LF, CR, vertical tab, and form feed.\n - query_hash: supports \"==\" with a lowercase hexadecimal SHA-256 digest of\n   the UTF-8 query after the same boundary trim. Internal whitespace and Unicode\n   remain unchanged.\n - schema: execution schema, supports \"==\"; empty matches only empty or absent values.\n - container: execution container, supports \"==\"; empty matches only empty or absent values.\n - target: the target database fullname, support \"==\" operator.\n - unmask: whether the grant allows unmasking sensitive data, support \"==\" operator with a boolean literal.\n - export: whether the grant allows exporting the query result, support \"==\" operator with a boolean literal.\n\n Examples:\n - creator == \"users/dev@example.com\"\n - status == \"ACTIVE\"\n - status in [\"ACTIVE\", \"PENDING\"]\n - creator == \"users/dev@example.com\" && status == \"ACTIVE\"\n - issue == \"projects/x/issues/123\"\n - status == \"ACTIVE\" && expire_time > \"2024-02-01T00:00:00Z\"\n - target == \"instances/sample/databases/employee\"\n - unmask == true\n - export == true && status == \"ACTIVE\""
+        schema:
+          type: string
+          title: filter
+      - name: orderBy
+        in: query
+        description: "The order by of access grants.\n Support creator, expire_time, create_time. The default sorting order is ascending.\n For example:\n - order_by = \"creator\"\n - order_by = \"expire_time desc\"\n - order_by = \"expire_time asc, create_time desc\""
+        schema:
+          type: string
+          title: order_by
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ListAccessGrantsResponse'
+    post:
+      tags:
+      - AccessGrantService
+      summary: CreateAccessGrant
+      description: Creates an access grant.
+      operationId: AccessGrantService_CreateAccessGrant
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: The access grant to create.
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.AccessGrant'
+              title: access_grant
+              description: The access grant to create.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.AccessGrant'
+  /v1/projects/{project}/accessGrants/{accessGrant}:
+    get:
+      tags:
+      - AccessGrantService
+      summary: GetAccessGrant
+      description: Gets an access grant by name.
+      operationId: AccessGrantService_GetAccessGrant
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: accessGrant
+        in: path
+        description: The accessGrant id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.AccessGrant'
+  /v1/projects/{project}/accessGrants/{accessGrant}:activate:
+    post:
+      tags:
+      - AccessGrantService
+      summary: ActivateAccessGrant
+      description: Activates a pending access grant.
+      operationId: AccessGrantService_ActivateAccessGrant
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: accessGrant
+        in: path
+        description: The accessGrant id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.AccessGrant'
+  /v1/projects/{project}/accessGrants/{accessGrant}:revoke:
+    post:
+      tags:
+      - AccessGrantService
+      summary: RevokeAccessGrant
+      description: Revokes an active access grant.
+      operationId: AccessGrantService_RevokeAccessGrant
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: accessGrant
+        in: path
+        description: The accessGrant id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.AccessGrant'
+  /v1/projects/{project}/accessGrants:searchMy:
+    post:
+      tags:
+      - AccessGrantService
+      summary: SearchMyAccessGrants
+      description: Searches access grants created by the caller.
+      operationId: AccessGrantService_SearchMyAccessGrants
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pageSize:
+                  type: integer
+                  title: page_size
+                  format: int32
+                  description: The maximum number of access grants to return.
+                pageToken:
+                  type: string
+                  title: page_token
+                  description: A page token from a previous SearchMyAccessGrants call.
+                filter:
+                  type: string
+                  title: filter
+                  description: Check the filter field in the ListAccessGrantsRequest message.
+                orderBy:
+                  type: string
+                  title: order_by
+                  description: Check the order_by field in the ListAccessGrantsRequest message.
+              title: SearchMyAccessGrantsRequest
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.SearchMyAccessGrantsResponse'
+components:
+  schemas:
+    google.protobuf.Timestamp:
+      type: string
+      examples:
+      - '2023-01-15T01:30:15.01Z'
+      - '2024-12-25T12:00:00Z'
+      format: date-time
+      description: A point in time in RFC 3339 format, with up to nanosecond precision. Output uses UTC (`Z`); input may use an offset from UTC.
+    bytebase.v1.SearchMyAccessGrantsResponse:
+      type: object
+      properties:
+        accessGrants:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.AccessGrant'
+          title: access_grants
+          description: The access grants from the specified request.
+        nextPageToken:
+          type: string
+          title: next_page_token
+          description: "A token, which can be sent as `page_token` to retrieve the next page.\n If this field is omitted, there are no subsequent pages."
+      title: SearchMyAccessGrantsResponse
+      additionalProperties: false
+    bytebase.v1.AccessGrant.Status:
+      type: string
+      title: Status
+      enum:
+      - STATUS_UNSPECIFIED
+      - PENDING
+      - ACTIVE
+      - REVOKED
+      description: The status of the access grant.
+    bytebase.v1.AccessGrant:
+      type: object
+      anyOf:
+      - type: object
+        properties:
+          expireTime:
+            allOf:
+            - $ref: '#/components/schemas/google.protobuf.Timestamp'
+            title: expire_time
+            description: The expiration time of the access grant.
+        title: expire_time
+      - type: object
+        properties:
+          ttl:
+            allOf:
+            - $ref: '#/components/schemas/google.protobuf.Duration'
+            title: ttl
+            description: "Input only. The time-to-live duration for the access grant.\n The server computes `expire_time` from this value at activation time."
+            writeOnly: true
+        title: ttl
+      unevaluatedProperties: false
+      not:
+        allOf:
+        - anyOf:
+          - required:
+            - expireTime
+          - required:
+            - ttl
+        - not:
+            oneOf:
+            - required:
+              - expireTime
+            - required:
+              - ttl
+      properties:
+        name:
+          type: string
+          title: name
+          description: "The name of the access grant, generated by the server.\n Format: projects/{project}/accessGrants/{access_grant}\n The {access_grant} segment is a server-generated unique ID."
+        creator:
+          type: string
+          title: creator
+          description: "The creator of the access grant.\n Format: users/{email}"
+        status:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.AccessGrant.Status'
+          title: status
+          description: "The status of the access grant.\n An ACTIVE grant with `expire_time` in the past is effectively expired\n and no longer authorizes access. Use `expire_time` to determine\n whether an ACTIVE grant has expired."
+          readOnly: true
+        issue:
+          type: string
+          title: issue
+          description: "The issue associated with the access grant.\n Can be empty.\n Format: projects/{project}/issues/{issue}"
+          readOnly: true
+        targets:
+          type: array
+          items:
+            type: string
+          title: targets
+          description: "The target databases for this access grant.\n Format: instances/{instance}/databases/{database} or projects/{project}/instances/{instance}/databases/{database}"
+        query:
+          type: string
+          title: query
+          description: The query permission granted.
+        unmask:
+          type: boolean
+          title: unmask
+          description: Whether the grant allows unmasking sensitive data.
+        createTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: create_time
+          readOnly: true
+        updateTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: update_time
+          readOnly: true
+        reason:
+          type: string
+          title: reason
+        export:
+          type: boolean
+          title: export
+          description: Whether export the query result.
+        schema:
+          type: string
+          title: schema
+          description: The default schema to execute the query.
+        container:
+          type: string
+          title: container
+          description: The container name to execute the query against, used for CosmosDB only.
+      title: AccessGrant
+      required:
+      - creator
+      - targets
+    google.protobuf.Duration:
+      type: string
+      format: duration
+      description: A signed duration in seconds, with up to nine fractional digits and an `s` suffix (for example, `3s` or `-0.001s`).
+    bytebase.v1.ListAccessGrantsResponse:
+      type: object
+      properties:
+        accessGrants:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.AccessGrant'
+          title: access_grants
+          description: The access grants from the specified request.
+        nextPageToken:
+          type: string
+          title: next_page_token
+          description: "A token, which can be sent as `page_token` to retrieve the next page.\n If this field is omitted, there are no subsequent pages."
+      title: ListAccessGrantsResponse
+      additionalProperties: false

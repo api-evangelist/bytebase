@@ -1,0 +1,292 @@
+openapi: 3.2.0
+info:
+  title: Bytebase API Reference Group Service API
+  description: API reference for Bytebase. Every endpoint is served by your own Bytebase instance.
+  version: 1.0.0
+security: []
+tags:
+- name: GroupService
+  description: GroupService manages user groups for organizing users and permissions.
+paths:
+  /v1/groups:
+    get:
+      tags:
+      - GroupService
+      summary: ListGroups
+      description: 'Lists all groups in the workspace.
+
+        Permissions required: bb.groups.list'
+      operationId: GroupService_ListGroups
+      parameters:
+      - name: pageSize
+        in: query
+        description: "The maximum number of groups to return. The service may return fewer than\n this value.\n If unspecified, at most 10 groups will be returned.\n The maximum value is 1000; values above 1000 will be coerced to 1000."
+        schema:
+          type: integer
+          title: page_size
+          format: int32
+      - name: pageToken
+        in: query
+        description: "A page token, received from a previous `ListGroups` call.\n Provide this to retrieve the subsequent page.\n\n When paginating, all other parameters provided to `ListGroups` must match\n the call that provided the page token."
+        schema:
+          type: string
+          title: page_token
+      - name: filter
+        in: query
+        description: "Filter is used to filter groups returned in the list.\n The syntax and semantics of CEL are documented at https://github.com/google/cel-spec\n\n Supported filter:\n - title: the group title, support \"==\" and \".contains()\" operator.\n - email: the group email, support \"==\" and \".contains()\" operator.\n - project: the project full name in \"projects/{id}\" format, support \"==\" operator.\n\n For example:\n title == \"dba\"\n email == \"dba@bytebase.com\"\n title.contains(\"dba\")\n email.contains(\"dba\")\n project == \"projects/sample-project\"\n You can combine filter conditions like:\n title.contains(\"dba\") || email.contains(\"dba\")"
+        schema:
+          type: string
+          title: filter
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ListGroupsResponse'
+    post:
+      tags:
+      - GroupService
+      summary: CreateGroup
+      description: 'Creates a new group.
+
+        Permissions required: bb.groups.create'
+      operationId: GroupService_CreateGroup
+      parameters:
+      - name: groupEmail
+        in: query
+        description: "The email to use for the group, which will become the final component\n of the group's resource name."
+        required: true
+        schema:
+          type: string
+          title: group_email
+      requestBody:
+        description: The group to create.
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.Group'
+              title: group
+              description: The group to create.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Group'
+  /v1/groups/{group}:
+    get:
+      tags:
+      - GroupService
+      summary: GetGroup
+      description: 'Gets a group by name.
+
+        Group members or users with bb.groups.get permission can get the group.
+
+        Permissions required: bb.groups.get OR caller is the group member'
+      operationId: GroupService_GetGroup
+      parameters:
+      - name: group
+        in: path
+        description: The group id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Group'
+    delete:
+      tags:
+      - GroupService
+      summary: DeleteGroup
+      description: 'Deletes a group. Group owners or users with bb.groups.delete permission can delete.
+
+        Permissions required: bb.groups.delete OR caller is group owner'
+      operationId: GroupService_DeleteGroup
+      parameters:
+      - name: group
+        in: path
+        description: The group id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/google.protobuf.Empty'
+    patch:
+      tags:
+      - GroupService
+      summary: UpdateGroup
+      description: 'Updates a group. Group owners or users with bb.groups.update permission can update.
+
+        Permissions required: bb.groups.update OR caller is group owner
+
+        When allow_missing=true, also requires: bb.groups.create'
+      operationId: GroupService_UpdateGroup
+      parameters:
+      - name: group
+        in: path
+        description: The group id.
+        required: true
+        schema:
+          type: string
+      - name: updateMask
+        in: query
+        description: The list of fields to update.
+        schema:
+          type: string
+      - name: allowMissing
+        in: query
+        description: "If set to true, and the group is not found, a new group will be created.\n In this situation, `update_mask` is ignored."
+        schema:
+          type: boolean
+          title: allow_missing
+      requestBody:
+        description: "The group to update.\n\n The group's `name` field is used to identify the group to update.\n Format: groups/{email}"
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.Group'
+              title: group
+              description: "The group to update.\n\n The group's `name` field is used to identify the group to update.\n Format: groups/{email}"
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Group'
+  /v1/groups:batchGet:
+    get:
+      tags:
+      - GroupService
+      summary: BatchGetGroups
+      description: 'Gets multiple groups in a single request.
+
+        Group members or users with bb.groups.get permission can get the group.
+
+        One resource per requested name, in request order. The first name that
+
+        does not resolve fails the whole call (AIP-231: no partial response).
+
+        Permissions required: bb.groups.get OR caller is the group member'
+      operationId: GroupService_BatchGetGroups
+      parameters:
+      - name: names
+        in: query
+        description: "The group names to retrieve.\n Format: groups/{email}"
+        required: true
+        schema:
+          type: array
+          items:
+            type: string
+          title: names
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.BatchGetGroupsResponse'
+components:
+  schemas:
+    bytebase.v1.GroupMember:
+      type: object
+      properties:
+        member:
+          type: string
+          title: member
+          description: "Member is the principal who belong to this group.\n\n Format: users/hello@world.com"
+        role:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.GroupMember.Role'
+          title: role
+          description: The member's role in the group.
+      title: GroupMember
+      additionalProperties: false
+      description: A member of a group with a role.
+    bytebase.v1.GroupMember.Role:
+      type: string
+      title: Role
+      enum:
+      - ROLE_UNSPECIFIED
+      - OWNER
+      - MEMBER
+      description: The role of a group member.
+    bytebase.v1.Group:
+      type: object
+      properties:
+        name:
+          type: string
+          title: name
+          description: "The name of the group to retrieve.\n Format: groups/{group}, the group should be email or uuid."
+          readOnly: true
+        title:
+          type: string
+          title: title
+          maxLength: 200
+          description: The display title of the group.
+        description:
+          type: string
+          title: description
+          maxLength: 1000
+          description: The description of the group.
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.GroupMember'
+          title: members
+          description: The members of the group.
+        source:
+          type: string
+          title: source
+          description: The source system where the group originated (e.g., Entra ID for SCIM sync).
+        email:
+          type: string
+          title: email
+          description: The unique email for the group.
+      title: Group
+      additionalProperties: false
+      description: A group of users within the workspace.
+    bytebase.v1.ListGroupsResponse:
+      type: object
+      properties:
+        groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.Group'
+          title: groups
+          description: The groups from the specified request.
+        nextPageToken:
+          type: string
+          title: next_page_token
+          description: "A token, which can be sent as `page_token` to retrieve the next page.\n If this field is omitted, there are no subsequent pages."
+      title: ListGroupsResponse
+      additionalProperties: false
+      description: Response message for listing groups.
+    google.protobuf.Empty:
+      type: object
+      description: An empty JSON object.
+    bytebase.v1.BatchGetGroupsResponse:
+      type: object
+      properties:
+        groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.Group'
+          title: groups
+          description: One group per requested name, in the same order as `names`.
+      title: BatchGetGroupsResponse
+      additionalProperties: false
+      description: Response message for batch getting groups.

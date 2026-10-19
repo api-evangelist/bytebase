@@ -48,18 +48,16 @@ created: '2026-06-21'
 modified: '2026-10-06'
 specificationVersion: '0.23'
 apis:
-- aid: bytebase:bytebase-auth-api
-  name: Bytebase Auth API
-  description: The Auth API from Bytebase — 1 operation(s) for auth.
+- aid: bytebase:bytebase-accessgrantservice-api
+  name: Bytebase Access Grant Service API
+  description: AccessGrantService manages temporary access grants within projects.
   humanURL: https://docs.bytebase.com/integrations/api/overview
   baseURL: https://demo.bytebase.com/v1
   tags:
-  - Authentication
-  tags_raw:
-  - Auth
+  - AccessGrantService
   properties:
   - type: OpenAPI
-    url: openapi/bytebase-auth-api-openapi.yml
+    url: openapi/bytebase-accessgrantservice-api-openapi.yml
   - type: Documentation
     url: https://docs.bytebase.com/integrations/api/overview
   - type: APIReference
@@ -68,18 +66,16 @@ apis:
     url: collections/bytebase.postman_collection.json
   - type: OpenCollection
     url: collections/bytebase.opencollection.json
-- aid: bytebase:bytebase-databases-api
-  name: Bytebase Databases API
-  description: The Databases API from Bytebase — 2 operation(s) for databases.
+- aid: bytebase:bytebase-actuatorservice-api
+  name: Bytebase Actuator Service API
+  description: ActuatorService manages system health and operational information.
   humanURL: https://docs.bytebase.com/integrations/api/overview
   baseURL: https://demo.bytebase.com/v1
   tags:
-  - Database
-  tags_raw:
-  - Databases
+  - ActuatorService
   properties:
   - type: OpenAPI
-    url: openapi/bytebase-databases-api-openapi.yml
+    url: openapi/bytebase-actuatorservice-api-openapi.yml
   - type: Documentation
     url: https://docs.bytebase.com/integrations/api/overview
   - type: APIReference
@@ -88,18 +84,16 @@ apis:
     url: collections/bytebase.postman_collection.json
   - type: OpenCollection
     url: collections/bytebase.opencollection.json
-- aid: bytebase:bytebase-groups-api
-  name: Bytebase Groups API
-  description: The Groups API from Bytebase — 1 operation(s) for groups.
+- aid: bytebase:bytebase-aiservice-api
+  name: Bytebase AI Service API
+  description: AIService provides AI chat capabilities for the page agent.
   humanURL: https://docs.bytebase.com/integrations/api/overview
   baseURL: https://demo.bytebase.com/v1
   tags:
-  - Group
-  tags_raw:
-  - Groups
+  - AIService
   properties:
   - type: OpenAPI
-    url: openapi/bytebase-groups-api-openapi.yml
+    url: openapi/bytebase-aiservice-api-openapi.yml
   - type: Documentation
     url: https://docs.bytebase.com/integrations/api/overview
   - type: APIReference
@@ -108,16 +102,16 @@ apis:
     url: collections/bytebase.postman_collection.json
   - type: OpenCollection
     url: collections/bytebase.opencollection.json
-- aid: bytebase:bytebase-instances-api
-  name: Bytebase Instances API
-  description: The Instances API from Bytebase — 2 operation(s) for instances.
+- aid: bytebase:bytebase-auditlogservice-api
+  name: Bytebase Audit Log Service API
+  description: AuditLogService manages audit logs for system activities and API calls.
   humanURL: https://docs.bytebase.com/integrations/api/overview
   baseURL: https://demo.bytebase.com/v1
   tags:
-  - Instances
+  - AuditLogService
   properties:
   - type: OpenAPI
-    url: openapi/bytebase-instances-api-openapi.yml
+    url: openapi/bytebase-auditlogservice-api-openapi.yml
   - type: Documentation
     url: https://docs.bytebase.com/integrations/api/overview
   - type: APIReference
@@ -126,16 +120,16 @@ apis:
     url: collections/bytebase.postman_collection.json
   - type: OpenCollection
     url: collections/bytebase.opencollection.json
-- aid: bytebase:bytebase-issues-api
-  name: Bytebase Issues API
-  description: The Issues API from Bytebase — 3 operation(s) for issues.
+- aid: bytebase:bytebase-celservice-api
+  name: Bytebase Cel Service API
+  description: CelService manages CEL (Common Expression Language) parsing and formatting operations.
   humanURL: https://docs.bytebase.com/integrations/api/overview
   baseURL: https://demo.bytebase.com/v1
   tags:
-  - Issues
+  - CelService
   properties:
   - type: OpenAPI
-    url: openapi/bytebase-issues-api-openapi.yml
+    url: openapi/bytebase-celservice-api-openapi.yml
   - type: Documentation
     url: https://docs.bytebase.com/integrations/api/overview
   - type: APIReference
@@ -144,16 +138,16 @@ apis:
     url: collections/bytebase.postman_collection.json
   - type: OpenCollection
     url: collections/bytebase.opencollection.json
-- aid: bytebase:bytebase-plans-api
-  name: Bytebase Plans API
-  description: The Plans API from Bytebase — 1 operation(s) for plans.
+- aid: bytebase:bytebase-changelogservice-api
+  name: Bytebase Changelog Service API
+  description: ChangelogService manages database migration history.
   humanURL: https://docs.bytebase.com/integrations/api/overview
   baseURL: https://demo.bytebase.com/v1
   tags:
-  - Plans
+  - ChangelogService
   properties:
   - type: OpenAPI
-    url: openapi/bytebase-plans-api-openapi.yml
+    url: openapi/bytebase-changelogservice-api-openapi.yml
   - type: Documentation
     url: https://docs.bytebase.com/integrations/api/overview
   - type: APIReference
@@ -162,18 +156,16 @@ apis:
     url: collections/bytebase.postman_collection.json
   - type: OpenCollection
     url: collections/bytebase.opencollection.json
-- aid: bytebase:bytebase-projects-api
-  name: Bytebase Projects API
-  description: The Projects API from Bytebase — 2 operation(s) for projects.
+- aid: bytebase:bytebase-databasecatalogservice-api
+  name: Bytebase Database Catalog Service API
+  description: DatabaseCatalogService manages database schema metadata and classification.
   humanURL: https://docs.bytebase.com/integrations/api/overview
   baseURL: https://demo.bytebase.com/v1
   tags:
-  - Project
-  tags_raw:
-  - Projects
+  - DatabaseCatalogService
   properties:
   - type: OpenAPI
-    url: openapi/bytebase-projects-api-openapi.yml
+    url: openapi/bytebase-databasecatalogservice-api-openapi.yml
   - type: Documentation
     url: https://docs.bytebase.com/integrations/api/overview
   - type: APIReference
@@ -182,16 +174,16 @@ apis:
     url: collections/bytebase.postman_collection.json
   - type: OpenCollection
     url: collections/bytebase.opencollection.json
-- aid: bytebase:bytebase-roles-api
-  name: Bytebase Roles API
-  description: The Roles API from Bytebase — 1 operation(s) for roles.
+- aid: bytebase:bytebase-databasegroupservice-api
+  name: Bytebase Database Group Service API
+  description: DatabaseGroupService manages database groups for organizing databases by criteria.
   humanURL: https://docs.bytebase.com/integrations/api/overview
   baseURL: https://demo.bytebase.com/v1
   tags:
-  - Roles
+  - DatabaseGroupService
   properties:
   - type: OpenAPI
-    url: openapi/bytebase-roles-api-openapi.yml
+    url: openapi/bytebase-databasegroupservice-api-openapi.yml
   - type: Documentation
     url: https://docs.bytebase.com/integrations/api/overview
   - type: APIReference
@@ -200,16 +192,16 @@ apis:
     url: collections/bytebase.postman_collection.json
   - type: OpenCollection
     url: collections/bytebase.opencollection.json
-- aid: bytebase:bytebase-rollouts-api
-  name: Bytebase Rollouts API
-  description: The Rollouts API from Bytebase — 2 operation(s) for rollouts.
+- aid: bytebase:bytebase-databaseservice-api
+  name: Bytebase Database Service API
+  description: DatabaseService manages databases and their schemas.
   humanURL: https://docs.bytebase.com/integrations/api/overview
   baseURL: https://demo.bytebase.com/v1
   tags:
-  - Rollouts
+  - DatabaseService
   properties:
   - type: OpenAPI
-    url: openapi/bytebase-rollouts-api-openapi.yml
+    url: openapi/bytebase-databaseservice-api-openapi.yml
   - type: Documentation
     url: https://docs.bytebase.com/integrations/api/overview
   - type: APIReference
@@ -218,16 +210,16 @@ apis:
     url: collections/bytebase.postman_collection.json
   - type: OpenCollection
     url: collections/bytebase.opencollection.json
-- aid: bytebase:bytebase-sheets-api
-  name: Bytebase Sheets API
-  description: The Sheets API from Bytebase — 1 operation(s) for sheets.
+- aid: bytebase:bytebase-groupservice-api
+  name: Bytebase Group Service API
+  description: GroupService manages user groups for organizing users and permissions.
   humanURL: https://docs.bytebase.com/integrations/api/overview
   baseURL: https://demo.bytebase.com/v1
   tags:
-  - Sheets
+  - GroupService
   properties:
   - type: OpenAPI
-    url: openapi/bytebase-sheets-api-openapi.yml
+    url: openapi/bytebase-groupservice-api-openapi.yml
   - type: Documentation
     url: https://docs.bytebase.com/integrations/api/overview
   - type: APIReference
@@ -236,18 +228,16 @@ apis:
     url: collections/bytebase.postman_collection.json
   - type: OpenCollection
     url: collections/bytebase.opencollection.json
-- aid: bytebase:bytebase-users-api
-  name: Bytebase Users API
-  description: The Users API from Bytebase — 1 operation(s) for users.
+- aid: bytebase:bytebase-identityproviderservice-api
+  name: Bytebase Identity Provider Service API
+  description: IdentityProviderService manages external identity providers for SSO authentication.
   humanURL: https://docs.bytebase.com/integrations/api/overview
   baseURL: https://demo.bytebase.com/v1
   tags:
-  - User
-  tags_raw:
-  - Users
+  - IdentityProviderService
   properties:
   - type: OpenAPI
-    url: openapi/bytebase-users-api-openapi.yml
+    url: openapi/bytebase-identityproviderservice-api-openapi.yml
   - type: Documentation
     url: https://docs.bytebase.com/integrations/api/overview
   - type: APIReference
@@ -256,18 +246,406 @@ apis:
     url: collections/bytebase.postman_collection.json
   - type: OpenCollection
     url: collections/bytebase.opencollection.json
-- aid: bytebase:bytebase-webhooks-api
-  name: Bytebase Webhooks API
-  description: The Webhooks API from Bytebase — 1 operation(s) for webhooks.
+- aid: bytebase:bytebase-instanceroleservice-api
+  name: Bytebase Instance Role Service API
+  description: InstanceRoleService manages database roles within instances.
   humanURL: https://docs.bytebase.com/integrations/api/overview
   baseURL: https://demo.bytebase.com/v1
   tags:
-  - Webhook
-  tags_raw:
-  - Webhooks
+  - InstanceRoleService
   properties:
   - type: OpenAPI
-    url: openapi/bytebase-webhooks-api-openapi.yml
+    url: openapi/bytebase-instanceroleservice-api-openapi.yml
+  - type: Documentation
+    url: https://docs.bytebase.com/integrations/api/overview
+  - type: APIReference
+    url: https://api.bytebase.com/
+  - type: PostmanCollection
+    url: collections/bytebase.postman_collection.json
+  - type: OpenCollection
+    url: collections/bytebase.opencollection.json
+- aid: bytebase:bytebase-instanceservice-api
+  name: Bytebase Instance Service API
+  description: InstanceService manages database instances and their connections.
+  humanURL: https://docs.bytebase.com/integrations/api/overview
+  baseURL: https://demo.bytebase.com/v1
+  tags:
+  - InstanceService
+  properties:
+  - type: OpenAPI
+    url: openapi/bytebase-instanceservice-api-openapi.yml
+  - type: Documentation
+    url: https://docs.bytebase.com/integrations/api/overview
+  - type: APIReference
+    url: https://api.bytebase.com/
+  - type: PostmanCollection
+    url: collections/bytebase.postman_collection.json
+  - type: OpenCollection
+    url: collections/bytebase.opencollection.json
+- aid: bytebase:bytebase-issueservice-api
+  name: Bytebase Issue Service API
+  description: IssueService manages issues for tracking database changes and tasks.
+  humanURL: https://docs.bytebase.com/integrations/api/overview
+  baseURL: https://demo.bytebase.com/v1
+  tags:
+  - IssueService
+  properties:
+  - type: OpenAPI
+    url: openapi/bytebase-issueservice-api-openapi.yml
+  - type: Documentation
+    url: https://docs.bytebase.com/integrations/api/overview
+  - type: APIReference
+    url: https://api.bytebase.com/
+  - type: PostmanCollection
+    url: collections/bytebase.postman_collection.json
+  - type: OpenCollection
+    url: collections/bytebase.opencollection.json
+- aid: bytebase:bytebase-orgpolicyservice-api
+  name: Bytebase Org Policy Service API
+  description: OrgPolicyService manages organizational policies at various resource levels.
+  humanURL: https://docs.bytebase.com/integrations/api/overview
+  baseURL: https://demo.bytebase.com/v1
+  tags:
+  - OrgPolicyService
+  properties:
+  - type: OpenAPI
+    url: openapi/bytebase-orgpolicyservice-api-openapi.yml
+  - type: Documentation
+    url: https://docs.bytebase.com/integrations/api/overview
+  - type: APIReference
+    url: https://api.bytebase.com/
+  - type: PostmanCollection
+    url: collections/bytebase.postman_collection.json
+  - type: OpenCollection
+    url: collections/bytebase.opencollection.json
+- aid: bytebase:bytebase-planservice-api
+  name: Bytebase Plan Service API
+  description: PlanService manages deployment plans for database changes.
+  humanURL: https://docs.bytebase.com/integrations/api/overview
+  baseURL: https://demo.bytebase.com/v1
+  tags:
+  - PlanService
+  properties:
+  - type: OpenAPI
+    url: openapi/bytebase-planservice-api-openapi.yml
+  - type: Documentation
+    url: https://docs.bytebase.com/integrations/api/overview
+  - type: APIReference
+    url: https://api.bytebase.com/
+  - type: PostmanCollection
+    url: collections/bytebase.postman_collection.json
+  - type: OpenCollection
+    url: collections/bytebase.opencollection.json
+- aid: bytebase:bytebase-projectservice-api
+  name: Bytebase Project Service API
+  description: ProjectService manages projects that group databases and changes.
+  humanURL: https://docs.bytebase.com/integrations/api/overview
+  baseURL: https://demo.bytebase.com/v1
+  tags:
+  - ProjectService
+  properties:
+  - type: OpenAPI
+    url: openapi/bytebase-projectservice-api-openapi.yml
+  - type: Documentation
+    url: https://docs.bytebase.com/integrations/api/overview
+  - type: APIReference
+    url: https://api.bytebase.com/
+  - type: PostmanCollection
+    url: collections/bytebase.postman_collection.json
+  - type: OpenCollection
+    url: collections/bytebase.opencollection.json
+- aid: bytebase:bytebase-queryhistoryservice-api
+  name: Bytebase Query History Service API
+  description: QueryHistoryService manages query history records of SQL Editor queries and exports.
+  humanURL: https://docs.bytebase.com/integrations/api/overview
+  baseURL: https://demo.bytebase.com/v1
+  tags:
+  - QueryHistoryService
+  properties:
+  - type: OpenAPI
+    url: openapi/bytebase-queryhistoryservice-api-openapi.yml
+  - type: Documentation
+    url: https://docs.bytebase.com/integrations/api/overview
+  - type: APIReference
+    url: https://api.bytebase.com/
+  - type: PostmanCollection
+    url: collections/bytebase.postman_collection.json
+  - type: OpenCollection
+    url: collections/bytebase.opencollection.json
+- aid: bytebase:bytebase-releaseservice-api
+  name: Bytebase Release Service API
+  description: ReleaseService manages releases for coordinating deployments.
+  humanURL: https://docs.bytebase.com/integrations/api/overview
+  baseURL: https://demo.bytebase.com/v1
+  tags:
+  - ReleaseService
+  properties:
+  - type: OpenAPI
+    url: openapi/bytebase-releaseservice-api-openapi.yml
+  - type: Documentation
+    url: https://docs.bytebase.com/integrations/api/overview
+  - type: APIReference
+    url: https://api.bytebase.com/
+  - type: PostmanCollection
+    url: collections/bytebase.postman_collection.json
+  - type: OpenCollection
+    url: collections/bytebase.opencollection.json
+- aid: bytebase:bytebase-reviewconfigservice-api
+  name: Bytebase Review Config Service API
+  description: ReviewConfigService manages approval flow configurations.
+  humanURL: https://docs.bytebase.com/integrations/api/overview
+  baseURL: https://demo.bytebase.com/v1
+  tags:
+  - ReviewConfigService
+  properties:
+  - type: OpenAPI
+    url: openapi/bytebase-reviewconfigservice-api-openapi.yml
+  - type: Documentation
+    url: https://docs.bytebase.com/integrations/api/overview
+  - type: APIReference
+    url: https://api.bytebase.com/
+  - type: PostmanCollection
+    url: collections/bytebase.postman_collection.json
+  - type: OpenCollection
+    url: collections/bytebase.opencollection.json
+- aid: bytebase:bytebase-revisionservice-api
+  name: Bytebase Revision Service API
+  description: RevisionService manages schema revision history.
+  humanURL: https://docs.bytebase.com/integrations/api/overview
+  baseURL: https://demo.bytebase.com/v1
+  tags:
+  - RevisionService
+  properties:
+  - type: OpenAPI
+    url: openapi/bytebase-revisionservice-api-openapi.yml
+  - type: Documentation
+    url: https://docs.bytebase.com/integrations/api/overview
+  - type: APIReference
+    url: https://api.bytebase.com/
+  - type: PostmanCollection
+    url: collections/bytebase.postman_collection.json
+  - type: OpenCollection
+    url: collections/bytebase.opencollection.json
+- aid: bytebase:bytebase-roleservice-api
+  name: Bytebase Role Service API
+  description: RoleService manages workspace roles and permissions.
+  humanURL: https://docs.bytebase.com/integrations/api/overview
+  baseURL: https://demo.bytebase.com/v1
+  tags:
+  - RoleService
+  properties:
+  - type: OpenAPI
+    url: openapi/bytebase-roleservice-api-openapi.yml
+  - type: Documentation
+    url: https://docs.bytebase.com/integrations/api/overview
+  - type: APIReference
+    url: https://api.bytebase.com/
+  - type: PostmanCollection
+    url: collections/bytebase.postman_collection.json
+  - type: OpenCollection
+    url: collections/bytebase.opencollection.json
+- aid: bytebase:bytebase-rolloutservice-api
+  name: Bytebase Rollout Service API
+  description: RolloutService manages the execution of deployment plans.
+  humanURL: https://docs.bytebase.com/integrations/api/overview
+  baseURL: https://demo.bytebase.com/v1
+  tags:
+  - RolloutService
+  properties:
+  - type: OpenAPI
+    url: openapi/bytebase-rolloutservice-api-openapi.yml
+  - type: Documentation
+    url: https://docs.bytebase.com/integrations/api/overview
+  - type: APIReference
+    url: https://api.bytebase.com/
+  - type: PostmanCollection
+    url: collections/bytebase.postman_collection.json
+  - type: OpenCollection
+    url: collections/bytebase.opencollection.json
+- aid: bytebase:bytebase-savedqueryservice-api
+  name: Bytebase Saved Query Service API
+  description: >-
+    SavedQueryService manages saved queries in the SQL Editor.
+
+     A saved query is private to its creator until shared. Permissions come from
+     three places:
+     - The creator owns the saved query and holds every permission on it.
+     - A VIEWER binding grants bb.savedQueries.get and getIamPolicy; an EDITOR
+       binding adds update.
+     - Permissions granted on the project or workspace apply to every saved
+       query in the project, private ones included.
+     A caller without a method's permission gets NotFound, not
+     PermissionDenied, so private names stay unprobeable. Running a saved query
+     is governed by the SQL Editor's database permissions, not by this service.
+  humanURL: https://docs.bytebase.com/integrations/api/overview
+  baseURL: https://demo.bytebase.com/v1
+  tags:
+  - SavedQueryService
+  properties:
+  - type: OpenAPI
+    url: openapi/bytebase-savedqueryservice-api-openapi.yml
+  - type: Documentation
+    url: https://docs.bytebase.com/integrations/api/overview
+  - type: APIReference
+    url: https://api.bytebase.com/
+  - type: PostmanCollection
+    url: collections/bytebase.postman_collection.json
+  - type: OpenCollection
+    url: collections/bytebase.opencollection.json
+- aid: bytebase:bytebase-serviceaccountservice-api
+  name: Bytebase Service Account Service API
+  description: ServiceAccountService manages service accounts for API integrations.
+  humanURL: https://docs.bytebase.com/integrations/api/overview
+  baseURL: https://demo.bytebase.com/v1
+  tags:
+  - ServiceAccountService
+  properties:
+  - type: OpenAPI
+    url: openapi/bytebase-serviceaccountservice-api-openapi.yml
+  - type: Documentation
+    url: https://docs.bytebase.com/integrations/api/overview
+  - type: APIReference
+    url: https://api.bytebase.com/
+  - type: PostmanCollection
+    url: collections/bytebase.postman_collection.json
+  - type: OpenCollection
+    url: collections/bytebase.opencollection.json
+- aid: bytebase:bytebase-settingservice-api
+  name: Bytebase Setting Service API
+  description: SettingService manages workspace-level settings and configurations.
+  humanURL: https://docs.bytebase.com/integrations/api/overview
+  baseURL: https://demo.bytebase.com/v1
+  tags:
+  - SettingService
+  properties:
+  - type: OpenAPI
+    url: openapi/bytebase-settingservice-api-openapi.yml
+  - type: Documentation
+    url: https://docs.bytebase.com/integrations/api/overview
+  - type: APIReference
+    url: https://api.bytebase.com/
+  - type: PostmanCollection
+    url: collections/bytebase.postman_collection.json
+  - type: OpenCollection
+    url: collections/bytebase.opencollection.json
+- aid: bytebase:bytebase-sheetservice-api
+  name: Bytebase Sheet Service API
+  description: SheetService manages SQL scripts and saved queries.
+  humanURL: https://docs.bytebase.com/integrations/api/overview
+  baseURL: https://demo.bytebase.com/v1
+  tags:
+  - SheetService
+  properties:
+  - type: OpenAPI
+    url: openapi/bytebase-sheetservice-api-openapi.yml
+  - type: Documentation
+    url: https://docs.bytebase.com/integrations/api/overview
+  - type: APIReference
+    url: https://api.bytebase.com/
+  - type: PostmanCollection
+    url: collections/bytebase.postman_collection.json
+  - type: OpenCollection
+    url: collections/bytebase.opencollection.json
+- aid: bytebase:bytebase-sqlservice-api
+  name: Bytebase SQL Service API
+  description: SQLService executes SQL queries and manages query operations.
+  humanURL: https://docs.bytebase.com/integrations/api/overview
+  baseURL: https://demo.bytebase.com/v1
+  tags:
+  - SQLService
+  properties:
+  - type: OpenAPI
+    url: openapi/bytebase-sqlservice-api-openapi.yml
+  - type: Documentation
+    url: https://docs.bytebase.com/integrations/api/overview
+  - type: APIReference
+    url: https://api.bytebase.com/
+  - type: PostmanCollection
+    url: collections/bytebase.postman_collection.json
+  - type: OpenCollection
+    url: collections/bytebase.opencollection.json
+- aid: bytebase:bytebase-subscriptionservice-api
+  name: Bytebase Subscription Service API
+  description: SubscriptionService manages enterprise subscriptions and licensing.
+  humanURL: https://docs.bytebase.com/integrations/api/overview
+  baseURL: https://demo.bytebase.com/v1
+  tags:
+  - SubscriptionService
+  properties:
+  - type: OpenAPI
+    url: openapi/bytebase-subscriptionservice-api-openapi.yml
+  - type: Documentation
+    url: https://docs.bytebase.com/integrations/api/overview
+  - type: APIReference
+    url: https://api.bytebase.com/
+  - type: PostmanCollection
+    url: collections/bytebase.postman_collection.json
+  - type: OpenCollection
+    url: collections/bytebase.opencollection.json
+- aid: bytebase:bytebase-userservice-api
+  name: Bytebase User Service API
+  description: UserService manages user accounts and authentication.
+  humanURL: https://docs.bytebase.com/integrations/api/overview
+  baseURL: https://demo.bytebase.com/v1
+  tags:
+  - UserService
+  properties:
+  - type: OpenAPI
+    url: openapi/bytebase-userservice-api-openapi.yml
+  - type: Documentation
+    url: https://docs.bytebase.com/integrations/api/overview
+  - type: APIReference
+    url: https://api.bytebase.com/
+  - type: PostmanCollection
+    url: collections/bytebase.postman_collection.json
+  - type: OpenCollection
+    url: collections/bytebase.opencollection.json
+- aid: bytebase:bytebase-workloadidentityservice-api
+  name: Bytebase Workload Identity Service API
+  description: WorkloadIdentityService manages workload identities for external CI/CD integrations.
+  humanURL: https://docs.bytebase.com/integrations/api/overview
+  baseURL: https://demo.bytebase.com/v1
+  tags:
+  - WorkloadIdentityService
+  properties:
+  - type: OpenAPI
+    url: openapi/bytebase-workloadidentityservice-api-openapi.yml
+  - type: Documentation
+    url: https://docs.bytebase.com/integrations/api/overview
+  - type: APIReference
+    url: https://api.bytebase.com/
+  - type: PostmanCollection
+    url: collections/bytebase.postman_collection.json
+  - type: OpenCollection
+    url: collections/bytebase.opencollection.json
+- aid: bytebase:bytebase-workspaceservice-api
+  name: Bytebase Workspace Service API
+  description: WorkspaceService manages workspace-level operations and profile.
+  humanURL: https://docs.bytebase.com/integrations/api/overview
+  baseURL: https://demo.bytebase.com/v1
+  tags:
+  - WorkspaceService
+  properties:
+  - type: OpenAPI
+    url: openapi/bytebase-workspaceservice-api-openapi.yml
+  - type: Documentation
+    url: https://docs.bytebase.com/integrations/api/overview
+  - type: APIReference
+    url: https://api.bytebase.com/
+  - type: PostmanCollection
+    url: collections/bytebase.postman_collection.json
+  - type: OpenCollection
+    url: collections/bytebase.opencollection.json
+- aid: bytebase:bytebase-auth-service-api
+  name: Bytebase Auth Service API
+  description: AuthService handles user authentication operations.
+  humanURL: https://docs.bytebase.com/integrations/api/overview
+  baseURL: https://demo.bytebase.com/v1
+  tags:
+  - Auth Service
+  properties:
+  - type: OpenAPI
+    url: openapi/bytebase-auth-service-api-openapi.yml
   - type: Documentation
     url: https://docs.bytebase.com/integrations/api/overview
   - type: APIReference

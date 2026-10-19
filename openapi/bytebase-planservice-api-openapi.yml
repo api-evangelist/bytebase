@@ -1,0 +1,755 @@
+openapi: 3.2.0
+info:
+  title: Bytebase API Reference Plan Service API
+  description: API reference for Bytebase. Every endpoint is served by your own Bytebase instance.
+  version: 1.0.0
+security: []
+tags:
+- name: PlanService
+  description: PlanService manages deployment plans for database changes.
+paths:
+  /v1/projects/{project}/plans:
+    get:
+      tags:
+      - PlanService
+      summary: ListPlans
+      description: 'Lists deployment plans in a project.
+
+        Permissions required: bb.plans.list'
+      operationId: PlanService_ListPlans
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: "The maximum number of plans to return. The service may return fewer than\n this value.\n If unspecified, at most 10 plans will be returned.\n The maximum value is 1000; values above 1000 will be coerced to 1000."
+        schema:
+          type: integer
+          title: page_size
+          format: int32
+      - name: pageToken
+        in: query
+        description: "A page token, received from a previous `ListPlans` call.\n Provide this to retrieve the subsequent page.\n\n When paginating, all other parameters provided to `ListPlans` must match\n the call that provided the page token."
+        schema:
+          type: string
+          title: page_token
+      - name: filter
+        in: query
+        description: "Filter is used to filter plans returned in the list.\n The syntax and semantics of CEL are documented at https://github.com/google/cel-spec\n\n Supported filters:\n - creator: the plan creator full name in \"users/{email or id}\" format, support \"==\" operator.\n - create_time: the plan create time in \"2006-01-02T15:04:05Z07:00\" format, support \">=\" or \"<=\" operator.\n - has_rollout: whether the plan has rollout, support \"==\" operator, the value should be \"true\" or \"false\".\n - title: the plan title, support \"==\" operator for exact match and \".contains()\" operator for case-insensitive substring match.\n - spec_type: the plan spec config type, support \"==\" operator, the value should be \"create_database_config\" or \"change_database_config\".\n - state: the plan state, support \"==\" operator, the value should be \"ACTIVE\" or \"DELETED\".\n\n For example:\n creator == \"users/ed@bytebase.com\" && create_time >= \"2025-01-02T15:04:05Z07:00\"\n title == \"My Plan\"\n title.contains(\"database migration\")\n spec_type == \"change_database_config\"\n state == \"ACTIVE\""
+        schema:
+          type: string
+          title: filter
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ListPlansResponse'
+    post:
+      tags:
+      - PlanService
+      summary: CreatePlan
+      description: 'Creates a new deployment plan.
+
+        Permissions required: bb.plans.create'
+      operationId: PlanService_CreatePlan
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: The plan to create.
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.Plan'
+              title: plan
+              description: The plan to create.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Plan'
+  /v1/projects/{project}/plans/{plan}:
+    get:
+      tags:
+      - PlanService
+      summary: GetPlan
+      description: 'Retrieves a deployment plan by name.
+
+        Permissions required: bb.plans.get'
+      operationId: PlanService_GetPlan
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: plan
+        in: path
+        description: The plan id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Plan'
+    patch:
+      tags:
+      - PlanService
+      summary: UpdatePlan
+      description: 'UpdatePlan updates the plan.
+
+        The plan creator and the user with bb.plans.update permission on the project can update the plan.
+
+        Permissions required: bb.plans.update (or creator)'
+      operationId: PlanService_UpdatePlan
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: plan
+        in: path
+        description: The plan id.
+        required: true
+        schema:
+          type: string
+      - name: updateMask
+        in: query
+        description: The list of fields to update.
+        required: true
+        schema:
+          type: string
+      - name: allowMissing
+        in: query
+        description: "If set to true, and the plan is not found, a new plan will be created.\n In this situation, `update_mask` is ignored."
+        schema:
+          type: boolean
+          title: allow_missing
+      requestBody:
+        description: "The plan to update.\n\n The plan's `name` field is used to identify the plan to update.\n Format: projects/{project}/plans/{plan}"
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.Plan'
+              title: plan
+              description: "The plan to update.\n\n The plan's `name` field is used to identify the plan to update.\n Format: projects/{project}/plans/{plan}"
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Plan'
+  /v1/projects/{project}/plans/{plan}/planCheckRun:
+    get:
+      tags:
+      - PlanService
+      summary: GetPlanCheckRun
+      description: 'Gets the plan check run for a deployment plan.
+
+        Permissions required: bb.planCheckRuns.get'
+      operationId: PlanService_GetPlanCheckRun
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: plan
+        in: path
+        description: The plan id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.PlanCheckRun'
+  /v1/projects/{project}/plans/{plan}/planCheckRun:cancel:
+    post:
+      tags:
+      - PlanService
+      summary: CancelPlanCheckRun
+      description: 'Cancels the plan check run for a deployment plan.
+
+        Permissions required: bb.planCheckRuns.run'
+      operationId: PlanService_CancelPlanCheckRun
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: plan
+        in: path
+        description: The plan id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.CancelPlanCheckRunResponse'
+  /v1/projects/{project}/plans/{plan}:runPlanChecks:
+    post:
+      tags:
+      - PlanService
+      summary: RunPlanChecks
+      description: 'Executes validation checks on a deployment plan.
+
+        Permissions required: bb.planCheckRuns.run'
+      operationId: PlanService_RunPlanChecks
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: plan
+        in: path
+        description: The plan id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                specId:
+                  type:
+                  - string
+                  - 'null'
+                  title: spec_id
+                  description: "The UUID of the specific spec to run plan checks for.\n This should match the spec.id field in Plan.Spec.\n If not set, all specs in the plan will be used."
+              title: RunPlanChecksRequest
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.RunPlanChecksResponse'
+components:
+  schemas:
+    bytebase.v1.Plan.ChangeDatabaseConfig:
+      type: object
+      properties:
+        targets:
+          type: array
+          items:
+            type: string
+          title: targets
+          description: "The list of targets.\n Multi-database format: [instances/{instance-id}/databases/{database-name}].\n Single database group format: [projects/{project}/databaseGroups/{databaseGroup}]."
+        sheet:
+          type: string
+          title: sheet
+          description: "The resource name of the sheet.\n Format: projects/{project}/sheets/{sheet}"
+        release:
+          type: string
+          title: release
+          description: "The resource name of the release.\n Format: projects/{project}/releases/{release}"
+        enablePriorBackup:
+          type: boolean
+          title: enable_prior_backup
+          description: If set, a backup of the modified data will be created automatically before any changes are applied.
+      title: ChangeDatabaseConfig
+      additionalProperties: false
+    bytebase.v1.State:
+      type: string
+      title: State
+      enum:
+      - STATE_UNSPECIFIED
+      - ACTIVE
+      - DELETED
+      description: Resource lifecycle state.
+    bytebase.v1.Plan.TaskStatusCount:
+      type: object
+      properties:
+        status:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.Task.Status'
+          title: status
+          description: The task status.
+        count:
+          type: integer
+          title: count
+          format: int32
+          description: The number of tasks in the status.
+      title: TaskStatusCount
+      additionalProperties: false
+    bytebase.v1.CancelPlanCheckRunResponse:
+      type: object
+      title: CancelPlanCheckRunResponse
+      additionalProperties: false
+    bytebase.v1.RunPlanChecksResponse:
+      type: object
+      title: RunPlanChecksResponse
+      additionalProperties: false
+    bytebase.v1.PlanCheckRun.Status:
+      type: string
+      title: Status
+      enum:
+      - STATUS_UNSPECIFIED
+      - RUNNING
+      - DONE
+      - FAILED
+      - CANCELED
+    bytebase.v1.Plan.RolloutStageSummary:
+      type: object
+      properties:
+        stage:
+          type: string
+          title: stage
+          description: "The stage resource name.\n Format: projects/{project}/plans/{plan}/rollout/stages/{stage}"
+        taskStatusCounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.Plan.TaskStatusCount'
+          title: task_status_counts
+          description: Task status counts for this stage.
+      title: RolloutStageSummary
+      additionalProperties: false
+    bytebase.v1.Plan.Spec:
+      type: object
+      anyOf:
+      - type: object
+        properties:
+          changeDatabaseConfig:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.Plan.ChangeDatabaseConfig'
+            title: change_database_config
+        title: change_database_config
+      - type: object
+        properties:
+          createDatabaseConfig:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.Plan.CreateDatabaseConfig'
+            title: create_database_config
+        title: create_database_config
+      unevaluatedProperties: false
+      not:
+        allOf:
+        - anyOf:
+          - required:
+            - changeDatabaseConfig
+          - required:
+            - createDatabaseConfig
+        - not:
+            oneOf:
+            - required:
+              - changeDatabaseConfig
+            - required:
+              - createDatabaseConfig
+      properties:
+        id:
+          type: string
+          title: id
+          description: A UUID4 string that uniquely identifies the Spec.
+      title: Spec
+    bytebase.v1.StatementType:
+      type: string
+      title: StatementType
+      enum:
+      - STATEMENT_TYPE_UNSPECIFIED
+      - CREATE_DATABASE
+      - CREATE_TABLE
+      - CREATE_VIEW
+      - CREATE_INDEX
+      - CREATE_SEQUENCE
+      - CREATE_SCHEMA
+      - CREATE_FUNCTION
+      - CREATE_TRIGGER
+      - CREATE_PROCEDURE
+      - CREATE_EVENT
+      - CREATE_EXTENSION
+      - CREATE_TYPE
+      - DROP_DATABASE
+      - DROP_TABLE
+      - DROP_VIEW
+      - DROP_INDEX
+      - DROP_SEQUENCE
+      - DROP_SCHEMA
+      - DROP_FUNCTION
+      - DROP_TRIGGER
+      - DROP_PROCEDURE
+      - DROP_EVENT
+      - DROP_EXTENSION
+      - DROP_TYPE
+      - ALTER_DATABASE
+      - ALTER_TABLE
+      - ALTER_VIEW
+      - ALTER_SEQUENCE
+      - ALTER_EVENT
+      - ALTER_TYPE
+      - ALTER_INDEX
+      - TRUNCATE
+      - RENAME
+      - RENAME_INDEX
+      - RENAME_SCHEMA
+      - RENAME_SEQUENCE
+      - COMMENT
+      - INSERT
+      - UPDATE
+      - DELETE
+      - MERGE
+      description: StatementType represents the type of SQL statement.
+    bytebase.v1.Task.Status:
+      type: string
+      title: Status
+      enum:
+      - STATUS_UNSPECIFIED
+      - NOT_STARTED
+      - PENDING
+      - RUNNING
+      - DONE
+      - FAILED
+      - CANCELED
+      - SKIPPED
+    google.protobuf.Timestamp:
+      type: string
+      examples:
+      - '2023-01-15T01:30:15.01Z'
+      - '2024-12-25T12:00:00Z'
+      format: date-time
+      description: A point in time in RFC 3339 format, with up to nanosecond precision. Output uses UTC (`Z`); input may use an offset from UTC.
+    bytebase.v1.PlanCheckRun.Result.SqlSummaryReport:
+      type: object
+      properties:
+        statementTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.StatementType'
+          title: statement_types
+          description: statement_types are the types of statements that are found in the sql.
+        affectedRows:
+          type: string
+          title: affected_rows
+          format: int64
+      title: SqlSummaryReport
+      additionalProperties: false
+    bytebase.v1.PlanCheckRun.Result:
+      type: object
+      anyOf:
+      - type: object
+        properties:
+          sqlReviewReport:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.PlanCheckRun.Result.SqlReviewReport'
+            title: sql_review_report
+        title: sql_review_report
+      - type: object
+        properties:
+          sqlSummaryReport:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.PlanCheckRun.Result.SqlSummaryReport'
+            title: sql_summary_report
+        title: sql_summary_report
+      unevaluatedProperties: false
+      not:
+        allOf:
+        - anyOf:
+          - required:
+            - sqlReviewReport
+          - required:
+            - sqlSummaryReport
+        - not:
+            oneOf:
+            - required:
+              - sqlReviewReport
+            - required:
+              - sqlSummaryReport
+      properties:
+        status:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.Advice.Level'
+          title: status
+        title:
+          type: string
+          title: title
+        content:
+          type: string
+          title: content
+        code:
+          type: integer
+          title: code
+          format: int32
+        target:
+          type: string
+          title: target
+          description: "Target identification for consolidated results.\n Format: instances/{instance}/databases/{database} or projects/{project}/instances/{instance}/databases/{database}"
+        type:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.PlanCheckRun.Result.Type'
+          title: type
+      title: Result
+    bytebase.v1.PlanCheckRun.Result.SqlReviewReport:
+      type: object
+      properties:
+        startPosition:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.Position'
+          title: start_position
+          description: Position of the SQL statement.
+        endPosition:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.Position'
+          title: end_position
+      title: SqlReviewReport
+      additionalProperties: false
+    bytebase.v1.Plan.CreateDatabaseConfig:
+      type: object
+      properties:
+        target:
+          type: string
+          title: target
+          description: "The resource name of the instance on which the database is created.\n Format: instances/{instance} or projects/{project}/instances/{instance}"
+        database:
+          type: string
+          title: database
+          description: The name of the database to create.
+        table:
+          type: string
+          title: table
+          description: "(OPTIONAL) table is the name of the table, if it is not empty, Bytebase should create a table after creating the database.\n For example, in MongoDB, it only creates the database when we first store data in that database."
+        characterSet:
+          type: string
+          title: character_set
+          description: (OPTIONAL) character_set is the character set of the database.
+        collation:
+          type: string
+          title: collation
+          description: (OPTIONAL) collation is the collation of the database.
+        cluster:
+          type: string
+          title: cluster
+          description: (OPTIONAL) cluster is the cluster of the database. This is only applicable to ClickHouse for "ON CLUSTER <<cluster>>".
+        owner:
+          type: string
+          title: owner
+          description: (OPTIONAL) owner is the owner of the database. This is only applicable to Postgres for "WITH OWNER <<owner>>".
+        environment:
+          type: string
+          title: environment
+          description: "(OPTIONAL) The environment resource.\n Format: environments/prod where prod is the environment resource ID."
+      title: CreateDatabaseConfig
+      required:
+      - target
+      - database
+      additionalProperties: false
+    bytebase.v1.IssueStatus:
+      type: string
+      title: IssueStatus
+      enum:
+      - ISSUE_STATUS_UNSPECIFIED
+      - OPEN
+      - DONE
+      - CANCELED
+      description: "The status of an issue.\n Lives at the top level so both plan_service.proto and issue_service.proto\n can reference it without a circular import."
+    bytebase.v1.PlanCheckRun:
+      type: object
+      properties:
+        name:
+          type: string
+          title: name
+          description: 'Format: projects/{project}/plans/{plan}/planCheckRun'
+        status:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.PlanCheckRun.Status'
+          title: status
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.PlanCheckRun.Result'
+          title: results
+        error:
+          type: string
+          title: error
+          description: error is set if the Status is FAILED.
+        createTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: create_time
+          readOnly: true
+      title: PlanCheckRun
+      additionalProperties: false
+    bytebase.v1.ApprovalStatus:
+      type: string
+      title: ApprovalStatus
+      enum:
+      - APPROVAL_STATUS_UNSPECIFIED
+      - CHECKING
+      - PENDING
+      - APPROVED
+      - REJECTED
+      - SKIPPED
+      description: "Approval workflow status for an issue or a plan.\n Lives at the top level so both plan_service.proto and issue_service.proto\n can reference it without a circular import."
+    bytebase.v1.ListPlansResponse:
+      type: object
+      properties:
+        plans:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.Plan'
+          title: plans
+          description: The plans from the specified request.
+        nextPageToken:
+          type: string
+          title: next_page_token
+          description: "A token, which can be sent as `page_token` to retrieve the next page.\n If this field is omitted, there are no subsequent pages."
+      title: ListPlansResponse
+      additionalProperties: false
+    bytebase.v1.Position:
+      type: object
+      properties:
+        line:
+          type: integer
+          title: line
+          format: int32
+          description: "Line position in a text (one-based).\n First line of the text is line 1.\n A value of 0 indicates the line information is unknown."
+        column:
+          type: integer
+          title: column
+          format: int32
+          description: "Column position in a text (one-based).\n Column is measured in Unicode code points (characters/runes), not bytes or grapheme clusters.\n First character of the line is column 1.\n A value of 0 indicates the column information is unknown.\n\n Examples:\n - \"SELECT * FROM t\" - column 8 is '*'\n - \"SELECT 你好 FROM t\" - column 8 is '你' (even though it's at byte offset 7)\n - \"SELECT \U0001F600 FROM t\" - column 8 is '\U0001F600' (even though it's 4 bytes in UTF-8)"
+      title: Position
+      additionalProperties: false
+      description: "Position in a text expressed as one-based line and one-based column.\n We use 1-based numbering to match the majority of industry standards:\n - Monaco Editor uses 1-based (https://microsoft.github.io/monaco-editor/typedoc/interfaces/IPosition.html)\n - GitHub Actions uses 1-based (https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-error-message)\n - Most text editors display 1-based positions to users\n Note: LSP uses 0-based (https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#position),\n but we follow the canonical user-facing standards.\n\n Handling unknown positions:\n - If the entire position is unknown, leave this field as nil/undefined\n - If only line is known, set line and leave column as 0 (e.g., line=5, column=0)\n - If only column is known (rare), set column and leave line as 0\n Frontends should check for nil/undefined/zero values and handle them appropriately."
+    bytebase.v1.Advice.Level:
+      type: string
+      title: Level
+      enum:
+      - ADVICE_LEVEL_UNSPECIFIED
+      - SUCCESS
+      - WARNING
+      - ERROR
+      description: Level represents the severity level of the advice.
+    bytebase.v1.Plan:
+      type: object
+      properties:
+        name:
+          type: string
+          title: name
+          description: "The name of the plan.\n `plan` is a system generated ID.\n Format: projects/{project}/plans/{plan}"
+        state:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.State'
+          title: state
+          description: The state of the plan.
+        issue:
+          type: string
+          title: issue
+          description: "The issue associated with the plan.\n Can be empty.\n Format: projects/{project}/issues/{issue}"
+          readOnly: true
+        title:
+          type: string
+          title: title
+          maxLength: 200
+          description: The title of the plan.
+        description:
+          type: string
+          title: description
+          maxLength: 10000
+          description: The description of the plan.
+        specs:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.Plan.Spec'
+          title: specs
+          description: The deployment specs for the plan.
+        creator:
+          type: string
+          title: creator
+          description: 'Format: users/hello@world.com'
+          readOnly: true
+        createTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: create_time
+          readOnly: true
+        updateTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: update_time
+          readOnly: true
+        planCheckRunStatusCount:
+          type: object
+          title: plan_check_run_status_count
+          additionalProperties:
+            type: integer
+            title: value
+            format: int32
+          description: "The status count of the latest plan check runs.\n Keys are:\n - SUCCESS\n - WARNING\n - ERROR\n - RUNNING"
+          readOnly: true
+        hasRollout:
+          type: boolean
+          title: has_rollout
+          description: Whether the plan has started the rollout.
+          readOnly: true
+        approvalStatus:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.ApprovalStatus'
+          title: approval_status
+          description: "The approval status of the linked issue.\n Unspecified when no linked issue exists or the linked issue is a draft."
+          readOnly: true
+        rolloutStageSummaries:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.Plan.RolloutStageSummary'
+          title: rollout_stage_summaries
+          description: "Per-stage rollout status summary.\n Ordered by environment deployment order. Empty when no rollout exists."
+          readOnly: true
+        issueStatus:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.IssueStatus'
+          title: issue_status
+          description: "The lifecycle status of the linked issue.\n Unspecified when no linked issue exists."
+          readOnly: true
+        lastPlanEditor:
+          type: string
+          title: last_plan_editor
+          description: "The user who last created or updated the Plan specs.\n Format: users/hello@world.com. For legacy Plans without stored attribution,\n this falls back to the Plan creator."
+          readOnly: true
+      title: Plan
+      additionalProperties: false
+    bytebase.v1.PlanCheckRun.Result.Type:
+      type: string
+      title: Type
+      enum:
+      - TYPE_UNSPECIFIED
+      - STATEMENT_ADVISE
+      - STATEMENT_SUMMARY_REPORT
+      - GHOST_SYNC

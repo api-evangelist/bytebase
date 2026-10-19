@@ -1,0 +1,157 @@
+openapi: 3.2.0
+info:
+  title: Bytebase API Reference Instance Role Service API
+  description: API reference for Bytebase. Every endpoint is served by your own Bytebase instance.
+  version: 1.0.0
+security: []
+tags:
+- name: InstanceRoleService
+  description: InstanceRoleService manages database roles within instances.
+paths:
+  /v1/instances/{instance}/roles:
+    get:
+      tags:
+      - InstanceRoleService
+      summary: ListInstanceRoles
+      description: 'Lists all database roles in an instance.
+
+        Permissions required: bb.instanceRoles.list'
+      operationId: InstanceRoleService_ListInstanceRoles
+      parameters:
+      - name: instance
+        in: path
+        description: The instance id.
+        required: true
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: "Not used.\n The maximum number of roles to return. The service may return fewer than\n this value.\n If unspecified, at most 10 roles will be returned.\n The maximum value is 1000; values above 1000 will be coerced to 1000."
+        schema:
+          type: integer
+          title: page_size
+          format: int32
+      - name: pageToken
+        in: query
+        description: "Not used.\n A page token, received from a previous `ListInstanceRoles` call.\n Provide this to retrieve the subsequent page.\n\n When paginating, all other parameters provided to `ListInstanceRoles` must match\n the call that provided the page token."
+        schema:
+          type: string
+          title: page_token
+      - name: refresh
+        in: query
+        description: Refresh will refresh and return the latest data.
+        schema:
+          type: boolean
+          title: refresh
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ListInstanceRolesResponse'
+  /v1/projects/{project}/instances/{instance}/roles:
+    get:
+      tags:
+      - InstanceRoleService
+      summary: ListInstanceRoles
+      description: 'Lists all database roles in an instance.
+
+        Permissions required: bb.instanceRoles.list'
+      operationId: InstanceRoleService_ListInstanceRoles2
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: instance
+        in: path
+        description: The instance id.
+        required: true
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: "Not used.\n The maximum number of roles to return. The service may return fewer than\n this value.\n If unspecified, at most 10 roles will be returned.\n The maximum value is 1000; values above 1000 will be coerced to 1000."
+        schema:
+          type: integer
+          title: page_size
+          format: int32
+      - name: pageToken
+        in: query
+        description: "Not used.\n A page token, received from a previous `ListInstanceRoles` call.\n Provide this to retrieve the subsequent page.\n\n When paginating, all other parameters provided to `ListInstanceRoles` must match\n the call that provided the page token."
+        schema:
+          type: string
+          title: page_token
+      - name: refresh
+        in: query
+        description: Refresh will refresh and return the latest data.
+        schema:
+          type: boolean
+          title: refresh
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ListInstanceRolesResponse'
+components:
+  schemas:
+    bytebase.v1.ListInstanceRolesResponse:
+      type: object
+      properties:
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.InstanceRole'
+          title: roles
+          description: The roles from the specified request.
+        nextPageToken:
+          type: string
+          title: next_page_token
+          description: "A token, which can be sent as `page_token` to retrieve the next page.\n If this field is omitted, there are no subsequent pages."
+      title: ListInstanceRolesResponse
+      additionalProperties: false
+    bytebase.v1.InstanceRole:
+      type: object
+      properties:
+        name:
+          type: string
+          title: name
+          description: "The name of the role.\n Format: instances/{instance}/roles/{role} or projects/{project}/instances/{instance}/roles/{role}\n The role name is the unique name for the role."
+        roleName:
+          type: string
+          title: role_name
+          description: The role name. It's unique within the instance.
+        password:
+          type:
+          - string
+          - 'null'
+          title: password
+          description: The role password.
+          writeOnly: true
+        connectionLimit:
+          type:
+          - integer
+          - 'null'
+          title: connection_limit
+          format: int32
+          description: The connection count limit for this role.
+        validUntil:
+          type:
+          - string
+          - 'null'
+          title: valid_until
+          description: The expiration for the role's password.
+        attribute:
+          type:
+          - string
+          - 'null'
+          title: attribute
+          description: "The role attribute.\n For PostgreSQL, it contains super_user, no_inherit, create_role, create_db, can_login, replication, and bypass_rls. Docs: https://www.postgresql.org/docs/current/role-attributes.html\n For MySQL, it's the global privileges as GRANT statements, which means it only contains \"GRANT ... ON *.* TO ...\". Docs: https://dev.mysql.com/doc/refman/8.0/en/grant.html"
+      title: InstanceRole
+      additionalProperties: false
+      description: InstanceRole is the API message for instance role.

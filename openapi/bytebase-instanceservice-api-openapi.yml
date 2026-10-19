@@ -1,0 +1,1931 @@
+openapi: 3.2.0
+info:
+  title: Bytebase API Reference Instance Service API
+  description: API reference for Bytebase. Every endpoint is served by your own Bytebase instance.
+  version: 1.0.0
+security: []
+tags:
+- name: InstanceService
+  description: InstanceService manages database instances and their connections.
+paths:
+  /v1/instances:
+    get:
+      tags:
+      - InstanceService
+      summary: ListInstances
+      description: 'Lists database instances, optionally within a project.
+
+        Permissions required: bb.instances.list'
+      operationId: InstanceService_ListInstances
+      parameters:
+      - name: parent
+        in: query
+        description: "The parent, which owns this collection of instances.\n Format: projects/{project}. If omitted, only workspace instances are\n returned. Wildcard project parents are not supported. When set, the\n `project` filter must be omitted or match this parent."
+        schema:
+          type: string
+          title: parent
+      - name: pageSize
+        in: query
+        description: "The maximum number of instances to return. The service may return fewer than\n this value.\n If unspecified, at most 10 instances will be returned.\n The maximum value is 1000; values above 1000 will be coerced to 1000."
+        schema:
+          type: integer
+          title: page_size
+          format: int32
+      - name: pageToken
+        in: query
+        description: "A page token, received from a previous `ListInstances` call.\n Provide this to retrieve the subsequent page.\n\n When paginating, all other parameters provided to `ListInstances` must match\n the call that provided the page token."
+        schema:
+          type: string
+          title: page_token
+      - name: showDeleted
+        in: query
+        description: Show deleted instances if specified.
+        schema:
+          type: boolean
+          title: show_deleted
+      - name: filter
+        in: query
+        description: "Filter the instance.\n The syntax and semantics of CEL are documented at https://github.com/google/cel-spec\n\n Supported filters:\n - name: the instance name, support \"==\" and \".contains()\" operator.\n - resource_id: the instance id, support \"==\" and \".contains()\" operator.\n - environment: the environment full name in \"environments/{id}\" format, support \"==\" operator.\n - state: the instance state, check State enum for values, support \"==\" operator.\n - engine: the instance engine, check Engine enum for values. Support \"==\", \"in [xx]\", \"!(in [xx])\" operator.\n - host: the instance host, support \"==\" and \".contains()\" operator.\n - port: the instance port, support \"==\" and \".contains()\" operator.\n - project: the project full name in \"projects/{id}\" format, support \"==\" operator.\n - labels.{key}: the instance label, support \"==\" and \"in\" operators.\n\n For example:\n name == \"sample instance\"\n name.contains(\"sample\")\n resource_id == \"sample-instance\"\n resource_id.contains(\"sample\")\n state == \"DELETED\"\n environment == \"environments/test\"\n environment == \"\" (find instances which environment is not set)\n engine == \"MYSQL\"\n engine in [\"MYSQL\", \"POSTGRES\"]\n !(engine in [\"MYSQL\", \"POSTGRES\"])\n host == \"127.0.0.1\"\n host.contains(\"127.0\")\n port == \"54321\"\n port.contains(\"543\")\n labels.org_group == \"infrastructure\"\n labels.environment in [\"prod\", \"production\"]\n project == \"projects/sample-project\"\n You can combine filter conditions like:\n name.contains(\"sample\") && environment == \"environments/test\"\n host == \"127.0.0.1\" && port == \"54321\""
+        schema:
+          type: string
+          title: filter
+      - name: orderBy
+        in: query
+        description: "The order by of instances.\n Support title, environment. The default sorting order is ascending.\n For example:\n - order_by = \"title\"\n - order_by = \"title desc\"\n - order_by = \"title desc, environment asc\""
+        schema:
+          type: string
+          title: order_by
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ListInstancesResponse'
+    post:
+      tags:
+      - InstanceService
+      summary: CreateInstance
+      description: 'Creates a new database instance.
+
+        Permissions required: bb.instances.create'
+      operationId: InstanceService_CreateInstance
+      parameters:
+      - name: parent
+        in: query
+        description: "The parent, which owns this collection of instances.\n Format: projects/{project}. If omitted, the instance is created in the\n workspace collection."
+        schema:
+          type: string
+          title: parent
+      - name: instanceId
+        in: query
+        description: "The ID to use for the instance, which will become the final component of\n the instance's resource name.\n\n This value should be 4-63 characters, and valid characters\n are /[a-z][0-9]-/."
+        schema:
+          type: string
+          title: instance_id
+      - name: validateOnly
+        in: query
+        description: Validate only also tests the data source connection.
+        schema:
+          type: boolean
+          title: validate_only
+      requestBody:
+        description: The instance to create.
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.Instance'
+              title: instance
+              description: The instance to create.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Instance'
+  /v1/instances/{instance}:
+    get:
+      tags:
+      - InstanceService
+      summary: GetInstance
+      description: 'Gets a database instance by name.
+
+        Permissions required: bb.instances.get'
+      operationId: InstanceService_GetInstance
+      parameters:
+      - name: instance
+        in: path
+        description: The instance id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Instance'
+    delete:
+      tags:
+      - InstanceService
+      summary: DeleteInstance
+      description: 'Deletes or soft-deletes a database instance.
+
+        Soft-delete requests fail with FAILED_PRECONDITION while any task run
+
+        targeting the instance is pending, available, or running.
+
+        Permissions required: bb.instances.delete'
+      operationId: InstanceService_DeleteInstance
+      parameters:
+      - name: instance
+        in: path
+        description: The instance id.
+        required: true
+        schema:
+          type: string
+      - name: force
+        in: query
+        description: "If set to true, a workspace instance's databases are moved to the default\n project before the instance is soft-deleted. Project instances reject this\n option because their databases must remain in the owning project."
+        schema:
+          type: boolean
+          title: force
+      - name: purge
+        in: query
+        description: "If set to true, permanently purge the soft-deleted instance and all related resources.\n This operation is irreversible. Following AIP-165, this should only be used for\n administrative cleanup of old soft-deleted instances.\n The instance must already be soft-deleted for this to work."
+        schema:
+          type: boolean
+          title: purge
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/google.protobuf.Empty'
+    patch:
+      tags:
+      - InstanceService
+      summary: UpdateInstance
+      description: 'Updates a database instance.
+
+        Permissions required: bb.instances.update'
+      operationId: InstanceService_UpdateInstance
+      parameters:
+      - name: instance
+        in: path
+        description: The instance id.
+        required: true
+        schema:
+          type: string
+      - name: updateMask
+        in: query
+        description: The list of fields to update.
+        schema:
+          type: string
+      - name: allowMissing
+        in: query
+        description: "If set to true, and the instance is not found, a new instance will be created.\n In this situation, `update_mask` is ignored. A project-nested name creates\n the instance only under its encoded active, non-default project; it never\n falls back to a workspace instance."
+        schema:
+          type: boolean
+          title: allow_missing
+      requestBody:
+        description: "The instance to update.\n\n The instance's `name` field is used to identify the instance to update.\n Format: instances/{instance} or projects/{project}/instances/{instance}"
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.Instance'
+              title: instance
+              description: "The instance to update.\n\n The instance's `name` field is used to identify the instance to update.\n Format: instances/{instance} or projects/{project}/instances/{instance}"
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Instance'
+  /v1/instances/{instance}:addDataSource:
+    post:
+      tags:
+      - InstanceService
+      summary: AddDataSource
+      description: 'Adds a read-only data source to an instance.
+
+        Permissions required: bb.instances.update'
+      operationId: InstanceService_AddDataSource
+      parameters:
+      - name: instance
+        in: path
+        description: The instance id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                dataSource:
+                  allOf:
+                  - $ref: '#/components/schemas/bytebase.v1.DataSource'
+                  title: data_source
+                  description: "Identified by data source ID.\n Only READ_ONLY data source can be added."
+                validateOnly:
+                  type: boolean
+                  title: validate_only
+                  description: Validate only also tests the data source connection.
+              title: AddDataSourceRequest
+              required:
+              - dataSource
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Instance'
+  /v1/instances/{instance}:databases:
+    post:
+      tags:
+      - InstanceService
+      summary: ListInstanceDatabase
+      description: 'Lists all databases within an instance without creating them.
+
+        Permissions required: bb.instances.get'
+      operationId: InstanceService_ListInstanceDatabase
+      parameters:
+      - name: instance
+        in: path
+        description: The instance id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                instance:
+                  oneOf:
+                  - $ref: '#/components/schemas/bytebase.v1.Instance'
+                  - type: 'null'
+                  title: instance
+                  description: The target instance. We need to set this field if the target instance is not created yet.
+              title: ListInstanceDatabaseRequest
+              required:
+              - instance
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ListInstanceDatabaseResponse'
+  /v1/instances/{instance}:removeDataSource:
+    post:
+      tags:
+      - InstanceService
+      summary: RemoveDataSource
+      description: 'Removes a read-only data source from an instance.
+
+        Permissions required: bb.instances.update'
+      operationId: InstanceService_RemoveDataSource
+      parameters:
+      - name: instance
+        in: path
+        description: The instance id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                dataSource:
+                  allOf:
+                  - $ref: '#/components/schemas/bytebase.v1.DataSource'
+                  title: data_source
+                  description: "Identified by data source ID.\n Only READ_ONLY data source can be removed."
+              title: RemoveDataSourceRequest
+              required:
+              - dataSource
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Instance'
+  /v1/instances/{instance}:sync:
+    post:
+      tags:
+      - InstanceService
+      summary: SyncInstance
+      description: 'Syncs database schemas and metadata from an instance.
+
+        Permissions required: bb.instances.sync'
+      operationId: InstanceService_SyncInstance
+      parameters:
+      - name: instance
+        in: path
+        description: The instance id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                enableFullSync:
+                  type: boolean
+                  title: enable_full_sync
+                  description: "When full sync is enabled, all databases in the instance will be synchronized. Otherwise, only\n the instance metadata (such as the database list) and any newly discovered databases will be synced."
+              title: SyncInstanceRequest
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.SyncInstanceResponse'
+  /v1/instances/{instance}:undelete:
+    post:
+      tags:
+      - InstanceService
+      summary: UndeleteInstance
+      description: 'Restores a soft-deleted database instance.
+
+        Restore requests fail with FAILED_PRECONDITION while any task run targeting
+
+        the instance is pending, available, or running.
+
+        Permissions required: bb.instances.undelete'
+      operationId: InstanceService_UndeleteInstance
+      parameters:
+      - name: instance
+        in: path
+        description: The instance id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Instance'
+  /v1/instances/{instance}:updateDataSource:
+    patch:
+      tags:
+      - InstanceService
+      summary: UpdateDataSource
+      description: 'Updates a data source configuration.
+
+        Permissions required: bb.instances.update'
+      operationId: InstanceService_UpdateDataSource
+      parameters:
+      - name: instance
+        in: path
+        description: The instance id.
+        required: true
+        schema:
+          type: string
+      - name: updateMask
+        in: query
+        description: The list of fields to update.
+        schema:
+          type: string
+      - name: validateOnly
+        in: query
+        description: Validate only also tests the data source connection.
+        schema:
+          type: boolean
+          title: validate_only
+      - name: allowMissing
+        in: query
+        description: "If set to true, and the data source is not found, a new data source will be created.\n In this situation, `update_mask` is ignored."
+        schema:
+          type: boolean
+          title: allow_missing
+      requestBody:
+        description: Identified by data source ID.
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.DataSource'
+              title: data_source
+              description: Identified by data source ID.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Instance'
+  /v1/instances:batchSync:
+    post:
+      tags:
+      - InstanceService
+      summary: BatchSyncInstances
+      description: 'Syncs multiple instances in a single request.
+
+        Permissions required: bb.instances.sync'
+      operationId: InstanceService_BatchSyncInstances
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/bytebase.v1.BatchSyncInstancesRequest'
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.BatchSyncInstancesResponse'
+  /v1/instances:batchUpdate:
+    post:
+      tags:
+      - InstanceService
+      summary: BatchUpdateInstances
+      description: 'Updates multiple instances in a single request.
+
+        Permissions required: bb.instances.update'
+      operationId: InstanceService_BatchUpdateInstances
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/bytebase.v1.BatchUpdateInstancesRequest'
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.BatchUpdateInstancesResponse'
+  /v1/projects/{project}/instances:
+    get:
+      tags:
+      - InstanceService
+      summary: ListInstances
+      description: 'Lists database instances, optionally within a project.
+
+        Permissions required: bb.instances.list'
+      operationId: InstanceService_ListInstances2
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: "The maximum number of instances to return. The service may return fewer than\n this value.\n If unspecified, at most 10 instances will be returned.\n The maximum value is 1000; values above 1000 will be coerced to 1000."
+        schema:
+          type: integer
+          title: page_size
+          format: int32
+      - name: pageToken
+        in: query
+        description: "A page token, received from a previous `ListInstances` call.\n Provide this to retrieve the subsequent page.\n\n When paginating, all other parameters provided to `ListInstances` must match\n the call that provided the page token."
+        schema:
+          type: string
+          title: page_token
+      - name: showDeleted
+        in: query
+        description: Show deleted instances if specified.
+        schema:
+          type: boolean
+          title: show_deleted
+      - name: filter
+        in: query
+        description: "Filter the instance.\n The syntax and semantics of CEL are documented at https://github.com/google/cel-spec\n\n Supported filters:\n - name: the instance name, support \"==\" and \".contains()\" operator.\n - resource_id: the instance id, support \"==\" and \".contains()\" operator.\n - environment: the environment full name in \"environments/{id}\" format, support \"==\" operator.\n - state: the instance state, check State enum for values, support \"==\" operator.\n - engine: the instance engine, check Engine enum for values. Support \"==\", \"in [xx]\", \"!(in [xx])\" operator.\n - host: the instance host, support \"==\" and \".contains()\" operator.\n - port: the instance port, support \"==\" and \".contains()\" operator.\n - project: the project full name in \"projects/{id}\" format, support \"==\" operator.\n - labels.{key}: the instance label, support \"==\" and \"in\" operators.\n\n For example:\n name == \"sample instance\"\n name.contains(\"sample\")\n resource_id == \"sample-instance\"\n resource_id.contains(\"sample\")\n state == \"DELETED\"\n environment == \"environments/test\"\n environment == \"\" (find instances which environment is not set)\n engine == \"MYSQL\"\n engine in [\"MYSQL\", \"POSTGRES\"]\n !(engine in [\"MYSQL\", \"POSTGRES\"])\n host == \"127.0.0.1\"\n host.contains(\"127.0\")\n port == \"54321\"\n port.contains(\"543\")\n labels.org_group == \"infrastructure\"\n labels.environment in [\"prod\", \"production\"]\n project == \"projects/sample-project\"\n You can combine filter conditions like:\n name.contains(\"sample\") && environment == \"environments/test\"\n host == \"127.0.0.1\" && port == \"54321\""
+        schema:
+          type: string
+          title: filter
+      - name: orderBy
+        in: query
+        description: "The order by of instances.\n Support title, environment. The default sorting order is ascending.\n For example:\n - order_by = \"title\"\n - order_by = \"title desc\"\n - order_by = \"title desc, environment asc\""
+        schema:
+          type: string
+          title: order_by
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ListInstancesResponse'
+    post:
+      tags:
+      - InstanceService
+      summary: CreateInstance
+      description: 'Creates a new database instance.
+
+        Permissions required: bb.instances.create'
+      operationId: InstanceService_CreateInstance2
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: instanceId
+        in: query
+        description: "The ID to use for the instance, which will become the final component of\n the instance's resource name.\n\n This value should be 4-63 characters, and valid characters\n are /[a-z][0-9]-/."
+        schema:
+          type: string
+          title: instance_id
+      - name: validateOnly
+        in: query
+        description: Validate only also tests the data source connection.
+        schema:
+          type: boolean
+          title: validate_only
+      requestBody:
+        description: The instance to create.
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.Instance'
+              title: instance
+              description: The instance to create.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Instance'
+  /v1/projects/{project}/instances/{instance}:
+    get:
+      tags:
+      - InstanceService
+      summary: GetInstance
+      description: 'Gets a database instance by name.
+
+        Permissions required: bb.instances.get'
+      operationId: InstanceService_GetInstance2
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: instance
+        in: path
+        description: The instance id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Instance'
+    delete:
+      tags:
+      - InstanceService
+      summary: DeleteInstance
+      description: 'Deletes or soft-deletes a database instance.
+
+        Soft-delete requests fail with FAILED_PRECONDITION while any task run
+
+        targeting the instance is pending, available, or running.
+
+        Permissions required: bb.instances.delete'
+      operationId: InstanceService_DeleteInstance2
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: instance
+        in: path
+        description: The instance id.
+        required: true
+        schema:
+          type: string
+      - name: force
+        in: query
+        description: "If set to true, a workspace instance's databases are moved to the default\n project before the instance is soft-deleted. Project instances reject this\n option because their databases must remain in the owning project."
+        schema:
+          type: boolean
+          title: force
+      - name: purge
+        in: query
+        description: "If set to true, permanently purge the soft-deleted instance and all related resources.\n This operation is irreversible. Following AIP-165, this should only be used for\n administrative cleanup of old soft-deleted instances.\n The instance must already be soft-deleted for this to work."
+        schema:
+          type: boolean
+          title: purge
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/google.protobuf.Empty'
+    patch:
+      tags:
+      - InstanceService
+      summary: UpdateInstance
+      description: 'Updates a database instance.
+
+        Permissions required: bb.instances.update'
+      operationId: InstanceService_UpdateInstance2
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: instance
+        in: path
+        description: The instance id.
+        required: true
+        schema:
+          type: string
+      - name: updateMask
+        in: query
+        description: The list of fields to update.
+        schema:
+          type: string
+      - name: allowMissing
+        in: query
+        description: "If set to true, and the instance is not found, a new instance will be created.\n In this situation, `update_mask` is ignored. A project-nested name creates\n the instance only under its encoded active, non-default project; it never\n falls back to a workspace instance."
+        schema:
+          type: boolean
+          title: allow_missing
+      requestBody:
+        description: "The instance to update.\n\n The instance's `name` field is used to identify the instance to update.\n Format: instances/{instance} or projects/{project}/instances/{instance}"
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.Instance'
+              title: instance
+              description: "The instance to update.\n\n The instance's `name` field is used to identify the instance to update.\n Format: instances/{instance} or projects/{project}/instances/{instance}"
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Instance'
+  /v1/projects/{project}/instances/{instance}:addDataSource:
+    post:
+      tags:
+      - InstanceService
+      summary: AddDataSource
+      description: 'Adds a read-only data source to an instance.
+
+        Permissions required: bb.instances.update'
+      operationId: InstanceService_AddDataSource2
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: instance
+        in: path
+        description: The instance id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                dataSource:
+                  allOf:
+                  - $ref: '#/components/schemas/bytebase.v1.DataSource'
+                  title: data_source
+                  description: "Identified by data source ID.\n Only READ_ONLY data source can be added."
+                validateOnly:
+                  type: boolean
+                  title: validate_only
+                  description: Validate only also tests the data source connection.
+              title: AddDataSourceRequest
+              required:
+              - dataSource
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Instance'
+  /v1/projects/{project}/instances/{instance}:databases:
+    post:
+      tags:
+      - InstanceService
+      summary: ListInstanceDatabase
+      description: 'Lists all databases within an instance without creating them.
+
+        Permissions required: bb.instances.get'
+      operationId: InstanceService_ListInstanceDatabase2
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: instance
+        in: path
+        description: The instance id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                instance:
+                  oneOf:
+                  - $ref: '#/components/schemas/bytebase.v1.Instance'
+                  - type: 'null'
+                  title: instance
+                  description: The target instance. We need to set this field if the target instance is not created yet.
+              title: ListInstanceDatabaseRequest
+              required:
+              - instance
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ListInstanceDatabaseResponse'
+  /v1/projects/{project}/instances/{instance}:removeDataSource:
+    post:
+      tags:
+      - InstanceService
+      summary: RemoveDataSource
+      description: 'Removes a read-only data source from an instance.
+
+        Permissions required: bb.instances.update'
+      operationId: InstanceService_RemoveDataSource2
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: instance
+        in: path
+        description: The instance id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                dataSource:
+                  allOf:
+                  - $ref: '#/components/schemas/bytebase.v1.DataSource'
+                  title: data_source
+                  description: "Identified by data source ID.\n Only READ_ONLY data source can be removed."
+              title: RemoveDataSourceRequest
+              required:
+              - dataSource
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Instance'
+  /v1/projects/{project}/instances/{instance}:sync:
+    post:
+      tags:
+      - InstanceService
+      summary: SyncInstance
+      description: 'Syncs database schemas and metadata from an instance.
+
+        Permissions required: bb.instances.sync'
+      operationId: InstanceService_SyncInstance2
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: instance
+        in: path
+        description: The instance id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                enableFullSync:
+                  type: boolean
+                  title: enable_full_sync
+                  description: "When full sync is enabled, all databases in the instance will be synchronized. Otherwise, only\n the instance metadata (such as the database list) and any newly discovered databases will be synced."
+              title: SyncInstanceRequest
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.SyncInstanceResponse'
+  /v1/projects/{project}/instances/{instance}:undelete:
+    post:
+      tags:
+      - InstanceService
+      summary: UndeleteInstance
+      description: 'Restores a soft-deleted database instance.
+
+        Restore requests fail with FAILED_PRECONDITION while any task run targeting
+
+        the instance is pending, available, or running.
+
+        Permissions required: bb.instances.undelete'
+      operationId: InstanceService_UndeleteInstance2
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: instance
+        in: path
+        description: The instance id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Instance'
+  /v1/projects/{project}/instances/{instance}:updateDataSource:
+    patch:
+      tags:
+      - InstanceService
+      summary: UpdateDataSource
+      description: 'Updates a data source configuration.
+
+        Permissions required: bb.instances.update'
+      operationId: InstanceService_UpdateDataSource2
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: instance
+        in: path
+        description: The instance id.
+        required: true
+        schema:
+          type: string
+      - name: updateMask
+        in: query
+        description: The list of fields to update.
+        schema:
+          type: string
+      - name: validateOnly
+        in: query
+        description: Validate only also tests the data source connection.
+        schema:
+          type: boolean
+          title: validate_only
+      - name: allowMissing
+        in: query
+        description: "If set to true, and the data source is not found, a new data source will be created.\n In this situation, `update_mask` is ignored."
+        schema:
+          type: boolean
+          title: allow_missing
+      requestBody:
+        description: Identified by data source ID.
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.DataSource'
+              title: data_source
+              description: Identified by data source ID.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Instance'
+  /v1/projects/{project}/instances:batchSync:
+    post:
+      tags:
+      - InstanceService
+      summary: BatchSyncInstances
+      description: 'Syncs multiple instances in a single request.
+
+        Permissions required: bb.instances.sync'
+      operationId: InstanceService_BatchSyncInstances2
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                requests:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/bytebase.v1.SyncInstanceRequest'
+                  title: requests
+                  description: "The request message specifying the instances to sync.\n A maximum of 1000 instances can be synced in a batch."
+              title: BatchSyncInstancesRequest
+              required:
+              - requests
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.BatchSyncInstancesResponse'
+  /v1/projects/{project}/instances:batchUpdate:
+    post:
+      tags:
+      - InstanceService
+      summary: BatchUpdateInstances
+      description: 'Updates multiple instances in a single request.
+
+        Permissions required: bb.instances.update'
+      operationId: InstanceService_BatchUpdateInstances2
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                requests:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/bytebase.v1.UpdateInstanceRequest'
+                  title: requests
+                  description: The request message specifying the resources to update.
+              title: BatchUpdateInstancesRequest
+              required:
+              - requests
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.BatchUpdateInstancesResponse'
+  /v1/projects/{project}/instances:prepareSampleProjectInstance:
+    post:
+      tags:
+      - InstanceService
+      summary: PrepareSampleProjectInstance
+      description: 'Prepares a Sample Project Instance for a project.
+
+        Permissions required: bb.instances.create'
+      operationId: InstanceService_PrepareSampleProjectInstance
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Instance'
+components:
+  schemas:
+    bytebase.v1.DataSource.GCPCredential:
+      type: object
+      properties:
+        content:
+          type: string
+          title: content
+          writeOnly: true
+      title: GCPCredential
+      additionalProperties: false
+    bytebase.v1.SyncInstanceResponse:
+      type: object
+      properties:
+        databases:
+          type: array
+          items:
+            type: string
+          title: databases
+          description: All database name list in the instance.
+      title: SyncInstanceResponse
+      additionalProperties: false
+    bytebase.v1.DataSourceExternalSecret.TokenType:
+      type: string
+      title: TokenType
+      enum:
+      - TOKEN_TYPE_UNSPECIFIED
+      - PLAIN
+      - ENVIRONMENT
+      - FILE
+    bytebase.v1.State:
+      type: string
+      title: State
+      enum:
+      - STATE_UNSPECIFIED
+      - ACTIVE
+      - DELETED
+      description: Resource lifecycle state.
+    bytebase.v1.BatchUpdateInstancesResponse:
+      type: object
+      properties:
+        instances:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.Instance'
+          title: instances
+      title: BatchUpdateInstancesResponse
+      additionalProperties: false
+    bytebase.v1.DataSource.Address:
+      type: object
+      properties:
+        host:
+          type: string
+          title: host
+        port:
+          type: string
+          title: port
+      title: Address
+      additionalProperties: false
+    google.protobuf.Empty:
+      type: object
+      description: An empty JSON object.
+    bytebase.v1.ListInstanceDatabaseResponse:
+      type: object
+      properties:
+        databases:
+          type: array
+          items:
+            type: string
+          title: databases
+          description: All database name list in the instance.
+      title: ListInstanceDatabaseResponse
+      additionalProperties: false
+    bytebase.v1.SyncInstanceRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          title: name
+          description: "The name of instance.\n Format: instances/{instance} or projects/{project}/instances/{instance}"
+        enableFullSync:
+          type: boolean
+          title: enable_full_sync
+          description: "When full sync is enabled, all databases in the instance will be synchronized. Otherwise, only\n the instance metadata (such as the database list) and any newly discovered databases will be synced."
+      title: SyncInstanceRequest
+      required:
+      - name
+      additionalProperties: false
+    google.protobuf.FieldMask:
+      type: string
+      description: Comma-separated field paths in lowerCamelCase (for example, `user.displayName,photo`).
+    bytebase.v1.DataSourceExternalSecret.AppRoleAuthOption:
+      type: object
+      properties:
+        roleId:
+          type: string
+          title: role_id
+          description: The role ID for Vault AppRole authentication.
+          writeOnly: true
+        secretId:
+          type: string
+          title: secret_id
+          description: the secret id for the role without ttl.
+          writeOnly: true
+        type:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.DataSourceExternalSecret.AppRoleAuthOption.SecretType'
+          title: type
+          description: The type of secret for AppRole authentication.
+        mountPath:
+          type: string
+          title: mount_path
+          description: The path where the approle auth method is mounted.
+      title: AppRoleAuthOption
+      additionalProperties: false
+    bytebase.v1.Instance:
+      type: object
+      properties:
+        name:
+          type: string
+          title: name
+          description: "The name of the instance.\n Format: instances/{instance} or projects/{project}/instances/{instance}"
+        state:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.State'
+          title: state
+          description: The lifecycle state of the instance.
+        title:
+          type: string
+          title: title
+          maxLength: 200
+          description: The display title of the instance.
+        engine:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.Engine'
+          title: engine
+          description: The database engine type.
+        engineVersion:
+          type: string
+          title: engine_version
+          description: The version of the database engine.
+          readOnly: true
+        externalLink:
+          type: string
+          title: external_link
+          description: External URL to the database instance console.
+        dataSources:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.DataSource'
+          title: data_sources
+          description: Data source configurations for connecting to the instance.
+        environment:
+          type:
+          - string
+          - 'null'
+          title: environment
+          description: "(OPTIONAL) The environment resource.\n Format: environments/prod where prod is the environment resource ID."
+        activation:
+          type: boolean
+          title: activation
+          description: Whether the instance is activated for use.
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.InstanceRole'
+          title: roles
+          description: Database roles available in this instance.
+          readOnly: true
+        syncInterval:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Duration'
+          title: sync_interval
+          description: How often the instance is synced.
+        syncDatabases:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.SyncDatabases'
+          title: sync_databases
+          description: "Enable sync for following databases.\n Not set means sync all schemas & databases."
+        lastSyncTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: last_sync_time
+          description: The last time the instance was synced.
+          readOnly: true
+        labels:
+          type: object
+          title: labels
+          additionalProperties:
+            type: string
+            title: value
+          description: "Labels are key-value pairs that can be attached to the instance.\n For example, { \"org_group\": \"infrastructure\", \"environment\": \"production\" }"
+      title: Instance
+      additionalProperties: false
+    bytebase.v1.DataSource.AzureCredential:
+      type: object
+      properties:
+        tenantId:
+          type: string
+          title: tenant_id
+        clientId:
+          type: string
+          title: client_id
+        clientSecret:
+          type: string
+          title: client_secret
+          writeOnly: true
+      title: AzureCredential
+      additionalProperties: false
+    bytebase.v1.BatchSyncInstancesRequest:
+      type: object
+      properties:
+        parent:
+          type:
+          - string
+          - 'null'
+          title: parent
+          description: "The parent, which owns this collection of instances.\n Format: projects/{project}. If omitted, all targets must be workspace\n instances; otherwise, every target must belong to this project collection."
+        requests:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.SyncInstanceRequest'
+          title: requests
+          description: "The request message specifying the instances to sync.\n A maximum of 1000 instances can be synced in a batch."
+      title: BatchSyncInstancesRequest
+      required:
+      - requests
+      additionalProperties: false
+    bytebase.v1.DataSourceType:
+      type: string
+      title: DataSourceType
+      enum:
+      - DATA_SOURCE_UNSPECIFIED
+      - ADMIN
+      - READ_ONLY
+    bytebase.v1.DataSourceExternalSecret:
+      type: object
+      anyOf:
+      - type: object
+        properties:
+          appRole:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.DataSourceExternalSecret.AppRoleAuthOption'
+            title: app_role
+            description: AppRole authentication configuration.
+        title: app_role
+      - type: object
+        properties:
+          token:
+            type: string
+            title: token
+            description: "Token for direct authentication. Interpreted according to token_type:\n the literal token (PLAIN), an environment variable name (ENVIRONMENT),\n or a file path (FILE)."
+            writeOnly: true
+        title: token
+      unevaluatedProperties: false
+      not:
+        allOf:
+        - anyOf:
+          - required:
+            - appRole
+          - required:
+            - token
+        - not:
+            oneOf:
+            - required:
+              - appRole
+            - required:
+              - token
+      properties:
+        secretType:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.DataSourceExternalSecret.SecretType'
+          title: secret_type
+          description: The type of external secret store.
+        url:
+          type: string
+          title: url
+          description: The URL of the external secret store.
+        authType:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.DataSourceExternalSecret.AuthType'
+          title: auth_type
+          description: The authentication method for accessing the secret store.
+        tokenType:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.DataSourceExternalSecret.TokenType'
+          title: token_type
+          description: How to interpret the token field when auth_type is TOKEN.
+        engineName:
+          type: string
+          title: engine_name
+          description: engine name is the name for secret engine.
+        secretName:
+          type: string
+          title: secret_name
+          description: the secret name in the engine to store the password.
+        passwordKeyName:
+          type: string
+          title: password_key_name
+          description: the key name for the password.
+        skipVaultTlsVerification:
+          type: boolean
+          title: skip_vault_tls_verification
+          description: "TLS configuration for connecting to Vault server.\n These fields are separate from the database TLS configuration in DataSource.\n skip_vault_tls_verification disables TLS certificate verification for Vault connections.\n Default is false (verification enabled) for security.\n Only set to true for development or when certificates cannot be properly validated."
+        vaultSslCa:
+          type: string
+          title: vault_ssl_ca
+          description: CA certificate for Vault server verification.
+          writeOnly: true
+        vaultSslCert:
+          type: string
+          title: vault_ssl_cert
+          description: Client certificate for mutual TLS authentication with Vault.
+          writeOnly: true
+        vaultSslKey:
+          type: string
+          title: vault_ssl_key
+          description: Client private key for mutual TLS authentication with Vault.
+          writeOnly: true
+      title: DataSourceExternalSecret
+    bytebase.v1.ListInstancesResponse:
+      type: object
+      properties:
+        instances:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.Instance'
+          title: instances
+          description: The instances from the specified request.
+        nextPageToken:
+          type: string
+          title: next_page_token
+          description: "A token, which can be sent as `page_token` to retrieve the next page.\n If this field is omitted, there are no subsequent pages."
+      title: ListInstancesResponse
+      additionalProperties: false
+    bytebase.v1.UpdateInstanceRequest:
+      type: object
+      properties:
+        instance:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.Instance'
+          title: instance
+          description: "The instance to update.\n\n The instance's `name` field is used to identify the instance to update.\n Format: instances/{instance} or projects/{project}/instances/{instance}"
+        updateMask:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.FieldMask'
+          title: update_mask
+          description: The list of fields to update.
+        allowMissing:
+          type: boolean
+          title: allow_missing
+          description: "If set to true, and the instance is not found, a new instance will be created.\n In this situation, `update_mask` is ignored. A project-nested name creates\n the instance only under its encoded active, non-default project; it never\n falls back to a workspace instance."
+      title: UpdateInstanceRequest
+      required:
+      - instance
+      additionalProperties: false
+    bytebase.v1.SASLConfig:
+      type: object
+      anyOf:
+      - type: object
+        properties:
+          krbConfig:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.KerberosConfig'
+            title: krb_config
+            description: Kerberos authentication configuration.
+        title: krb_config
+      unevaluatedProperties: false
+      title: SASLConfig
+    bytebase.v1.BatchUpdateInstancesRequest:
+      type: object
+      properties:
+        parent:
+          type:
+          - string
+          - 'null'
+          title: parent
+          description: "The parent, which owns this collection of instances.\n Format: projects/{project}. If omitted, all targets must be workspace\n instances; otherwise, every target must belong to this project collection."
+        requests:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.UpdateInstanceRequest'
+          title: requests
+          description: The request message specifying the resources to update.
+      title: BatchUpdateInstancesRequest
+      required:
+      - requests
+      additionalProperties: false
+    google.protobuf.Timestamp:
+      type: string
+      examples:
+      - '2023-01-15T01:30:15.01Z'
+      - '2024-12-25T12:00:00Z'
+      format: date-time
+      description: A point in time in RFC 3339 format, with up to nanosecond precision. Output uses UTC (`Z`); input may use an offset from UTC.
+    bytebase.v1.KerberosConfig:
+      type: object
+      properties:
+        primary:
+          type: string
+          title: primary
+          description: The primary component of the Kerberos principal.
+        instance:
+          type: string
+          title: instance
+          description: The instance component of the Kerberos principal.
+        realm:
+          type: string
+          title: realm
+          description: The Kerberos realm.
+        keytab:
+          type: string
+          title: keytab
+          format: byte
+          description: The keytab file contents for authentication.
+          writeOnly: true
+        kdcHost:
+          type: string
+          title: kdc_host
+          description: The hostname of the Key Distribution Center (KDC).
+        kdcPort:
+          type: string
+          title: kdc_port
+          description: The port of the Key Distribution Center (KDC).
+        kdcTransportProtocol:
+          type: string
+          title: kdc_transport_protocol
+          description: The transport protocol for KDC communication (tcp or udp).
+      title: KerberosConfig
+      additionalProperties: false
+    bytebase.v1.InstanceRole:
+      type: object
+      properties:
+        name:
+          type: string
+          title: name
+          description: "The name of the role.\n Format: instances/{instance}/roles/{role} or projects/{project}/instances/{instance}/roles/{role}\n The role name is the unique name for the role."
+        roleName:
+          type: string
+          title: role_name
+          description: The role name. It's unique within the instance.
+        password:
+          type:
+          - string
+          - 'null'
+          title: password
+          description: The role password.
+          writeOnly: true
+        connectionLimit:
+          type:
+          - integer
+          - 'null'
+          title: connection_limit
+          format: int32
+          description: The connection count limit for this role.
+        validUntil:
+          type:
+          - string
+          - 'null'
+          title: valid_until
+          description: The expiration for the role's password.
+        attribute:
+          type:
+          - string
+          - 'null'
+          title: attribute
+          description: "The role attribute.\n For PostgreSQL, it contains super_user, no_inherit, create_role, create_db, can_login, replication, and bypass_rls. Docs: https://www.postgresql.org/docs/current/role-attributes.html\n For MySQL, it's the global privileges as GRANT statements, which means it only contains \"GRANT ... ON *.* TO ...\". Docs: https://dev.mysql.com/doc/refman/8.0/en/grant.html"
+      title: InstanceRole
+      additionalProperties: false
+      description: InstanceRole is the API message for instance role.
+    bytebase.v1.SyncDatabases:
+      type: object
+      properties:
+        databases:
+          type: array
+          items:
+            type: string
+          title: databases
+      title: SyncDatabases
+      additionalProperties: false
+    bytebase.v1.DataSourceExternalSecret.SecretType:
+      type: string
+      title: SecretType
+      enum:
+      - SECRET_TYPE_UNSPECIFIED
+      - VAULT_KV_V2
+      - AWS_SECRETS_MANAGER
+      - GCP_SECRET_MANAGER
+      - AZURE_KEY_VAULT
+    bytebase.v1.Engine:
+      type: string
+      title: Engine
+      enum:
+      - ENGINE_UNSPECIFIED
+      - CLICKHOUSE
+      - MYSQL
+      - POSTGRES
+      - SNOWFLAKE
+      - TIDB
+      - MONGODB
+      - REDIS
+      - ORACLE
+      - SPANNER
+      - MSSQL
+      - REDSHIFT
+      - MARIADB
+      - OCEANBASE
+      - STARROCKS
+      - DORIS
+      - HIVE
+      - ELASTICSEARCH
+      - BIGQUERY
+      - DYNAMODB
+      - DATABRICKS
+      - COCKROACHDB
+      - COSMOSDB
+      - TRINO
+      - CASSANDRA
+      description: Database engine type.
+    bytebase.v1.BatchSyncInstancesResponse:
+      type: object
+      title: BatchSyncInstancesResponse
+      additionalProperties: false
+    bytebase.v1.DataSource:
+      type: object
+      anyOf:
+      - type: object
+        properties:
+          awsCredential:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.DataSource.AWSCredential'
+            title: aws_credential
+        title: aws_credential
+      - type: object
+        properties:
+          azureCredential:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.DataSource.AzureCredential'
+            title: azure_credential
+        title: azure_credential
+      - type: object
+        properties:
+          gcpCredential:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.DataSource.GCPCredential'
+            title: gcp_credential
+        title: gcp_credential
+      unevaluatedProperties: false
+      not:
+        allOf:
+        - anyOf:
+          - required:
+            - awsCredential
+          - required:
+            - azureCredential
+          - required:
+            - gcpCredential
+        - not:
+            oneOf:
+            - required:
+              - awsCredential
+            - required:
+              - azureCredential
+            - required:
+              - gcpCredential
+      properties:
+        id:
+          type: string
+          title: id
+          description: The unique identifier for this data source.
+        type:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.DataSourceType'
+          title: type
+          description: The type of data source (ADMIN or READ_ONLY).
+        username:
+          type: string
+          title: username
+          description: The username for database authentication.
+        password:
+          type: string
+          title: password
+          description: The password for database authentication.
+          writeOnly: true
+        useSsl:
+          type: boolean
+          title: use_ssl
+          description: Use SSL to connect to the data source. By default, we use system default SSL configuration.
+        sslCa:
+          type: string
+          title: ssl_ca
+          description: The SSL certificate authority certificate.
+          writeOnly: true
+        sslCert:
+          type: string
+          title: ssl_cert
+          description: The SSL client certificate.
+          writeOnly: true
+        sslKey:
+          type: string
+          title: ssl_key
+          description: The SSL client private key.
+          writeOnly: true
+        sslCaPath:
+          type: string
+          title: ssl_ca_path
+          description: The local filesystem path to the SSL certificate authority certificate.
+          writeOnly: true
+        sslCertPath:
+          type: string
+          title: ssl_cert_path
+          description: The local filesystem path to the SSL client certificate.
+          writeOnly: true
+        sslKeyPath:
+          type: string
+          title: ssl_key_path
+          description: The local filesystem path to the SSL client private key.
+          writeOnly: true
+        sslCaSet:
+          type: boolean
+          title: ssl_ca_set
+          description: Whether an SSL certificate authority certificate has been configured.
+          readOnly: true
+        sslCertSet:
+          type: boolean
+          title: ssl_cert_set
+          description: Whether an SSL client certificate has been configured.
+          readOnly: true
+        sslKeySet:
+          type: boolean
+          title: ssl_key_set
+          description: Whether an SSL client private key has been configured.
+          readOnly: true
+        sslCaPathSet:
+          type: boolean
+          title: ssl_ca_path_set
+          description: Whether an SSL certificate authority path has been configured.
+          readOnly: true
+        sslCertPathSet:
+          type: boolean
+          title: ssl_cert_path_set
+          description: Whether an SSL client certificate path has been configured.
+          readOnly: true
+        sslKeyPathSet:
+          type: boolean
+          title: ssl_key_path_set
+          description: Whether an SSL client private key path has been configured.
+          readOnly: true
+        verifyTlsCertificate:
+          type: boolean
+          title: verify_tls_certificate
+          description: "verify_tls_certificate enables TLS certificate verification for SSL connections.\n Default is false (no verification) for backward compatibility.\n Set to true for secure connections (recommended for production).\n Only set to false for development or when certificates cannot be properly\n validated (e.g., self-signed certs, VPN environments)."
+        host:
+          type: string
+          title: host
+          description: The hostname or IP address of the database server.
+        port:
+          type: string
+          title: port
+          description: The port number of the database server.
+        database:
+          type: string
+          title: database
+          description: The name of the database to connect to.
+        srv:
+          type: boolean
+          title: srv
+          description: "srv, authentication_database and replica_set are used for MongoDB.\n srv is a boolean flag that indicates whether the host is a DNS SRV record."
+        authenticationDatabase:
+          type: string
+          title: authentication_database
+          description: authentication_database is the database name to authenticate against, which stores the user credentials.
+        replicaSet:
+          type: string
+          title: replica_set
+          description: replica_set is used for MongoDB replica set.
+        sid:
+          type: string
+          title: sid
+          description: sid and service_name are used for Oracle.
+        serviceName:
+          type: string
+          title: service_name
+        sshHost:
+          type: string
+          title: ssh_host
+          description: "Connection over SSH.\n The hostname of the SSH server agent.\n Required."
+        sshPort:
+          type: string
+          title: ssh_port
+          description: "The port of the SSH server agent. It's 22 typically.\n Required."
+        sshUser:
+          type: string
+          title: ssh_user
+          description: "The user to login the server.\n Required."
+        sshPassword:
+          type: string
+          title: ssh_password
+          description: The password to login the server. If it's empty string, no password is required.
+          writeOnly: true
+        sshPrivateKey:
+          type: string
+          title: ssh_private_key
+          description: The private key to login the server. If it's empty string, we will use the system default private key from os.Getenv("SSH_AUTH_SOCK").
+          writeOnly: true
+        authenticationPrivateKey:
+          type: string
+          title: authentication_private_key
+          description: "PKCS#8 private key in PEM format. If it's empty string, no private key is required.\n Used for authentication when connecting to the data source."
+          writeOnly: true
+        authenticationPrivateKeyPassphrase:
+          type: string
+          title: authentication_private_key_passphrase
+          description: Passphrase for the encrypted PKCS#8 private key. Only used when the private key is encrypted.
+          writeOnly: true
+        externalSecret:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.DataSourceExternalSecret'
+          title: external_secret
+        authenticationType:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.DataSource.AuthenticationType'
+          title: authentication_type
+        cloudSqlIpType:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.DataSource.CloudSQLIPType'
+          title: cloud_sql_ip_type
+          description: "cloud_sql_ip_type selects the Cloud SQL IP type for Google Cloud SQL IAM connections.\n CLOUD_SQL_IP_TYPE_UNSPECIFIED is treated as PUBLIC for backward compatibility."
+        saslConfig:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.SASLConfig'
+          title: sasl_config
+        additionalAddresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.DataSource.Address'
+          title: additional_addresses
+          description: (OPTIONAL) additional_addresses is used for MongoDB replica set.
+        directConnection:
+          type: boolean
+          title: direct_connection
+          description: direct_connection is used for MongoDB to dispatch all the operations to the node specified in the connection string.
+        region:
+          type: string
+          title: region
+          description: region is the location of where the DB is, works for AWS RDS. For example, us-east-1.
+        warehouseId:
+          type: string
+          title: warehouse_id
+          description: warehouse_id is used by Databricks.
+        masterName:
+          type: string
+          title: master_name
+          description: master_name is the master name used by connecting redis-master via redis sentinel.
+        masterUsername:
+          type: string
+          title: master_username
+          description: master_username and master_password are master credentials used by redis sentinel mode.
+        masterPassword:
+          type: string
+          title: master_password
+          writeOnly: true
+        redisType:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.DataSource.RedisType'
+          title: redis_type
+        extraConnectionParameters:
+          type: object
+          title: extra_connection_parameters
+          additionalProperties:
+            type: string
+            title: value
+          description: "Extra connection parameters for the database connection.\n For PostgreSQL HA, this can be used to set target_session_attrs=read-write"
+        projectId:
+          type: string
+          title: project_id
+          description: "project_id and instance_id are the GCP resource identifiers.\n project_id is used by Spanner and BigQuery; instance_id is used by Spanner.\n For these engines, host and port optionally override the default Google API\n endpoint (e.g. a Private Service Connect endpoint like\n spanner-nonprod.p.googleapis.com)."
+        instanceId:
+          type: string
+          title: instance_id
+      title: DataSource
+    bytebase.v1.DataSource.RedisType:
+      type: string
+      title: RedisType
+      enum:
+      - REDIS_TYPE_UNSPECIFIED
+      - STANDALONE
+      - SENTINEL
+      - CLUSTER
+    bytebase.v1.DataSourceExternalSecret.AuthType:
+      type: string
+      title: AuthType
+      enum:
+      - AUTH_TYPE_UNSPECIFIED
+      - TOKEN
+      - VAULT_APP_ROLE
+    bytebase.v1.DataSource.AWSCredential:
+      type: object
+      properties:
+        accessKeyId:
+          type: string
+          title: access_key_id
+          writeOnly: true
+        secretAccessKey:
+          type: string
+          title: secret_access_key
+          writeOnly: true
+        sessionToken:
+          type: string
+          title: session_token
+          writeOnly: true
+        roleArn:
+          type: string
+          title: role_arn
+          description: "ARN of IAM role to assume for cross-account access.\n See: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use.html"
+          writeOnly: true
+        externalId:
+          type: string
+          title: external_id
+          description: "Optional external ID for additional security when assuming role.\n See: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-user_externalid.html"
+          writeOnly: true
+      title: AWSCredential
+      additionalProperties: false
+    google.protobuf.Duration:
+      type: string
+      format: duration
+      description: A signed duration in seconds, with up to nine fractional digits and an `s` suffix (for example, `3s` or `-0.001s`).
+    bytebase.v1.DataSourceExternalSecret.AppRoleAuthOption.SecretType:
+      type: string
+      title: SecretType
+      enum:
+      - SECRET_TYPE_UNSPECIFIED
+      - PLAIN
+      - ENVIRONMENT
+    bytebase.v1.DataSource.AuthenticationType:
+      type: string
+      title: AuthenticationType
+      enum:
+      - AUTHENTICATION_UNSPECIFIED
+      - PASSWORD
+      - GOOGLE_CLOUD_SQL_IAM
+      - AWS_RDS_IAM
+      - AZURE_IAM
+    bytebase.v1.DataSource.CloudSQLIPType:
+      type: string
+      title: CloudSQLIPType
+      enum:
+      - CLOUD_SQL_IP_TYPE_UNSPECIFIED
+      - PUBLIC
+      - PRIVATE
+      - PSC
+      description: CloudSQLIPType selects which Cloud SQL IP to dial for Google Cloud SQL IAM connections.

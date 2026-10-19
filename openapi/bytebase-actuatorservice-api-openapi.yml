@@ -1,0 +1,199 @@
+openapi: 3.2.0
+info:
+  title: Bytebase API Reference Actuator Service API
+  description: API reference for Bytebase. Every endpoint is served by your own Bytebase instance.
+  version: 1.0.0
+security: []
+tags:
+- name: ActuatorService
+  description: ActuatorService manages system health and operational information.
+paths:
+  /v1/actuator/info:
+    get:
+      tags:
+      - ActuatorService
+      summary: GetActuatorInfo
+      description: 'Gets system information and health status of the Bytebase instance.
+
+        The workspace is resolved from the authenticated session.
+
+        Permissions required: None (authentication required)'
+      operationId: ActuatorService_GetActuatorInfo
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ActuatorInfo'
+components:
+  schemas:
+    google.protobuf.Timestamp:
+      type: string
+      examples:
+      - '2023-01-15T01:30:15.01Z'
+      - '2024-12-25T12:00:00Z'
+      format: date-time
+      description: A point in time in RFC 3339 format, with up to nanosecond precision. Output uses UTC (`Z`); input may use an offset from UTC.
+    bytebase.v1.ActuatorInfo:
+      type: object
+      properties:
+        version:
+          type: string
+          title: version
+          description: The Bytebase server version.
+          readOnly: true
+        gitCommit:
+          type: string
+          title: git_commit
+          description: The git commit hash of the build.
+          readOnly: true
+        saas:
+          type: boolean
+          title: saas
+          description: Whether the Bytebase instance is running in SaaS mode where some features cannot be edited by users.
+          readOnly: true
+        externalUrl:
+          type: string
+          title: external_url
+          description: The external URL where users or webhook callbacks access Bytebase.
+          readOnly: true
+        lastActiveTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: last_active_time
+          description: The last time any API call was made, refreshed on each request.
+          readOnly: true
+        workspace:
+          type: string
+          title: workspace
+          description: "The unique identifier for the workspace.\n Format: workspaces/{id}"
+          readOnly: true
+        unlicensedFeatures:
+          type: array
+          items:
+            type: string
+            readOnly: true
+          title: unlicensed_features
+          description: List of features that are not licensed.
+          readOnly: true
+        activatedInstanceCount:
+          type: integer
+          title: activated_instance_count
+          format: int32
+          description: The number of activated database instances.
+          readOnly: true
+        totalInstanceCount:
+          type: integer
+          title: total_instance_count
+          format: int32
+          description: The total number of database instances.
+          readOnly: true
+        externalUrlFromFlag:
+          type: boolean
+          title: external_url_from_flag
+          description: Whether the external URL is set via command-line flag (and thus cannot be changed via UI).
+          readOnly: true
+        replicaCount:
+          type: integer
+          title: replica_count
+          format: int32
+          description: The number of active replicas (servers sharing the same database).
+          readOnly: true
+        defaultProject:
+          type: string
+          title: default_project
+          description: "The default project for unassigned databases.\n Format: projects/{id}"
+          readOnly: true
+        userCountInIam:
+          type: integer
+          title: user_count_in_iam
+          format: int32
+          description: The number of users in the workspace IAM (for seat limit display).
+          readOnly: true
+        activeVcsUserCount:
+          type: integer
+          title: active_vcs_user_count
+          format: int32
+          description: The number of active VCS users seen in the active window.
+          readOnly: true
+        sample:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.SampleInfo'
+          title: sample
+          description: Sample setup availability and provisioned resources.
+          readOnly: true
+        mcpSetting:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.MCPSetting'
+          title: mcp_setting
+          description: The MCP (Model Context Protocol) setting in the current workspace.
+          readOnly: true
+        aiEnabled:
+          type: boolean
+          title: ai_enabled
+          description: Whether the workspace AI setting enables the AI agent.
+          readOnly: true
+        aiSqlReviewEnabled:
+          type: boolean
+          title: ai_sql_review_enabled
+          description: "Whether the workspace AI setting switches the AI SQL review on. A review\n also needs `ai_enabled`."
+          readOnly: true
+      title: ActuatorInfo
+      additionalProperties: false
+      description: "System information and configuration for the Bytebase instance.\n Actuator concept is similar to the Spring Boot Actuator."
+    bytebase.v1.MCPSetting:
+      type: object
+      properties:
+        capability:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.MCPSetting.Capability'
+          title: capability
+          description: "The maximum capability available to MCP sessions in this workspace, acting\n as an admin-set ceiling. Enforced server-side at three points: the /mcp\n endpoint decides whether a connection is admitted at all, the ceiling gate\n on the internal MCP chain decides, per request, which method classes are\n served, and under READ_ONLY the SQL clamp decides, per statement, whether\n it only reads."
+      title: MCPSetting
+      additionalProperties: false
+      description: "MCPSetting is what an MCP (Model Context Protocol) session may do in this\n workspace."
+    bytebase.v1.MCPSetting.Capability:
+      type: string
+      title: Capability
+      enum:
+      - CAPABILITY_UNSPECIFIED
+      - DISABLED
+      - READ_ONLY
+      - READ_WRITE
+      description: "Capability is the ceiling: a session runs at this level or lower.\n Writing CAPABILITY_UNSPECIFIED, explicitly or by leaving\n value.mcp.capability out of the update mask, is rejected."
+    bytebase.v1.SampleInfo.Instance:
+      type: object
+      properties:
+        instance:
+          type: string
+          title: instance
+          description: "The provisioned sample instance.\n Format: instances/{instance} or projects/{project}/instances/{instance}"
+          readOnly: true
+        expireTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: expire_time
+          description: The time when the provisioned sample instance expires.
+          readOnly: true
+      title: Instance
+      additionalProperties: false
+      description: Instance describes one provisioned sample instance.
+    bytebase.v1.SampleInfo:
+      type: object
+      properties:
+        available:
+          type: boolean
+          title: available
+          description: Whether sample setup is currently available.
+          readOnly: true
+        instances:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.SampleInfo.Instance'
+          title: instances
+          description: The provisioned sample instances.
+          readOnly: true
+      title: SampleInfo
+      additionalProperties: false
+      description: SampleInfo describes sample setup availability and provisioned resources.

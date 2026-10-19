@@ -1,0 +1,283 @@
+openapi: 3.2.0
+info:
+  title: Bytebase API Reference Database Group Service API
+  description: API reference for Bytebase. Every endpoint is served by your own Bytebase instance.
+  version: 1.0.0
+security: []
+tags:
+- name: DatabaseGroupService
+  description: DatabaseGroupService manages database groups for organizing databases by criteria.
+paths:
+  /v1/projects/{project}/databaseGroups:
+    get:
+      tags:
+      - DatabaseGroupService
+      summary: ListDatabaseGroups
+      description: 'Lists database groups in a project.
+
+        Permissions required: bb.databaseGroups.list'
+      operationId: DatabaseGroupService_ListDatabaseGroups
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: view
+        in: query
+        description: The view to return. Defaults to DATABASE_GROUP_VIEW_BASIC.
+        schema:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.DatabaseGroupView'
+          title: view
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ListDatabaseGroupsResponse'
+    post:
+      tags:
+      - DatabaseGroupService
+      summary: CreateDatabaseGroup
+      description: 'Creates a new database group.
+
+        Permissions required: bb.databaseGroups.create'
+      operationId: DatabaseGroupService_CreateDatabaseGroup
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: databaseGroupId
+        in: query
+        description: "The ID to use for the database group, which will become the final component of\n the database group's resource name.\n\n This value should be 4-63 characters, and valid characters\n are /[a-z][0-9]-/."
+        schema:
+          type: string
+          title: database_group_id
+      - name: validateOnly
+        in: query
+        description: If set, validate the create request and preview the full database group response, but do not actually create it.
+        schema:
+          type: boolean
+          title: validate_only
+      requestBody:
+        description: The database group to create.
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.DatabaseGroup'
+              title: database_group
+              description: The database group to create.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.DatabaseGroup'
+  /v1/projects/{project}/databaseGroups/{databaseGroup}:
+    get:
+      tags:
+      - DatabaseGroupService
+      summary: GetDatabaseGroup
+      description: 'Gets a database group by name.
+
+        Permissions required: bb.databaseGroups.get'
+      operationId: DatabaseGroupService_GetDatabaseGroup
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: databaseGroup
+        in: path
+        description: The databaseGroup id.
+        required: true
+        schema:
+          type: string
+      - name: view
+        in: query
+        description: The view to return. Defaults to DATABASE_GROUP_VIEW_BASIC.
+        schema:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.DatabaseGroupView'
+          title: view
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.DatabaseGroup'
+    delete:
+      tags:
+      - DatabaseGroupService
+      summary: DeleteDatabaseGroup
+      description: 'Deletes a database group.
+
+        Permissions required: bb.databaseGroups.delete'
+      operationId: DatabaseGroupService_DeleteDatabaseGroup
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: databaseGroup
+        in: path
+        description: The databaseGroup id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/google.protobuf.Empty'
+    patch:
+      tags:
+      - DatabaseGroupService
+      summary: UpdateDatabaseGroup
+      description: 'Updates a database group.
+
+        Permissions required: bb.databaseGroups.update
+
+        When allow_missing=true, also requires: bb.databaseGroups.create'
+      operationId: DatabaseGroupService_UpdateDatabaseGroup
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: databaseGroup
+        in: path
+        description: The databaseGroup id.
+        required: true
+        schema:
+          type: string
+      - name: updateMask
+        in: query
+        description: The list of fields to update.
+        schema:
+          type: string
+      - name: allowMissing
+        in: query
+        description: "If set to true, and the database group is not found, a new database group will be created.\n In this situation, `update_mask` is ignored."
+        schema:
+          type: boolean
+          title: allow_missing
+      requestBody:
+        description: "The database group to update.\n\n The database group's `name` field is used to identify the database group to update.\n Format: projects/{project}/databaseGroups/{databaseGroup}"
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.DatabaseGroup'
+              title: database_group
+              description: "The database group to update.\n\n The database group's `name` field is used to identify the database group to update.\n Format: projects/{project}/databaseGroups/{databaseGroup}"
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.DatabaseGroup'
+components:
+  schemas:
+    bytebase.v1.ListDatabaseGroupsResponse:
+      type: object
+      properties:
+        databaseGroups:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.DatabaseGroup'
+          title: database_groups
+          description: The database groups from the specified request.
+      title: ListDatabaseGroupsResponse
+      additionalProperties: false
+      description: Response message for listing database groups.
+    bytebase.v1.DatabaseGroup:
+      type: object
+      properties:
+        name:
+          type: string
+          title: name
+          description: "The name of the database group.\n Format: projects/{project}/databaseGroups/{databaseGroup}"
+        title:
+          type: string
+          title: title
+          maxLength: 200
+          description: The short name used in actual databases specified by users.
+        databaseExpr:
+          allOf:
+          - $ref: '#/components/schemas/google.type.Expr'
+          title: database_expr
+          description: "The condition that is associated with this database group.\n The syntax and semantics of CEL are documented at https://github.com/google/cel-spec\n\n Support variables:\n resource.environment_id: the environment resource id. Support \"==\", \"!=\", \"in [XX]\", \"!(in [xx])\" operations.\n resource.instance_id: the instance resource id. Support \"==\", \"!=\", \"in [XX]\", \"!(in [xx])\", \"contains\", \"matches\", \"startsWith\", \"endsWith\" operations.\n resource.database_name: the database name. Support \"==\", \"!=\", \"in [XX]\", \"!(in [xx])\", \"contains\", \"matches\", \"startsWith\", \"endsWith\" operations.\n resource.database_labels: the database labels. Support map access operations.\n All variables should join with \"&&\" condition.\n\n For example:\n resource.environment_id == \"test\" && resource.database_name.startsWith(\"sample_\")\n resource.database_labels[\"tenant\"] == \"tenant1\""
+        matchedDatabases:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.DatabaseGroup.Database'
+          title: matched_databases
+          description: The list of databases that match the database group condition.
+          readOnly: true
+      title: DatabaseGroup
+      required:
+      - title
+      additionalProperties: false
+      description: A group of databases matched by expressions.
+    bytebase.v1.DatabaseGroup.Database:
+      type: object
+      properties:
+        name:
+          type: string
+          title: name
+          description: "The resource name of the database.\n Format: instances/{instance}/databases/{database}"
+      title: Database
+      additionalProperties: false
+      description: A database within a database group.
+    google.type.Expr:
+      type: object
+      properties:
+        expression:
+          type: string
+          title: expression
+          description: "Textual representation of an expression in Common Expression Language\n syntax."
+        title:
+          type: string
+          title: title
+          description: "Optional. Title for the expression, i.e. a short string describing\n its purpose. This can be used e.g. in UIs which allow to enter the\n expression."
+        description:
+          type: string
+          title: description
+          description: "Optional. Description of the expression. This is a longer text which\n describes the expression, e.g. when hovered over it in a UI."
+        location:
+          type: string
+          title: location
+          description: "Optional. String indicating the location of the expression for error\n reporting, e.g. a file name and a position in the file."
+      title: Expr
+      additionalProperties: false
+      description: "Represents a textual expression in the Common Expression Language (CEL)\n syntax. CEL is a C-like expression language. The syntax and semantics of CEL\n are documented at https://github.com/google/cel-spec.\n\n Example (Comparison):\n\n     title: \"Summary size limit\"\n     description: \"Determines if a summary is less than 100 chars\"\n     expression: \"document.summary.size() < 100\"\n\n Example (Equality):\n\n     title: \"Requestor is owner\"\n     description: \"Determines if requestor is the document owner\"\n     expression: \"document.owner == request.auth.claims.email\"\n\n Example (Logic):\n\n     title: \"Public documents\"\n     description: \"Determine whether the document should be publicly visible\"\n     expression: \"document.type != 'private' && document.type != 'internal'\"\n\n Example (Data Manipulation):\n\n     title: \"Notification string\"\n     description: \"Create a notification string with a timestamp.\"\n     expression: \"'New message received at ' + string(document.create_time)\"\n\n The exact variables and functions that may be referenced within an expression\n are determined by the service that evaluates it. See the service\n documentation for additional information."
+    bytebase.v1.DatabaseGroupView:
+      type: string
+      title: DatabaseGroupView
+      enum:
+      - DATABASE_GROUP_VIEW_UNSPECIFIED
+      - DATABASE_GROUP_VIEW_BASIC
+      - DATABASE_GROUP_VIEW_FULL
+      description: View options for database group responses.
+    google.protobuf.Empty:
+      type: object
+      description: An empty JSON object.

@@ -1,0 +1,1217 @@
+openapi: 3.2.0
+info:
+  title: Bytebase API Reference Setting Service API
+  description: API reference for Bytebase. Every endpoint is served by your own Bytebase instance.
+  version: 1.0.0
+security: []
+tags:
+- name: SettingService
+  description: SettingService manages workspace-level settings and configurations.
+paths:
+  /v1/settings:
+    get:
+      tags:
+      - SettingService
+      summary: ListSettings
+      description: 'Lists all workspace settings.
+
+        Permissions required: bb.settings.list'
+      operationId: SettingService_ListSettings
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ListSettingsResponse'
+  /v1/settings/{setting}:
+    get:
+      tags:
+      - SettingService
+      summary: GetSetting
+      description: 'Retrieves a workspace setting by name.
+
+        Permissions required: bb.settings.get'
+      operationId: SettingService_GetSetting
+      parameters:
+      - name: setting
+        in: path
+        description: The setting id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Setting'
+    patch:
+      tags:
+      - SettingService
+      summary: UpdateSetting
+      description: 'Updates a workspace setting.
+
+        Permissions required: bb.settings.set'
+      operationId: SettingService_UpdateSetting
+      parameters:
+      - name: setting
+        in: path
+        description: The setting id.
+        required: true
+        schema:
+          type: string
+      - name: validateOnly
+        in: query
+        description: "validate_only is a flag to indicate whether to validate the setting value,\n server would not persist the setting value if it is true."
+        schema:
+          type: boolean
+          title: validate_only
+      - name: allowMissing
+        in: query
+        description: The allowMissing query parameter.
+        schema:
+          type: boolean
+          title: allow_missing
+      - name: updateMask
+        in: query
+        description: Comma-separated field paths in lowerCamelCase (for example, `user.displayName,photo`).
+        schema:
+          type: string
+      requestBody:
+        description: The setting to update.
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.Setting'
+              title: setting
+              description: The setting to update.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Setting'
+  /v1/workspaces/{workspace}/settings/EMAIL:test:
+    post:
+      tags:
+      - SettingService
+      summary: TestEmailSetting
+      description: 'Sends a test email using the provided config (without persisting).
+
+        Permissions required: bb.settings.set'
+      operationId: SettingService_TestEmailSetting
+      parameters:
+      - name: workspace
+        in: path
+        description: The workspace id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                emailSetting:
+                  allOf:
+                  - $ref: '#/components/schemas/bytebase.v1.EmailSetting'
+                  title: email_setting
+                to:
+                  type: string
+                  title: to
+              title: TestEmailSettingRequest
+              required:
+              - emailSetting
+              - to
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.TestEmailSettingResponse'
+components:
+  schemas:
+    google.type.Color:
+      type: object
+      properties:
+        red:
+          type: number
+          title: red
+          format: float
+          description: The amount of red in the color as a value in the interval [0, 1].
+        green:
+          type: number
+          title: green
+          format: float
+          description: The amount of green in the color as a value in the interval [0, 1].
+        blue:
+          type: number
+          title: blue
+          format: float
+          description: The amount of blue in the color as a value in the interval [0, 1].
+        alpha:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.FloatValue'
+          title: alpha
+          description: "The fraction of this color that should be applied to the pixel. That is,\n the final pixel color is defined by the equation:\n\n   `pixel color = alpha * (this color) + (1.0 - alpha) * (background color)`\n\n This means that a value of 1.0 corresponds to a solid color, whereas\n a value of 0.0 corresponds to a completely transparent color. This\n uses a wrapper message rather than a simple float scalar so that it is\n possible to distinguish between a default value and the value being unset.\n If omitted, this color object is rendered as a solid color\n (as if the alpha value had been explicitly given a value of 1.0)."
+      title: Color
+      additionalProperties: false
+      description: "Represents a color in the RGBA color space. This representation is designed\n for simplicity of conversion to/from color representations in various\n languages over compactness. For example, the fields of this representation\n can be trivially provided to the constructor of `java.awt.Color` in Java; it\n can also be trivially provided to UIColor's `+colorWithRed:green:blue:alpha`\n method in iOS; and, with just a little work, it can be easily formatted into\n a CSS `rgba()` string in JavaScript.\n\n This reference page doesn't carry information about the absolute color\n space\n that should be used to interpret the RGB value (e.g. sRGB, Adobe RGB,\n DCI-P3, BT.2020, etc.). By default, applications should assume the sRGB color\n space.\n\n When color equality needs to be decided, implementations, unless\n documented otherwise, treat two colors as equal if all their red,\n green, blue, and alpha values each differ by at most 1e-5.\n\n Example (Java):\n\n      import com.google.type.Color;\n\n      // ...\n      public static java.awt.Color fromProto(Color protocolor) {\n        float alpha = protocolor.hasAlpha()\n            ? protocolor.getAlpha().getValue()\n            : 1.0;\n\n        return new java.awt.Color(\n            protocolor.getRed(),\n            protocolor.getGreen(),\n            protocolor.getBlue(),\n            alpha);\n      }\n\n      public static Color toProto(java.awt.Color color) {\n        float red = (float) color.getRed();\n        float green = (float) color.getGreen();\n        float blue = (float) color.getBlue();\n        float denominator = 255.0;\n        Color.Builder resultBuilder =\n            Color\n                .newBuilder()\n                .setRed(red / denominator)\n                .setGreen(green / denominator)\n                .setBlue(blue / denominator);\n        int alpha = color.getAlpha();\n        if (alpha != 255) {\n          result.setAlpha(\n              FloatValue\n                  .newBuilder()\n                  .setValue(((float) alpha) / denominator)\n                  .build());\n        }\n        return resultBuilder.build();\n      }\n      // ...\n\n Example (iOS / Obj-C):\n\n      // ...\n      static UIColor* fromProto(Color* protocolor) {\n         float red = [protocolor red];\n         float green = [protocolor green];\n         float blue = [protocolor blue];\n         FloatValue* alpha_wrapper = [protocolor alpha];\n         float alpha = 1.0;\n         if (alpha_wrapper != nil) {\n           alpha = [alpha_wrapper value];\n         }\n         return [UIColor colorWithRed:red green:green blue:blue alpha:alpha];\n      }\n\n      static Color* toProto(UIColor* color) {\n          CGFloat red, green, blue, alpha;\n          if (![color getRed:&red green:&green blue:&blue alpha:&alpha]) {\n            return nil;\n          }\n          Color* result = [[Color alloc] init];\n          [result setRed:red];\n          [result setGreen:green];\n          [result setBlue:blue];\n          if (alpha <= 0.9999) {\n            [result setAlpha:floatWrapperWithValue(alpha)];\n          }\n          [result autorelease];\n          return result;\n     }\n     // ...\n\n  Example (JavaScript):\n\n     // ...\n\n     var protoToCssColor = function(rgb_color) {\n        var redFrac = rgb_color.red || 0.0;\n        var greenFrac = rgb_color.green || 0.0;\n        var blueFrac = rgb_color.blue || 0.0;\n        var red = Math.floor(redFrac * 255);\n        var green = Math.floor(greenFrac * 255);\n        var blue = Math.floor(blueFrac * 255);\n\n        if (!('alpha' in rgb_color)) {\n           return rgbToCssColor(red, green, blue);\n        }\n\n        var alphaFrac = rgb_color.alpha.value || 0.0;\n        var rgbParams = [red, green, blue].join(',');\n        return ['rgba(', rgbParams, ',', alphaFrac, ')'].join('');\n     };\n\n     var rgbToCssColor = function(red, green, blue) {\n       var rgbNumber = new Number((red << 16) | (green << 8) | blue);\n       var hexString = rgbNumber.toString(16);\n       var missingZeros = 6 - hexString.length;\n       var resultBuilder = ['#'];\n       for (var i = 0; i < missingZeros; i++) {\n          resultBuilder.push('0');\n       }\n       resultBuilder.push(hexString);\n       return resultBuilder.join('');\n     };\n\n     // ..."
+    bytebase.v1.SemanticTypeSetting:
+      type: object
+      properties:
+        types:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.SemanticTypeSetting.SemanticType'
+          title: types
+      title: SemanticTypeSetting
+      additionalProperties: false
+    bytebase.v1.AppIMSetting:
+      type: object
+      properties:
+        settings:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.AppIMSetting.IMSetting'
+          title: settings
+      title: AppIMSetting
+      additionalProperties: false
+    bytebase.v1.Algorithm.RangeMask:
+      type: object
+      properties:
+        slices:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.Algorithm.RangeMask.Slice'
+          title: slices
+          description: "We store it as a repeated field to face the fact that the original value may have multiple parts should be masked.\n But frontend can be started with a single rule easily."
+      title: RangeMask
+      additionalProperties: false
+    bytebase.v1.ApprovalTemplate:
+      type: object
+      properties:
+        flow:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.ApprovalFlow'
+          title: flow
+          description: The approval flow definition.
+        title:
+          type: string
+          title: title
+          description: The title of the approval template.
+        description:
+          type: string
+          title: description
+          description: The description of the approval template.
+      title: ApprovalTemplate
+      additionalProperties: false
+    bytebase.v1.ApprovalFlow:
+      type: object
+      properties:
+        roles:
+          type: array
+          items:
+            type: string
+          title: roles
+          description: The roles required for approval in order.
+      title: ApprovalFlow
+      additionalProperties: false
+    bytebase.v1.AppIMSetting.Teams:
+      type: object
+      properties:
+        tenantId:
+          type: string
+          title: tenant_id
+          description: Azure AD tenant ID (Directory ID).
+          writeOnly: true
+        clientId:
+          type: string
+          title: client_id
+          description: Azure AD application (client) ID.
+          writeOnly: true
+        clientSecret:
+          type: string
+          title: client_secret
+          description: Azure AD client secret.
+          writeOnly: true
+      title: Teams
+      additionalProperties: false
+    bytebase.v1.WorkspaceProfileSetting.PasswordRestriction:
+      type: object
+      properties:
+        minLength:
+          type: integer
+          title: min_length
+          format: int32
+          description: min_length is the minimum length for password, should no less than 8.
+        requireNumber:
+          type: boolean
+          title: require_number
+          description: require_number requires the password must contains at least one number.
+        requireLetter:
+          type: boolean
+          title: require_letter
+          description: require_letter requires the password must contains at least one letter, regardless of upper case or lower case
+        requireUppercaseLetter:
+          type: boolean
+          title: require_uppercase_letter
+          description: require_uppercase_letter requires the password must contains at least one upper case letter.
+        requireSpecialCharacter:
+          type: boolean
+          title: require_special_character
+          description: require_special_character requires the password must contains at least one special character.
+        requireResetPasswordForFirstLogin:
+          type: boolean
+          title: require_reset_password_for_first_login
+          description: require_reset_password_for_first_login requires users to reset their password after the 1st login.
+        passwordRotation:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Duration'
+          title: password_rotation
+          description: password_rotation requires users to reset their password after the duration.
+      title: PasswordRestriction
+      additionalProperties: false
+    bytebase.v1.WebhookType:
+      type: string
+      title: WebhookType
+      enum:
+      - WEBHOOK_TYPE_UNSPECIFIED
+      - SLACK
+      - DISCORD
+      - TEAMS
+      - DINGTALK
+      - FEISHU
+      - WECOM
+      - LARK
+      - GOOGLE_CHAT
+      description: Webhook integration type.
+    bytebase.v1.AppIMSetting.Wecom:
+      type: object
+      properties:
+        corpId:
+          type: string
+          title: corp_id
+          writeOnly: true
+        agentId:
+          type: string
+          title: agent_id
+          writeOnly: true
+        secret:
+          type: string
+          title: secret
+          writeOnly: true
+      title: Wecom
+      additionalProperties: false
+    bytebase.v1.AppIMSetting.Feishu:
+      type: object
+      properties:
+        appId:
+          type: string
+          title: app_id
+          writeOnly: true
+        appSecret:
+          type: string
+          title: app_secret
+          writeOnly: true
+      title: Feishu
+      additionalProperties: false
+    google.type.Expr:
+      type: object
+      properties:
+        expression:
+          type: string
+          title: expression
+          description: "Textual representation of an expression in Common Expression Language\n syntax."
+        title:
+          type: string
+          title: title
+          description: "Optional. Title for the expression, i.e. a short string describing\n its purpose. This can be used e.g. in UIs which allow to enter the\n expression."
+        description:
+          type: string
+          title: description
+          description: "Optional. Description of the expression. This is a longer text which\n describes the expression, e.g. when hovered over it in a UI."
+        location:
+          type: string
+          title: location
+          description: "Optional. String indicating the location of the expression for error\n reporting, e.g. a file name and a position in the file."
+      title: Expr
+      additionalProperties: false
+      description: "Represents a textual expression in the Common Expression Language (CEL)\n syntax. CEL is a C-like expression language. The syntax and semantics of CEL\n are documented at https://github.com/google/cel-spec.\n\n Example (Comparison):\n\n     title: \"Summary size limit\"\n     description: \"Determines if a summary is less than 100 chars\"\n     expression: \"document.summary.size() < 100\"\n\n Example (Equality):\n\n     title: \"Requestor is owner\"\n     description: \"Determines if requestor is the document owner\"\n     expression: \"document.owner == request.auth.claims.email\"\n\n Example (Logic):\n\n     title: \"Public documents\"\n     description: \"Determine whether the document should be publicly visible\"\n     expression: \"document.type != 'private' && document.type != 'internal'\"\n\n Example (Data Manipulation):\n\n     title: \"Notification string\"\n     description: \"Create a notification string with a timestamp.\"\n     expression: \"'New message received at ' + string(document.create_time)\"\n\n The exact variables and functions that may be referenced within an expression\n are determined by the service that evaluates it. See the service\n documentation for additional information."
+    bytebase.v1.DataClassificationSetting.DataClassificationConfig.DataClassification:
+      type: object
+      properties:
+        id:
+          type: string
+          title: id
+          description: id is the classification id in [0-9]+-[0-9]+-[0-9]+ format.
+        title:
+          type: string
+          title: title
+        level:
+          type:
+          - integer
+          - 'null'
+          title: level
+          format: int32
+          description: The sensitivity level. Maps to Level.level.
+      title: DataClassification
+      additionalProperties: false
+    google.protobuf.FloatValue:
+      oneOf:
+      - type: string
+      - type: number
+      description: A single-precision number. The non-finite values `NaN`, `Infinity`, and `-Infinity` are encoded as strings; `null` is also accepted.
+    bytebase.v1.DataClassificationSetting:
+      type: object
+      properties:
+        configs:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.DataClassificationSetting.DataClassificationConfig'
+          title: configs
+      title: DataClassificationSetting
+      additionalProperties: false
+    bytebase.v1.DataClassificationSetting.DataClassificationConfig:
+      type: object
+      properties:
+        id:
+          type: string
+          title: id
+          description: id is the uuid for classification. Each project can chose one classification config.
+        title:
+          type: string
+          title: title
+        levels:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.DataClassificationSetting.DataClassificationConfig.Level'
+          title: levels
+          description: levels is user defined level list for classification.
+        classification:
+          type: object
+          title: classification
+          additionalProperties:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.DataClassificationSetting.DataClassificationConfig.DataClassification'
+            title: value
+          description: "classification is the id - DataClassification map.\n The id should in [0-9]+-[0-9]+-[0-9]+ format."
+      title: DataClassificationConfig
+      additionalProperties: false
+    bytebase.v1.MCPSetting.Capability:
+      type: string
+      title: Capability
+      enum:
+      - CAPABILITY_UNSPECIFIED
+      - DISABLED
+      - READ_ONLY
+      - READ_WRITE
+      description: "Capability is the ceiling: a session runs at this level or lower.\n Writing CAPABILITY_UNSPECIFIED, explicitly or by leaving\n value.mcp.capability out of the update mask, is rejected."
+    bytebase.v1.EmailSetting.SMTPConfig.Authentication:
+      type: string
+      title: Authentication
+      enum:
+      - AUTHENTICATION_UNSPECIFIED
+      - AUTHENTICATION_NONE
+      - PLAIN
+      - LOGIN
+      - CRAM_MD5
+    bytebase.v1.EnvironmentSetting:
+      type: object
+      properties:
+        environments:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.EnvironmentSetting.Environment'
+          title: environments
+      title: EnvironmentSetting
+      additionalProperties: false
+    bytebase.v1.WorkspaceProfileSetting:
+      type: object
+      properties:
+        externalUrl:
+          type: string
+          title: external_url
+          description: The external URL is used for sso authentication callback.
+        disallowSignup:
+          type: boolean
+          title: disallow_signup
+          description: Disallow self-service signup, users can only be invited by the owner.
+        requireMfa:
+          type: boolean
+          title: require_mfa
+          description: Require MFA for all users.
+        refreshTokenDuration:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Duration'
+          title: refresh_token_duration
+          description: The duration for refresh token. Default is 7 days.
+        announcement:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.Announcement'
+          title: announcement
+          description: The setting of custom announcement
+        maximumRequestExpiration:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Duration'
+          title: maximum_request_expiration
+          description: The max expiration duration for data access requests.
+        domains:
+          type: array
+          items:
+            type: string
+          title: domains
+          description: The workspace domain, e.g., bytebase.com.
+        enforceIdentityDomain:
+          type: boolean
+          title: enforce_identity_domain
+          description: Only user and group from the domains can be created and login.
+        databaseChangeMode:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.DatabaseChangeMode'
+          title: database_change_mode
+          description: The workspace database change mode.
+        disallowPasswordSignin:
+          type: boolean
+          title: disallow_password_signin
+          description: Whether password sign-in is disabled for all end users.
+        enableMetricCollection:
+          type: boolean
+          title: enable_metric_collection
+          description: Whether to enable metric collection for the workspace.
+        inactiveSessionTimeout:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Duration'
+          title: inactive_session_timeout
+          description: The session expiration time if not activity detected for the user. Value <= 0 means no limit.
+        enableAuditLogStdout:
+          type: boolean
+          title: enable_audit_log_stdout
+          description: "Whether to enable audit logging to stdout in structured JSON format.\n Requires TEAM or ENTERPRISE license."
+        watermark:
+          type: boolean
+          title: watermark
+          description: "Whether to display watermark on pages.\n Requires ENTERPRISE license."
+        passwordRestriction:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.WorkspaceProfileSetting.PasswordRestriction'
+          title: password_restriction
+          description: Password restriction settings.
+        accessTokenDuration:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Duration'
+          title: access_token_duration
+          description: The duration for access token. Default is 1 hour.
+        enableDebug:
+          type: boolean
+          title: enable_debug
+          description: Whether debug mode is enabled.
+        sqlResultSize:
+          type: string
+          title: sql_result_size
+          format: int64
+          description: "The maximum result size limit in bytes for query and export, works for the SQL Editor and Export Center.\n The default value is 100MB, we will use the default value if the setting not exists, or the limit <= 0."
+        queryTimeout:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Duration'
+          title: query_timeout
+          description: The query timeout duration for query and export, works for the SQL Editor and Export Center.
+        allowEmailCodeSignin:
+          type: boolean
+          title: allow_email_code_signin
+          description: "Allow signin/signup using email + a 6-digit one-time verification code.\n Requires the EMAIL setting to be configured on the workspace."
+        sqlEditorThemeId:
+          type: string
+          title: sql_editor_theme_id
+          description: "Enforced SQL Editor theme id: OPAQUE — a frontend-resolved built-in preset id\n OR a custom theme's uuid. Empty ⇒ default light."
+        sqlEditorCustomTheme:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.SQLEditorThemeSetting'
+          title: sql_editor_custom_theme
+          description: "The enforced CUSTOM theme's full definition — present ONLY when\n sql_editor_theme_id is a custom uuid. tokens is always complete."
+        maximumRoleExpiration:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Duration'
+          title: maximum_role_expiration
+          description: "The max expiration duration for request role.\n Deprecated: use just-in-time access request flows instead."
+        directorySyncTokenConfigured:
+          type: boolean
+          title: directory_sync_token_configured
+          description: "Whether a directory sync token has been generated for this workspace.\n The token itself is never returned; this only lets the UI decide between\n offering \"generate\" and \"regenerate\"."
+          readOnly: true
+      title: WorkspaceProfileSetting
+      additionalProperties: false
+    bytebase.v1.Algorithm.InnerOuterMask:
+      type: object
+      properties:
+        prefixLen:
+          type: integer
+          title: prefix_len
+          format: int32
+        suffixLen:
+          type: integer
+          title: suffix_len
+          format: int32
+        type:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.Algorithm.InnerOuterMask.MaskType'
+          title: type
+        substitution:
+          type: string
+          title: substitution
+      title: InnerOuterMask
+      additionalProperties: false
+    bytebase.v1.AppIMSetting.DingTalk:
+      type: object
+      properties:
+        clientId:
+          type: string
+          title: client_id
+          writeOnly: true
+        clientSecret:
+          type: string
+          title: client_secret
+          writeOnly: true
+        robotCode:
+          type: string
+          title: robot_code
+          writeOnly: true
+      title: DingTalk
+      additionalProperties: false
+    bytebase.v1.AppIMSetting.Slack:
+      type: object
+      properties:
+        token:
+          type: string
+          title: token
+          writeOnly: true
+      title: Slack
+      additionalProperties: false
+    bytebase.v1.DatabaseChangeMode:
+      type: string
+      title: DatabaseChangeMode
+      enum:
+      - DATABASE_CHANGE_MODE_UNSPECIFIED
+      - PIPELINE
+      - EDITOR
+    bytebase.v1.Algorithm.RangeMask.Slice:
+      type: object
+      properties:
+        start:
+          type: integer
+          title: start
+          format: int32
+          description: "start is the start character index (0-based) of the original value, should be less than end.\n Uses character indices (not byte offsets) for display-oriented masking.\n Example: For \"你好world\", character index 2 refers to 'w' (the 3rd character)."
+        end:
+          type: integer
+          title: end
+          format: int32
+          description: "end is the end character index (exclusive) of the original value.\n Uses character indices (not byte offsets) for display-oriented masking."
+        substitution:
+          type: string
+          title: substitution
+          description: substitution is the string used to replace the OriginalValue[start:end).
+      title: Slice
+      additionalProperties: false
+    bytebase.v1.Announcement.AnnouncementTheme:
+      type: object
+      properties:
+        background:
+          allOf:
+          - $ref: '#/components/schemas/google.type.Color'
+          title: background
+        text:
+          allOf:
+          - $ref: '#/components/schemas/google.type.Color'
+          title: text
+      title: AnnouncementTheme
+      additionalProperties: false
+    bytebase.v1.WorkspaceApprovalSetting.Rule.Source:
+      type: string
+      title: Source
+      enum:
+      - SOURCE_UNSPECIFIED
+      - CHANGE_DATABASE
+      - CREATE_DATABASE
+      - REQUEST_ROLE
+      - REQUEST_ACCESS
+    bytebase.v1.WorkspaceApprovalSetting.Rule:
+      type: object
+      properties:
+        template:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.ApprovalTemplate'
+          title: template
+        condition:
+          allOf:
+          - $ref: '#/components/schemas/google.type.Expr'
+          title: condition
+          description: "The condition that is associated with the rule.\n The syntax and semantics of CEL are documented at https://github.com/google/cel-spec\n\n The `source` field filters which rules apply. The `condition` field then evaluates with full context.\n\n All supported variables:\n statement.affected_rows: affected row count in the DDL/DML, support \"==\", \"!=\", \"<\", \"<=\", \">\", \">=\" operations.\n statement.table_rows: table row count number, support \"==\", \"!=\", \"<\", \"<=\", \">\", \">=\" operations.\n resource.environment_id: the environment resource id, support \"==\", \"!=\", \"in [xx]\", \"!(in [xx])\" operations.\n resource.project_id: the project resource id, support \"==\", \"!=\", \"in [xx]\", \"!(in [xx])\", \"contains()\", \"matches()\", \"startsWith()\", \"endsWith()\" operations.\n resource.db_engine: the database engine type, support \"==\", \"!=\", \"in [xx]\", \"!(in [xx])\" operations. Check the Engine enum for values.\n statement.sql_type: the SQL type, support \"==\", \"!=\", \"in [xx]\", \"!(in [xx])\" operations.\n resource.database_name: the database name, support \"==\", \"!=\", \"in [xx]\", \"!(in [xx])\", \"contains()\", \"matches()\", \"startsWith()\", \"endsWith()\" operations.\n resource.schema_name: the schema name, support \"==\", \"!=\", \"in [xx]\", \"!(in [xx])\", \"contains()\", \"matches()\", \"startsWith()\", \"endsWith()\" operations.\n resource.table_name: the table name, support \"==\", \"!=\", \"in [xx]\", \"!(in [xx])\", \"contains()\", \"matches()\", \"startsWith()\", \"endsWith()\" operations.\n statement.text: the SQL statement, support \"contains()\", \"matches()\", \"startsWith()\", \"endsWith()\" operations.\n request.expiration_days: the role expiration days for the request, support \"==\", \"!=\", \"<\", \"<=\", \">\", \">=\" operations.\n request.role: the request role full name, support \"==\", \"!=\", \"in [xx]\", \"!(in [xx])\", \"contains()\", \"matches()\", \"startsWith()\", \"endsWith()\" operations.\n\n When source is CHANGE_DATABASE, support: statement.*, resource.* (excluding request.*)\n When source is CREATE_DATABASE, support: resource.environment_id, resource.project_id, resource.db_engine, resource.database_name\n When source is REQUEST_ROLE, support: resource.project_id, request.expiration_days, request.role\n When source is REQUEST_ACCESS, support: resource.environment_id, resource.project_id, resource.db_engine, resource.database_name, resource.schema_name, resource.table_name, request.unmask, request.data_export\n\n For examples:\n resource.environment_id == \"prod\" && statement.affected_rows >= 100\n resource.table_name.matches(\"sensitive_.*\") && resource.db_engine == \"MYSQL\""
+        source:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.WorkspaceApprovalSetting.Rule.Source'
+          title: source
+      title: Rule
+      additionalProperties: false
+    bytebase.v1.Algorithm.InnerOuterMask.MaskType:
+      type: string
+      title: MaskType
+      enum:
+      - MASK_TYPE_UNSPECIFIED
+      - INNER
+      - OUTER
+    bytebase.v1.EmailSetting.SMTPConfig:
+      type: object
+      properties:
+        host:
+          type: string
+          title: host
+        port:
+          type: integer
+          title: port
+          format: int32
+        username:
+          type: string
+          title: username
+        password:
+          type: string
+          title: password
+          writeOnly: true
+        encryption:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.EmailSetting.SMTPConfig.Encryption'
+          title: encryption
+        authentication:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.EmailSetting.SMTPConfig.Authentication'
+          title: authentication
+      title: SMTPConfig
+      additionalProperties: false
+    bytebase.v1.EmailSetting.SMTPConfig.Encryption:
+      type: string
+      title: Encryption
+      enum:
+      - ENCRYPTION_UNSPECIFIED
+      - ENCRYPTION_NONE
+      - STARTTLS
+      - SSL_TLS
+    bytebase.v1.Algorithm.MD5Mask:
+      type: object
+      properties:
+        salt:
+          type: string
+          title: salt
+          description: salt is the salt value to generate a different hash that with the word alone.
+      title: MD5Mask
+      additionalProperties: false
+    bytebase.v1.MCPSetting:
+      type: object
+      properties:
+        capability:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.MCPSetting.Capability'
+          title: capability
+          description: "The maximum capability available to MCP sessions in this workspace, acting\n as an admin-set ceiling. Enforced server-side at three points: the /mcp\n endpoint decides whether a connection is admitted at all, the ceiling gate\n on the internal MCP chain decides, per request, which method classes are\n served, and under READ_ONLY the SQL clamp decides, per statement, whether\n it only reads."
+      title: MCPSetting
+      additionalProperties: false
+      description: "MCPSetting is what an MCP (Model Context Protocol) session may do in this\n workspace."
+    bytebase.v1.EmailSetting:
+      type: object
+      anyOf:
+      - type: object
+        properties:
+          smtp:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.EmailSetting.SMTPConfig'
+            title: smtp
+        title: smtp
+      unevaluatedProperties: false
+      properties:
+        from:
+          type: string
+          title: from
+        fromName:
+          type: string
+          title: from_name
+        type:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.EmailSetting.Type'
+          title: type
+      title: EmailSetting
+    bytebase.v1.SemanticTypeSetting.SemanticType:
+      type: object
+      properties:
+        id:
+          type: string
+          title: id
+          description: id is the uuid for semantic type.
+        title:
+          type: string
+          title: title
+          description: the title of the semantic type, it should not be empty.
+        description:
+          type: string
+          title: description
+          description: the description of the semantic type, it can be empty.
+        algorithm:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.Algorithm'
+          title: algorithm
+        icon:
+          type: string
+          title: icon
+          description: icon is the icon for semantic type, it can be emoji or base64 encoded image.
+      title: SemanticType
+      additionalProperties: false
+    bytebase.v1.TestEmailSettingResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          title: success
+        error:
+          type: string
+          title: error
+      title: TestEmailSettingResponse
+      additionalProperties: false
+    bytebase.v1.WorkspaceApprovalSetting:
+      type: object
+      properties:
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.WorkspaceApprovalSetting.Rule'
+          title: rules
+      title: WorkspaceApprovalSetting
+      additionalProperties: false
+    bytebase.v1.AISetting.Provider:
+      type: string
+      title: Provider
+      enum:
+      - PROVIDER_UNSPECIFIED
+      - OPEN_AI
+      - CLAUDE
+      - GEMINI
+      - AZURE_OPENAI
+    bytebase.v1.Algorithm:
+      type: object
+      anyOf:
+      - type: object
+        properties:
+          fullMask:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.Algorithm.FullMask'
+            title: full_mask
+        title: full_mask
+      - type: object
+        properties:
+          innerOuterMask:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.Algorithm.InnerOuterMask'
+            title: inner_outer_mask
+        title: inner_outer_mask
+      - type: object
+        properties:
+          md5Mask:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.Algorithm.MD5Mask'
+            title: md5_mask
+        title: md5_mask
+      - type: object
+        properties:
+          rangeMask:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.Algorithm.RangeMask'
+            title: range_mask
+        title: range_mask
+      unevaluatedProperties: false
+      not:
+        allOf:
+        - anyOf:
+          - required:
+            - fullMask
+          - required:
+            - innerOuterMask
+          - required:
+            - md5Mask
+          - required:
+            - rangeMask
+        - not:
+            oneOf:
+            - required:
+              - fullMask
+            - required:
+              - innerOuterMask
+            - required:
+              - md5Mask
+            - required:
+              - rangeMask
+      title: Algorithm
+    bytebase.v1.Algorithm.FullMask:
+      type: object
+      properties:
+        substitution:
+          type: string
+          title: substitution
+          description: "substitution is the string used to replace the original value, the\n max length of the string is 16 bytes."
+      title: FullMask
+      additionalProperties: false
+    bytebase.v1.EnvironmentSetting.Environment:
+      type: object
+      properties:
+        name:
+          type: string
+          title: name
+          description: "The resource name of the environment.\n Format: environments/{environment}.\n Output only."
+          readOnly: true
+        id:
+          type: string
+          title: id
+          description: "The resource id of the environment.\n This value should be 4-63 characters, and valid characters\n are /[a-z][0-9]-/."
+        title:
+          type: string
+          title: title
+          description: The display name of the environment.
+        tags:
+          type: object
+          title: tags
+          additionalProperties:
+            type: string
+            title: value
+        color:
+          allOf:
+          - $ref: '#/components/schemas/google.type.Color'
+          title: color
+      title: Environment
+      additionalProperties: false
+    bytebase.v1.Announcement:
+      type: object
+      properties:
+        text:
+          type: string
+          title: text
+          description: The text of announcement
+        link:
+          type: string
+          title: link
+          description: The optional link, user can follow the link to check extra details
+        theme:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.Announcement.AnnouncementTheme'
+          title: theme
+          description: "Banner colors. Built-in presets (info/warning/critical) are a\n frontend-only concept that seeds these colors; the store only holds them."
+      title: Announcement
+      additionalProperties: false
+    bytebase.v1.Setting:
+      type: object
+      properties:
+        name:
+          type: string
+          title: name
+          description: "(IDENTIFIER) The resource name of the setting.\n Format: settings/{setting}\n Example: \"settings/SEMANTIC_TYPES\""
+        value:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.SettingValue'
+          title: value
+          description: The configuration value of the setting.
+      title: Setting
+      required:
+      - value
+      additionalProperties: false
+      description: The schema of setting.
+    bytebase.v1.ListSettingsResponse:
+      type: object
+      properties:
+        settings:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.Setting'
+          title: settings
+          description: The settings from the specified request.
+      title: ListSettingsResponse
+      additionalProperties: false
+    bytebase.v1.DataClassificationSetting.DataClassificationConfig.Level:
+      type: object
+      properties:
+        title:
+          type: string
+          title: title
+        level:
+          type: integer
+          title: level
+          format: int32
+          description: The numeric level for ordering. Higher = more sensitive.
+      title: Level
+      additionalProperties: false
+    bytebase.v1.SQLEditorThemeSetting:
+      type: object
+      properties:
+        id:
+          type: string
+          title: id
+        name:
+          type: string
+          title: name
+        monacoBase:
+          type: string
+          title: monaco_base
+        tokens:
+          type: object
+          title: tokens
+          additionalProperties:
+            allOf:
+            - $ref: '#/components/schemas/google.type.Color'
+            title: value
+          description: CSS token colors.
+      title: SQLEditorThemeSetting
+      additionalProperties: false
+    bytebase.v1.SettingValue:
+      type: object
+      anyOf:
+      - type: object
+        properties:
+          ai:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.AISetting'
+            title: ai
+        title: ai
+      - type: object
+        properties:
+          appIm:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.AppIMSetting'
+            title: app_im
+        title: app_im
+      - type: object
+        properties:
+          dataClassification:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.DataClassificationSetting'
+            title: data_classification
+        title: data_classification
+      - type: object
+        properties:
+          email:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.EmailSetting'
+            title: email
+        title: email
+      - type: object
+        properties:
+          environment:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.EnvironmentSetting'
+            title: environment
+        title: environment
+      - type: object
+        properties:
+          mcp:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.MCPSetting'
+            title: mcp
+        title: mcp
+      - type: object
+        properties:
+          semanticType:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.SemanticTypeSetting'
+            title: semantic_type
+        title: semantic_type
+      - type: object
+        properties:
+          workspaceApproval:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.WorkspaceApprovalSetting'
+            title: workspace_approval
+        title: workspace_approval
+      - type: object
+        properties:
+          workspaceProfile:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.WorkspaceProfileSetting'
+            title: workspace_profile
+        title: workspace_profile
+      unevaluatedProperties: false
+      not:
+        allOf:
+        - anyOf:
+          - required:
+            - ai
+          - required:
+            - appIm
+          - required:
+            - dataClassification
+          - required:
+            - email
+          - required:
+            - environment
+          - required:
+            - mcp
+          - required:
+            - semanticType
+          - required:
+            - workspaceApproval
+          - required:
+            - workspaceProfile
+        - not:
+            oneOf:
+            - required:
+              - ai
+            - required:
+              - appIm
+            - required:
+              - dataClassification
+            - required:
+              - email
+            - required:
+              - environment
+            - required:
+              - mcp
+            - required:
+              - semanticType
+            - required:
+              - workspaceApproval
+            - required:
+              - workspaceProfile
+      title: SettingValue
+      description: The data in setting value.
+    google.protobuf.Duration:
+      type: string
+      format: duration
+      description: A signed duration in seconds, with up to nine fractional digits and an `s` suffix (for example, `3s` or `-0.001s`).
+    bytebase.v1.AppIMSetting.IMSetting:
+      type: object
+      anyOf:
+      - type: object
+        properties:
+          dingtalk:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.AppIMSetting.DingTalk'
+            title: dingtalk
+        title: dingtalk
+      - type: object
+        properties:
+          feishu:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.AppIMSetting.Feishu'
+            title: feishu
+        title: feishu
+      - type: object
+        properties:
+          lark:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.AppIMSetting.Lark'
+            title: lark
+        title: lark
+      - type: object
+        properties:
+          slack:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.AppIMSetting.Slack'
+            title: slack
+        title: slack
+      - type: object
+        properties:
+          teams:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.AppIMSetting.Teams'
+            title: teams
+        title: teams
+      - type: object
+        properties:
+          wecom:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.AppIMSetting.Wecom'
+            title: wecom
+        title: wecom
+      unevaluatedProperties: false
+      not:
+        allOf:
+        - anyOf:
+          - required:
+            - dingtalk
+          - required:
+            - feishu
+          - required:
+            - lark
+          - required:
+            - slack
+          - required:
+            - teams
+          - required:
+            - wecom
+        - not:
+            oneOf:
+            - required:
+              - dingtalk
+            - required:
+              - feishu
+            - required:
+              - lark
+            - required:
+              - slack
+            - required:
+              - teams
+            - required:
+              - wecom
+      properties:
+        type:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.WebhookType'
+          title: type
+      title: IMSetting
+    bytebase.v1.AppIMSetting.Lark:
+      type: object
+      properties:
+        appId:
+          type: string
+          title: app_id
+          writeOnly: true
+        appSecret:
+          type: string
+          title: app_secret
+          writeOnly: true
+      title: Lark
+      additionalProperties: false
+    bytebase.v1.AISetting:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          title: enabled
+        provider:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.AISetting.Provider'
+          title: provider
+        endpoint:
+          type: string
+          title: endpoint
+        apiKey:
+          type: string
+          title: api_key
+        model:
+          type: string
+          title: model
+        version:
+          type: string
+          title: version
+        sqlReviewEnabled:
+          type: boolean
+          title: sql_review_enabled
+          description: "Whether the AI SQL review may run. It is off by default and is a consent\n of its own beside `enabled`: a review sends the statements of a change to\n the provider, and can send the schema of its target databases and their\n table statistics."
+      title: AISetting
+      additionalProperties: false
+    bytebase.v1.EmailSetting.Type:
+      type: string
+      title: Type
+      enum:
+      - TYPE_UNSPECIFIED
+      - SMTP

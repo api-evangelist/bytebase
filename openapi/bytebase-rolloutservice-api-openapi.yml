@@ -1,0 +1,1409 @@
+openapi: 3.2.0
+info:
+  title: Bytebase API Reference Rollout Service API
+  description: API reference for Bytebase. Every endpoint is served by your own Bytebase instance.
+  version: 1.0.0
+security: []
+tags:
+- name: RolloutService
+  description: RolloutService manages the execution of deployment plans.
+paths:
+  /v1/projects/{project}/plans/{plan}/rollout:
+    get:
+      tags:
+      - RolloutService
+      summary: GetRollout
+      description: 'Retrieves a rollout by its plan name.
+
+        Permissions required: bb.rollouts.get'
+      operationId: RolloutService_GetRollout
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: plan
+        in: path
+        description: The plan id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Rollout'
+    post:
+      tags:
+      - RolloutService
+      summary: CreateRollout
+      description: 'Creates a new rollout for a plan.
+
+        Permissions required: bb.rollouts.create'
+      operationId: RolloutService_CreateRollout
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: plan
+        in: path
+        description: The plan id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                target:
+                  type:
+                  - string
+                  - 'null'
+                  title: target
+                  description: "Create the rollout only for the specified target.\n Format: environments/{environment}\n If unspecified, all stages are created.\n If set to \"\", no stages are created."
+              title: CreateRolloutRequest
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Rollout'
+  /v1/projects/{project}/plans/{plan}/rollout/stages/{stage}/tasks/{task}/taskRuns:
+    get:
+      tags:
+      - RolloutService
+      summary: ListTaskRuns
+      description: 'Lists task run executions for a task.
+
+        Permissions required: bb.taskRuns.list'
+      operationId: RolloutService_ListTaskRuns
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: plan
+        in: path
+        description: The plan id.
+        required: true
+        schema:
+          type: string
+      - name: stage
+        in: path
+        description: The stage id.
+        required: true
+        schema:
+          type: string
+      - name: task
+        in: path
+        description: The task id.
+        required: true
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: "The maximum number of task runs to return. The service may return fewer\n than this value.\n If unspecified, at most 1000 task runs will be returned.\n The maximum value is 1000; values above 1000 will be coerced to 1000."
+        schema:
+          type: integer
+          title: page_size
+          format: int32
+      - name: pageToken
+        in: query
+        description: "A page token, received from a previous `ListTaskRuns` call.\n Provide this to retrieve the subsequent page.\n\n When paginating, all other parameters provided to `ListTaskRuns` must match\n the call that provided the page token."
+        schema:
+          type: string
+          title: page_token
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ListTaskRunsResponse'
+  /v1/projects/{project}/plans/{plan}/rollout/stages/{stage}/tasks/{task}/taskRuns/{taskRun}:
+    get:
+      tags:
+      - RolloutService
+      summary: GetTaskRun
+      description: 'Retrieves a task run by name.
+
+        Permissions required: bb.taskRuns.list'
+      operationId: RolloutService_GetTaskRun
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: plan
+        in: path
+        description: The plan id.
+        required: true
+        schema:
+          type: string
+      - name: stage
+        in: path
+        description: The stage id.
+        required: true
+        schema:
+          type: string
+      - name: task
+        in: path
+        description: The task id.
+        required: true
+        schema:
+          type: string
+      - name: taskRun
+        in: path
+        description: The taskRun id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.TaskRun'
+  /v1/projects/{project}/plans/{plan}/rollout/stages/{stage}/tasks/{task}/taskRuns/{taskRun}/log:
+    get:
+      tags:
+      - RolloutService
+      summary: GetTaskRunLog
+      description: 'Retrieves execution logs for a task run.
+
+        Permissions required: bb.taskRuns.list'
+      operationId: RolloutService_GetTaskRunLog
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: plan
+        in: path
+        description: The plan id.
+        required: true
+        schema:
+          type: string
+      - name: stage
+        in: path
+        description: The stage id.
+        required: true
+        schema:
+          type: string
+      - name: task
+        in: path
+        description: The task id.
+        required: true
+        schema:
+          type: string
+      - name: taskRun
+        in: path
+        description: The taskRun id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.TaskRunLog'
+  /v1/projects/{project}/plans/{plan}/rollout/stages/{stage}/tasks/{task}/taskRuns/{taskRun}/session:
+    get:
+      tags:
+      - RolloutService
+      summary: GetTaskRunSession
+      description: 'Retrieves database session information for a running task.
+
+        Permissions required: bb.taskRuns.list'
+      operationId: RolloutService_GetTaskRunSession
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: plan
+        in: path
+        description: The plan id.
+        required: true
+        schema:
+          type: string
+      - name: stage
+        in: path
+        description: The stage id.
+        required: true
+        schema:
+          type: string
+      - name: task
+        in: path
+        description: The task id.
+        required: true
+        schema:
+          type: string
+      - name: taskRun
+        in: path
+        description: The taskRun id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.TaskRunSession'
+  /v1/projects/{project}/plans/{plan}/rollout/stages/{stage}/tasks/{task}/taskRuns/{taskRun}:previewRollback:
+    post:
+      tags:
+      - RolloutService
+      summary: PreviewTaskRunRollback
+      description: 'Generates rollback SQL for a completed task run.
+
+        Permissions required: bb.taskRuns.list'
+      operationId: RolloutService_PreviewTaskRunRollback
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: plan
+        in: path
+        description: The plan id.
+        required: true
+        schema:
+          type: string
+      - name: stage
+        in: path
+        description: The stage id.
+        required: true
+        schema:
+          type: string
+      - name: task
+        in: path
+        description: The task id.
+        required: true
+        schema:
+          type: string
+      - name: taskRun
+        in: path
+        description: The taskRun id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.PreviewTaskRunRollbackResponse'
+  /v1/projects/{project}/plans/{plan}/rollout/stages/{stage}/tasks/{task}/taskRuns:batchCancel:
+    post:
+      tags:
+      - RolloutService
+      summary: BatchCancelTaskRuns
+      description: 'Cancels multiple task runs.
+
+        PENDING and AVAILABLE task runs are moved to CANCELED synchronously. RUNNING task runs receive
+
+        a best-effort cancellation request and may continue running if the request is missed or the
+
+        executor does not stop. The response does not report which task runs were actually canceled.
+
+        Permissions required: bb.taskRuns.create (or user with rollout policy role for the environment)'
+      operationId: RolloutService_BatchCancelTaskRuns
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: plan
+        in: path
+        description: The plan id.
+        required: true
+        schema:
+          type: string
+      - name: stage
+        in: path
+        description: The stage id.
+        required: true
+        schema:
+          type: string
+      - name: task
+        in: path
+        description: The task id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                taskRuns:
+                  type: array
+                  items:
+                    type: string
+                  title: task_runs
+                  description: "The taskRuns to cancel.\n Format: projects/{project}/plans/{plan}/rollout/stages/{stage}/tasks/{task}/taskRuns/{taskRun}"
+              title: BatchCancelTaskRunsRequest
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.BatchCancelTaskRunsResponse'
+  /v1/projects/{project}/plans/{plan}/rollout/stages/{stage}/tasks:batchRun:
+    post:
+      tags:
+      - RolloutService
+      summary: BatchRunTasks
+      description: 'Executes multiple tasks in a rollout stage.
+
+        Permissions required: bb.taskRuns.create (or user with rollout policy role for the environment)'
+      operationId: RolloutService_BatchRunTasks
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: plan
+        in: path
+        description: The plan id.
+        required: true
+        schema:
+          type: string
+      - name: stage
+        in: path
+        description: The stage id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tasks:
+                  type: array
+                  items:
+                    type: string
+                  title: tasks
+                  description: "The tasks to run.\n Format: projects/{project}/plans/{plan}/rollout/stages/{stage}/tasks/{task}"
+                runTime:
+                  oneOf:
+                  - $ref: '#/components/schemas/google.protobuf.Timestamp'
+                  - type: 'null'
+                  title: run_time
+                  description: The task run should run after run_time.
+                skipPriorBackup:
+                  type: boolean
+                  title: skip_prior_backup
+                  description: If true, skip prior backup for this run even if the task has prior backup enabled.
+              title: BatchRunTasksRequest
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.BatchRunTasksResponse'
+  /v1/projects/{project}/plans/{plan}/rollout/stages/{stage}/tasks:batchSkip:
+    post:
+      tags:
+      - RolloutService
+      summary: BatchSkipTasks
+      description: 'Skips multiple tasks in a rollout stage.
+
+        Permissions required: bb.taskRuns.create (or user with rollout policy role for the environment)'
+      operationId: RolloutService_BatchSkipTasks
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: plan
+        in: path
+        description: The plan id.
+        required: true
+        schema:
+          type: string
+      - name: stage
+        in: path
+        description: The stage id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tasks:
+                  type: array
+                  items:
+                    type: string
+                  title: tasks
+                  description: "The tasks to skip.\n Format: projects/{project}/plans/{plan}/rollout/stages/{stage}/tasks/{task}"
+                reason:
+                  type: string
+                  title: reason
+                  maxLength: 1000
+                  description: The reason for skipping the tasks.
+              title: BatchSkipTasksRequest
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.BatchSkipTasksResponse'
+  /v1/projects/{project}/rollouts:
+    get:
+      tags:
+      - RolloutService
+      summary: ListRollouts
+      description: 'Lists rollouts in a project.
+
+        Permissions required: bb.rollouts.list'
+      operationId: RolloutService_ListRollouts
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: "The maximum number of rollouts to return. The service may return fewer than\n this value.\n If unspecified, at most 10 rollouts will be returned.\n The maximum value is 1000; values above 1000 will be coerced to 1000."
+        schema:
+          type: integer
+          title: page_size
+          format: int32
+      - name: pageToken
+        in: query
+        description: "A page token, received from a previous `ListRollouts` call.\n Provide this to retrieve the subsequent page.\n\n When paginating, all other parameters provided to `ListRollouts` must match\n the call that provided the page token."
+        schema:
+          type: string
+          title: page_token
+      - name: filter
+        in: query
+        description: "Filter is used to filter rollouts returned in the list.\n The syntax and semantics of CEL are documented at https://github.com/google/cel-spec\n\n Supported filters:\n - update_time: rollout update time in \"2006-01-02T15:04:05Z07:00\" format, support \">=\" or \"<=\" operator.\n - task_type: the task type, support \"in\" operator, check the Task.Type enum for the values.\n\n For example:\n update_time >= \"2025-01-02T15:04:05Z07:00\"\n task_type in [\"DATABASE_MIGRATE\", \"DATABASE_CREATE\"]"
+        schema:
+          type: string
+          title: filter
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ListRolloutsResponse'
+components:
+  schemas:
+    bytebase.v1.TaskRun.SchedulerInfo:
+      type: object
+      properties:
+        reportTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: report_time
+          description: The time when the scheduling info was reported.
+        waitingCause:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.TaskRun.SchedulerInfo.WaitingCause'
+          title: waiting_cause
+          description: The cause for the task run waiting.
+      title: SchedulerInfo
+      additionalProperties: false
+      description: Information about task run scheduling.
+    bytebase.v1.TaskRun.Status:
+      type: string
+      title: Status
+      enum:
+      - STATUS_UNSPECIFIED
+      - PENDING
+      - RUNNING
+      - DONE
+      - FAILED
+      - CANCELED
+      - AVAILABLE
+    bytebase.v1.Task:
+      type: object
+      anyOf:
+      - type: object
+        properties:
+          databaseCreate:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.Task.DatabaseCreate'
+            title: database_create
+        title: database_create
+      - type: object
+        properties:
+          databaseUpdate:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.Task.DatabaseUpdate'
+            title: database_update
+        title: database_update
+      unevaluatedProperties: false
+      not:
+        allOf:
+        - anyOf:
+          - required:
+            - databaseCreate
+          - required:
+            - databaseUpdate
+        - not:
+            oneOf:
+            - required:
+              - databaseCreate
+            - required:
+              - databaseUpdate
+      properties:
+        name:
+          type: string
+          title: name
+          description: 'Format: projects/{project}/plans/{plan}/rollout/stages/{stage}/tasks/{task}'
+        specId:
+          type: string
+          title: spec_id
+          description: A UUID4 string that uniquely identifies the Spec.
+        status:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.Task.Status'
+          title: status
+          description: Status is the status of the task.
+        skippedReason:
+          type: string
+          title: skipped_reason
+          description: The reason why the task was skipped.
+        type:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.Task.Type'
+          title: type
+        target:
+          type: string
+          title: target
+          description: "Format: instances/{instance} or projects/{project}/instances/{instance} if the task is DatabaseCreate.\n Format: instances/{instance}/databases/{database} or projects/{project}/instances/{instance}/databases/{database}"
+        updateTime:
+          oneOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          - type: 'null'
+          title: update_time
+          description: "The update_time is the update time of latest task run.\n If there are no task runs, it will be empty."
+          readOnly: true
+        runTime:
+          oneOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          - type: 'null'
+          title: run_time
+          description: "The run_time is the scheduled run time of latest task run.\n If there are no task runs or the task run is not scheduled, it will be empty."
+          readOnly: true
+      title: Task
+    bytebase.v1.TaskRunSession.Postgres:
+      type: object
+      properties:
+        session:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.TaskRunSession.Postgres.Session'
+          title: session
+          description: '`session` is the session of the task run executing commands.'
+        blockingSessions:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.TaskRunSession.Postgres.Session'
+          title: blocking_sessions
+          description: '`blocking_sessions` block `session`.'
+        blockedSessions:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.TaskRunSession.Postgres.Session'
+          title: blocked_sessions
+          description: '`blocked_sessions` are blocked by `session`.'
+      title: Postgres
+      additionalProperties: false
+      description: PostgreSQL session information.
+    bytebase.v1.TaskRunLogEntry.ReleaseFileExecute:
+      type: object
+      properties:
+        version:
+          type: string
+          title: version
+          description: The version of the file being executed (e.g., "0001").
+        filePath:
+          type: string
+          title: file_path
+          description: The file path within the release (e.g., "2.2/V0001_create_table.sql").
+      title: ReleaseFileExecute
+      additionalProperties: false
+      description: Release file execution details.
+    bytebase.v1.TaskRunLogEntry:
+      type: object
+      properties:
+        type:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.TaskRunLogEntry.Type'
+          title: type
+          description: The type of this log entry.
+        logTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: log_time
+          description: The time when the log was recorded.
+        replicaId:
+          type: string
+          title: replica_id
+          description: The replica ID for this log entry.
+        schemaDump:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.TaskRunLogEntry.SchemaDump'
+          title: schema_dump
+          description: Schema dump details (if type is SCHEMA_DUMP).
+        commandExecute:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.TaskRunLogEntry.CommandExecute'
+          title: command_execute
+          description: Command execution details (if type is COMMAND_EXECUTE).
+        databaseSync:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.TaskRunLogEntry.DatabaseSync'
+          title: database_sync
+          description: Database sync details (if type is DATABASE_SYNC).
+        transactionControl:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.TaskRunLogEntry.TransactionControl'
+          title: transaction_control
+          description: Transaction control details (if type is TRANSACTION_CONTROL).
+        priorBackup:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.TaskRunLogEntry.PriorBackup'
+          title: prior_backup
+          description: Prior backup details (if type is PRIOR_BACKUP).
+        retryInfo:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.TaskRunLogEntry.RetryInfo'
+          title: retry_info
+          description: Retry information details (if type is RETRY_INFO).
+        computeDiff:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.TaskRunLogEntry.ComputeDiff'
+          title: compute_diff
+          description: Compute diff details (if type is COMPUTE_DIFF).
+        releaseFileExecute:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.TaskRunLogEntry.ReleaseFileExecute'
+          title: release_file_execute
+          description: Release file execution details (if type is RELEASE_FILE_EXECUTE).
+        ghostMigration:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.TaskRunLogEntry.GhostMigration'
+          title: ghost_migration
+          description: gh-ost migration details (if type is GHOST_MIGRATION).
+      title: TaskRunLogEntry
+      additionalProperties: false
+    bytebase.v1.TaskRunLogEntry.CommandExecute:
+      type: object
+      properties:
+        logTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: log_time
+          description: When the command was logged.
+        range:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.Range'
+          title: range
+          description: "The byte offset range of the executed command in the sheet.\n Uses byte offsets (not character indices) for efficient slicing of sheet content bytes.\n Example: For \"SELECT 你好;\" in a UTF-8 sheet, range [0, 13) represents all 13 bytes."
+        statement:
+          type: string
+          title: statement
+          description: The executed statement.
+        response:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.TaskRunLogEntry.CommandExecute.CommandResponse'
+          title: response
+          description: The response from executing the command.
+      title: CommandExecute
+      additionalProperties: false
+      description: Command execution details.
+    bytebase.v1.TaskRunLog:
+      type: object
+      properties:
+        name:
+          type: string
+          title: name
+          description: 'Format: projects/{project}/plans/{plan}/rollout/stages/{stage}/tasks/{task}/taskRuns/{taskRun}/log'
+        entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.TaskRunLogEntry'
+          title: entries
+          description: The log entries for this task run.
+      title: TaskRunLog
+      additionalProperties: false
+    bytebase.v1.TaskRunLogEntry.TransactionControl:
+      type: object
+      properties:
+        type:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.TaskRunLogEntry.TransactionControl.Type'
+          title: type
+          description: The type of transaction control.
+        error:
+          type: string
+          title: error
+          description: Error message if the operation failed.
+      title: TransactionControl
+      additionalProperties: false
+      description: Transaction control operation details.
+    bytebase.v1.TaskRunLogEntry.TransactionControl.Type:
+      type: string
+      title: Type
+      enum:
+      - TYPE_UNSPECIFIED
+      - BEGIN
+      - COMMIT
+      - ROLLBACK
+      description: Transaction control type.
+    bytebase.v1.TaskRunLogEntry.SchemaDump:
+      type: object
+      properties:
+        startTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: start_time
+          description: When the schema dump started.
+        endTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: end_time
+          description: When the schema dump ended.
+        error:
+          type: string
+          title: error
+          description: Error message if the schema dump failed.
+      title: SchemaDump
+      additionalProperties: false
+      description: Schema dump operation details.
+    bytebase.v1.TaskRunLogEntry.CommandExecute.CommandResponse:
+      type: object
+      properties:
+        logTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: log_time
+          description: When the response was logged.
+        error:
+          type: string
+          title: error
+          description: Error message if command execution failed.
+        affectedRows:
+          type: string
+          title: affected_rows
+          format: int64
+          description: Total affected rows.
+        allAffectedRows:
+          type: array
+          items:
+            type: string
+            format: int64
+          title: all_affected_rows
+          description: "`all_affected_rows` is the affected rows of each command.\n `all_affected_rows` may be unavailable if the database driver doesn't support it. Caller should fallback to `affected_rows` in that case."
+      title: CommandResponse
+      additionalProperties: false
+      description: Command execution response.
+    bytebase.v1.Task.Status:
+      type: string
+      title: Status
+      enum:
+      - STATUS_UNSPECIFIED
+      - NOT_STARTED
+      - PENDING
+      - RUNNING
+      - DONE
+      - FAILED
+      - CANCELED
+      - SKIPPED
+    bytebase.v1.TaskRunLogEntry.PriorBackup:
+      type: object
+      properties:
+        startTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: start_time
+          description: When the backup started.
+        endTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: end_time
+          description: When the backup ended.
+        priorBackupDetail:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.TaskRunLogEntry.PriorBackup.PriorBackupDetail'
+          title: prior_backup_detail
+          description: The backup details.
+        error:
+          type: string
+          title: error
+          description: Error message if the backup failed.
+      title: PriorBackup
+      additionalProperties: false
+      description: Prior backup operation details.
+    bytebase.v1.BatchCancelTaskRunsResponse:
+      type: object
+      title: BatchCancelTaskRunsResponse
+      additionalProperties: false
+    bytebase.v1.TaskRun:
+      type: object
+      properties:
+        name:
+          type: string
+          title: name
+          description: 'Format: projects/{project}/plans/{plan}/rollout/stages/{stage}/tasks/{task}/taskRuns/{taskRun}'
+        creator:
+          type: string
+          title: creator
+          description: 'Format: users/hello@world.com'
+        createTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: create_time
+          readOnly: true
+        updateTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: update_time
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.TaskRun.Status'
+          title: status
+          description: The current execution status of the task run.
+        detail:
+          type: string
+          title: detail
+          description: "Below are the results of a task run.\n Detailed information about the task run result."
+        startTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: start_time
+          description: The time when the task run started execution.
+          readOnly: true
+        hasPriorBackup:
+          type: boolean
+          title: has_prior_backup
+          description: "Indicates whether a prior backup was created for this task run.\n When true, rollback SQL can be generated via PreviewTaskRunRollback.\n Backup details are available in the task run logs."
+        schedulerInfo:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.TaskRun.SchedulerInfo'
+          title: scheduler_info
+          description: Scheduling information about the task run.
+          readOnly: true
+        runTime:
+          oneOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          - type: 'null'
+          title: run_time
+          description: "The task run should run after run_time.\n This can only be set when creating the task run calling BatchRunTasks."
+          readOnly: true
+      title: TaskRun
+      additionalProperties: false
+    google.protobuf.Timestamp:
+      type: string
+      examples:
+      - '2023-01-15T01:30:15.01Z'
+      - '2024-12-25T12:00:00Z'
+      format: date-time
+      description: A point in time in RFC 3339 format, with up to nanosecond precision. Output uses UTC (`Z`); input may use an offset from UTC.
+    bytebase.v1.TaskRunLogEntry.PriorBackup.PriorBackupDetail.Item.Table:
+      type: object
+      properties:
+        database:
+          type: string
+          title: database
+          description: "The database information.\n Format: instances/{instance}/databases/{database} or projects/{project}/instances/{instance}/databases/{database}"
+        schema:
+          type: string
+          title: schema
+          description: The schema name.
+        table:
+          type: string
+          title: table
+          description: The table name.
+      title: Table
+      additionalProperties: false
+      description: Table information.
+    bytebase.v1.Task.DatabaseCreate:
+      type: object
+      properties:
+        sheet:
+          type: string
+          title: sheet
+          description: 'Format: projects/{project}/sheets/{sheet}'
+      title: DatabaseCreate
+      additionalProperties: false
+      description: Payload for creating a new database.
+    bytebase.v1.BatchRunTasksResponse:
+      type: object
+      title: BatchRunTasksResponse
+      additionalProperties: false
+    bytebase.v1.Range:
+      type: object
+      properties:
+        start:
+          type: integer
+          title: start
+          format: int32
+          description: Start index (inclusive).
+        end:
+          type: integer
+          title: end
+          format: int32
+          description: End index (exclusive).
+      title: Range
+      additionalProperties: false
+      description: "Range represents a span within a text or sequence.\n Whether the indices are byte offsets or character indices depends on the context.\n Check the documentation of the field using Range for specific semantics."
+    bytebase.v1.TaskRunLogEntry.GhostMigration:
+      type: object
+      properties:
+        startTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: start_time
+          description: When the gh-ost migration started.
+        endTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: end_time
+          description: When the gh-ost migration ended.
+        error:
+          type: string
+          title: error
+          description: Error message if the gh-ost migration failed.
+      title: GhostMigration
+      additionalProperties: false
+      description: gh-ost migration details.
+    bytebase.v1.BatchSkipTasksResponse:
+      type: object
+      title: BatchSkipTasksResponse
+      additionalProperties: false
+    bytebase.v1.PreviewTaskRunRollbackResponse:
+      type: object
+      properties:
+        statement:
+          type: string
+          title: statement
+          description: The rollback SQL statement that would undo the task run.
+      title: PreviewTaskRunRollbackResponse
+      additionalProperties: false
+    bytebase.v1.TaskRunLogEntry.DatabaseSync:
+      type: object
+      properties:
+        startTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: start_time
+          description: When the database sync started.
+        endTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: end_time
+          description: When the database sync ended.
+        error:
+          type: string
+          title: error
+          description: Error message if sync failed.
+      title: DatabaseSync
+      additionalProperties: false
+      description: Database synchronization details.
+    bytebase.v1.TaskRunLogEntry.RetryInfo:
+      type: object
+      properties:
+        error:
+          type: string
+          title: error
+          description: The error that triggered the retry.
+        retryCount:
+          type: integer
+          title: retry_count
+          format: int32
+          description: Current retry attempt number.
+        maximumRetries:
+          type: integer
+          title: maximum_retries
+          format: int32
+          description: Maximum number of retries allowed.
+      title: RetryInfo
+      additionalProperties: false
+      description: Retry information for failed operations.
+    bytebase.v1.Rollout:
+      type: object
+      properties:
+        name:
+          type: string
+          title: name
+          description: "The resource name of the rollout.\n Format: projects/{project}/plans/{plan}/rollout"
+        title:
+          type: string
+          title: title
+          description: "The title of the rollout, inherited from the associated plan.\n This field is output only and cannot be directly set."
+          readOnly: true
+        stages:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.Stage'
+          title: stages
+          description: Stages and thus tasks of the rollout.
+          readOnly: true
+        createTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: create_time
+          readOnly: true
+        updateTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: update_time
+          readOnly: true
+      title: Rollout
+      additionalProperties: false
+    bytebase.v1.Task.Type:
+      type: string
+      title: Type
+      enum:
+      - TYPE_UNSPECIFIED
+      - GENERAL
+      - DATABASE_CREATE
+      - DATABASE_MIGRATE
+    bytebase.v1.TaskRunSession.Postgres.Session:
+      type: object
+      properties:
+        pid:
+          type: string
+          title: pid
+          description: Process ID of the session.
+        blockedByPids:
+          type: array
+          items:
+            type: string
+          title: blocked_by_pids
+          description: PIDs of sessions blocking this session.
+        query:
+          type: string
+          title: query
+          description: Current query being executed.
+        state:
+          type:
+          - string
+          - 'null'
+          title: state
+          description: Session state (active, idle, etc.).
+        waitEventType:
+          type:
+          - string
+          - 'null'
+          title: wait_event_type
+          description: Wait event type if session is waiting.
+        waitEvent:
+          type:
+          - string
+          - 'null'
+          title: wait_event
+          description: Specific wait event if session is waiting.
+        datname:
+          type:
+          - string
+          - 'null'
+          title: datname
+          description: Database name.
+        usename:
+          type:
+          - string
+          - 'null'
+          title: usename
+          description: User name.
+        applicationName:
+          type: string
+          title: application_name
+          description: Application name.
+        clientAddr:
+          type:
+          - string
+          - 'null'
+          title: client_addr
+          description: Client IP address.
+        clientPort:
+          type:
+          - string
+          - 'null'
+          title: client_port
+          description: Client port number.
+        backendStart:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: backend_start
+          description: When the backend process started.
+        xactStart:
+          oneOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          - type: 'null'
+          title: xact_start
+          description: When the current transaction started.
+        queryStart:
+          oneOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          - type: 'null'
+          title: query_start
+          description: When the current query started.
+      title: Session
+      additionalProperties: false
+      description: PostgreSQL session information read from `pg_stat_activity`.
+    bytebase.v1.TaskRunLogEntry.PriorBackup.PriorBackupDetail.Item:
+      type: object
+      properties:
+        sourceTable:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.TaskRunLogEntry.PriorBackup.PriorBackupDetail.Item.Table'
+          title: source_table
+          description: The original table information.
+        targetTable:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.TaskRunLogEntry.PriorBackup.PriorBackupDetail.Item.Table'
+          title: target_table
+          description: The target backup table information.
+        startPosition:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.Position'
+          title: start_position
+          description: The start position in the SQL statement.
+        endPosition:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.Position'
+          title: end_position
+          description: The end position in the SQL statement.
+      title: Item
+      additionalProperties: false
+      description: A single backup table mapping.
+    bytebase.v1.ListTaskRunsResponse:
+      type: object
+      properties:
+        taskRuns:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.TaskRun'
+          title: task_runs
+          description: The taskRuns from the specified request.
+        nextPageToken:
+          type: string
+          title: next_page_token
+          description: "A token, which can be sent as `page_token` to retrieve the next page.\n If this field is omitted, there are no subsequent pages."
+      title: ListTaskRunsResponse
+      additionalProperties: false
+    bytebase.v1.TaskRunLogEntry.PriorBackup.PriorBackupDetail:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.TaskRunLogEntry.PriorBackup.PriorBackupDetail.Item'
+          title: items
+          description: The list of backed up tables.
+      title: PriorBackupDetail
+      additionalProperties: false
+      description: Prior backup detail for rollback purposes.
+    bytebase.v1.Task.DatabaseUpdate:
+      type: object
+      anyOf:
+      - type: object
+        properties:
+          release:
+            type: string
+            title: release
+            description: 'Format: projects/{project}/releases/{release}'
+        title: release
+      - type: object
+        properties:
+          sheet:
+            type: string
+            title: sheet
+            description: 'Format: projects/{project}/sheets/{sheet}'
+        title: sheet
+      unevaluatedProperties: false
+      not:
+        allOf:
+        - anyOf:
+          - required:
+            - release
+          - required:
+            - sheet
+        - not:
+            oneOf:
+            - required:
+              - release
+            - required:
+              - sheet
+      title: DatabaseUpdate
+      description: Payload for updating a database schema.
+    bytebase.v1.TaskRunLogEntry.Type:
+      type: string
+      title: Type
+      enum:
+      - TYPE_UNSPECIFIED
+      - SCHEMA_DUMP
+      - COMMAND_EXECUTE
+      - DATABASE_SYNC
+      - TRANSACTION_CONTROL
+      - PRIOR_BACKUP
+      - RETRY_INFO
+      - COMPUTE_DIFF
+      - RELEASE_FILE_EXECUTE
+      - GHOST_MIGRATION
+      description: The type of log entry.
+    bytebase.v1.Stage:
+      type: object
+      properties:
+        name:
+          type: string
+          title: name
+          description: "Format: projects/{project}/plans/{plan}/rollout/stages/{stage}\n Use \"-\" for {stage} when the stage has no environment or deleted environment."
+        id:
+          type: string
+          title: id
+          description: "id is the environment id of the stage.\n e.g., \"prod\".\n Use \"-\" when the stage has no environment or deleted environment."
+          readOnly: true
+        environment:
+          type: string
+          title: environment
+          description: "environment is the environment of the stage.\n Format: environments/{environment} for valid environments, or \"environments/-\" for stages without environment or with deleted environments."
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.Task'
+          title: tasks
+          description: The tasks within this stage.
+      title: Stage
+      additionalProperties: false
+    bytebase.v1.Position:
+      type: object
+      properties:
+        line:
+          type: integer
+          title: line
+          format: int32
+          description: "Line position in a text (one-based).\n First line of the text is line 1.\n A value of 0 indicates the line information is unknown."
+        column:
+          type: integer
+          title: column
+          format: int32
+          description: "Column position in a text (one-based).\n Column is measured in Unicode code points (characters/runes), not bytes or grapheme clusters.\n First character of the line is column 1.\n A value of 0 indicates the column information is unknown.\n\n Examples:\n - \"SELECT * FROM t\" - column 8 is '*'\n - \"SELECT 你好 FROM t\" - column 8 is '你' (even though it's at byte offset 7)\n - \"SELECT \U0001F600 FROM t\" - column 8 is '\U0001F600' (even though it's 4 bytes in UTF-8)"
+      title: Position
+      additionalProperties: false
+      description: "Position in a text expressed as one-based line and one-based column.\n We use 1-based numbering to match the majority of industry standards:\n - Monaco Editor uses 1-based (https://microsoft.github.io/monaco-editor/typedoc/interfaces/IPosition.html)\n - GitHub Actions uses 1-based (https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-error-message)\n - Most text editors display 1-based positions to users\n Note: LSP uses 0-based (https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#position),\n but we follow the canonical user-facing standards.\n\n Handling unknown positions:\n - If the entire position is unknown, leave this field as nil/undefined\n - If only line is known, set line and leave column as 0 (e.g., line=5, column=0)\n - If only column is known (rare), set column and leave line as 0\n Frontends should check for nil/undefined/zero values and handle them appropriately."
+    bytebase.v1.TaskRunSession:
+      type: object
+      anyOf:
+      - type: object
+        properties:
+          postgres:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.TaskRunSession.Postgres'
+            title: postgres
+            description: PostgreSQL session information.
+        title: postgres
+      unevaluatedProperties: false
+      properties:
+        name:
+          type: string
+          title: name
+          description: 'Format: projects/{project}/plans/{plan}/rollout/stages/{stage}/tasks/{task}/taskRuns/{taskRun}/session'
+      title: TaskRunSession
+    bytebase.v1.TaskRun.SchedulerInfo.WaitingCause:
+      type: object
+      anyOf:
+      - type: object
+        properties:
+          parallelTasksLimit:
+            type: boolean
+            title: parallel_tasks_limit
+            description: Waiting due to parallel tasks limit.
+        title: parallel_tasks_limit
+      unevaluatedProperties: false
+      title: WaitingCause
+      description: Information about why a task run is waiting.
+    bytebase.v1.ListRolloutsResponse:
+      type: object
+      properties:
+        rollouts:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.Rollout'
+          title: rollouts
+          description: The rollouts from the specified request.
+        nextPageToken:
+          type: string
+          title: next_page_token
+          description: "A token, which can be sent as `page_token` to retrieve the next page.\n If this field is omitted, there are no subsequent pages."
+      title: ListRolloutsResponse
+      additionalProperties: false
+    bytebase.v1.TaskRunLogEntry.ComputeDiff:
+      type: object
+      properties:
+        startTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: start_time
+          description: When diff computation started.
+        endTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: end_time
+          description: When diff computation ended.
+        error:
+          type: string
+          title: error
+          description: Error message if computation failed.
+      title: ComputeDiff
+      additionalProperties: false
+      description: Schema diff computation details.

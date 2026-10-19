@@ -1,0 +1,587 @@
+openapi: 3.2.0
+info:
+  title: Bytebase API Reference Identity Provider Service API
+  description: API reference for Bytebase. Every endpoint is served by your own Bytebase instance.
+  version: 1.0.0
+security: []
+tags:
+- name: IdentityProviderService
+  description: IdentityProviderService manages external identity providers for SSO authentication.
+paths:
+  /v1/idps:
+    get:
+      tags:
+      - IdentityProviderService
+      summary: Lists the identity providers configured for the caller's workspace.
+      description: 'Returns the same representation as GetIdentityProvider — secrets redacted,
+
+        the rest of the configuration included — so granting
+
+        bb.identityProviders.list conveys configuration read over the whole
+
+        collection, not merely the names in it.
+
+        Permissions required: bb.identityProviders.list'
+      operationId: IdentityProviderService_ListIdentityProviders
+      parameters:
+      - name: parent
+        in: query
+        description: "The parent workspace whose identity providers should be listed. It must be\n the workspace the caller's credential belongs to.\n Format: workspaces/{workspace}"
+        required: true
+        schema:
+          type: string
+          title: parent
+          pattern: ^workspaces/[^/]+$
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ListIdentityProvidersResponse'
+    post:
+      tags:
+      - IdentityProviderService
+      summary: CreateIdentityProvider
+      description: 'Creates a new identity provider.
+
+        Permissions required: bb.identityProviders.create'
+      operationId: IdentityProviderService_CreateIdentityProvider
+      parameters:
+      - name: identityProviderId
+        in: query
+        description: "The ID to use for the identity provider, which will become the final component of\n the identity provider's resource name.\n\n This value should be 4-63 characters, and valid characters\n are /[a-z][0-9]-/."
+        schema:
+          type: string
+          title: identity_provider_id
+      - name: validateOnly
+        in: query
+        description: If set to true, the request will be validated without actually creating the identity provider.
+        schema:
+          type: boolean
+          title: validate_only
+      requestBody:
+        description: The identity provider to create.
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.IdentityProvider'
+              title: identity_provider
+              description: The identity provider to create.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.IdentityProvider'
+  /v1/idps/*:test:
+    post:
+      tags:
+      - IdentityProviderService
+      summary: TestIdentityProvider
+      description: 'Tests the connection and configuration of an identity provider.
+
+        Permissions required: bb.identityProviders.update'
+      operationId: IdentityProviderService_TestIdentityProvider
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/bytebase.v1.TestIdentityProviderRequest'
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.TestIdentityProviderResponse'
+  /v1/idps/{idp}:
+    get:
+      tags:
+      - IdentityProviderService
+      summary: GetIdentityProvider
+      description: 'Gets an identity provider by name.
+
+        Permissions required: bb.identityProviders.get'
+      operationId: IdentityProviderService_GetIdentityProvider
+      parameters:
+      - name: idp
+        in: path
+        description: The idp id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.IdentityProvider'
+    delete:
+      tags:
+      - IdentityProviderService
+      summary: DeleteIdentityProvider
+      description: 'Deletes an identity provider.
+
+        Permissions required: bb.identityProviders.delete'
+      operationId: IdentityProviderService_DeleteIdentityProvider
+      parameters:
+      - name: idp
+        in: path
+        description: The idp id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/google.protobuf.Empty'
+    patch:
+      tags:
+      - IdentityProviderService
+      summary: UpdateIdentityProvider
+      description: 'Updates an identity provider.
+
+        Permissions required: bb.identityProviders.update
+
+        When allow_missing=true, also requires: bb.identityProviders.create'
+      operationId: IdentityProviderService_UpdateIdentityProvider
+      parameters:
+      - name: idp
+        in: path
+        description: The idp id.
+        required: true
+        schema:
+          type: string
+      - name: updateMask
+        in: query
+        description: The list of fields to update.
+        schema:
+          type: string
+      - name: allowMissing
+        in: query
+        description: "If set to true, and the identity provider is not found, a new identity provider will be created.\n In this situation, `update_mask` is ignored."
+        schema:
+          type: boolean
+          title: allow_missing
+      requestBody:
+        description: "The identity provider to update.\n\n The identity provider's `name` field is used to identify the identity provider to update.\n Format: idps/{identity_provider}"
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.IdentityProvider'
+              title: identity_provider
+              description: "The identity provider to update.\n\n The identity provider's `name` field is used to identify the identity provider to update.\n Format: idps/{identity_provider}"
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.IdentityProvider'
+  /v1/workspaces/{workspace}/idps:
+    get:
+      tags:
+      - IdentityProviderService
+      summary: Lists the identity providers configured for the caller's workspace.
+      description: 'Returns the same representation as GetIdentityProvider — secrets redacted,
+
+        the rest of the configuration included — so granting
+
+        bb.identityProviders.list conveys configuration read over the whole
+
+        collection, not merely the names in it.
+
+        Permissions required: bb.identityProviders.list'
+      operationId: IdentityProviderService_ListIdentityProviders2
+      parameters:
+      - name: workspace
+        in: path
+        description: The workspace id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ListIdentityProvidersResponse'
+components:
+  schemas:
+    bytebase.v1.ListIdentityProvidersResponse:
+      type: object
+      properties:
+        identityProviders:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.IdentityProvider'
+          title: identity_providers
+          description: The identity providers from the specified request.
+      title: ListIdentityProvidersResponse
+      additionalProperties: false
+    bytebase.v1.OIDCIdentityProviderTestRequestContext:
+      type: object
+      properties:
+        code:
+          type: string
+          title: code
+          description: Authorize code from OIDC provider.
+      title: OIDCIdentityProviderTestRequestContext
+      additionalProperties: false
+    bytebase.v1.LDAPIdentityProviderConfig:
+      type: object
+      properties:
+        host:
+          type: string
+          title: host
+          description: "Host is the hostname or IP address of the LDAP server, e.g.,\n \"ldap.example.com\"."
+        port:
+          type: integer
+          title: port
+          format: int32
+          description: "Port is the port number of the LDAP server, e.g., 389. When not set, the\n default port of the corresponding security protocol will be used, i.e. 389\n for StartTLS and 636 for LDAPS."
+        skipTlsVerify:
+          type: boolean
+          title: skip_tls_verify
+          description: SkipTLSVerify controls whether to skip TLS certificate verification.
+        bindDn:
+          type: string
+          title: bind_dn
+          description: "BindDN is the DN of the user to bind as a service account to perform\n search requests."
+        bindPassword:
+          type: string
+          title: bind_password
+          description: BindPassword is the password of the user to bind as a service account.
+        baseDn:
+          type: string
+          title: base_dn
+          description: BaseDN is the base DN to search for users, e.g., "ou=users,dc=example,dc=com".
+        userFilter:
+          type: string
+          title: user_filter
+          description: UserFilter is the filter to search for users, e.g., "(uid=%s)".
+        securityProtocol:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.LDAPIdentityProviderConfig.SecurityProtocol'
+          title: security_protocol
+          description: "SecurityProtocol is the security protocol to be used for establishing\n connections with the LDAP server."
+        fieldMapping:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.FieldMapping'
+          title: field_mapping
+          description: "FieldMapping is the mapping of the user attributes returned by the LDAP\n server."
+      title: LDAPIdentityProviderConfig
+      additionalProperties: false
+      description: LDAPIdentityProviderConfig is the structure for LDAP identity provider config.
+    bytebase.v1.OAuth2AuthStyle:
+      type: string
+      title: OAuth2AuthStyle
+      enum:
+      - OAUTH2_AUTH_STYLE_UNSPECIFIED
+      - IN_PARAMS
+      - IN_HEADER
+    bytebase.v1.OIDCIdentityProviderConfig:
+      type: object
+      properties:
+        issuer:
+          type: string
+          title: issuer
+          description: The OIDC issuer URL for the identity provider.
+        clientId:
+          type: string
+          title: client_id
+          description: The OIDC client identifier.
+        clientSecret:
+          type: string
+          title: client_secret
+          description: The OIDC client secret for authentication.
+        scopes:
+          type: array
+          items:
+            type: string
+          title: scopes
+          description: "The scopes that the OIDC provider supports.\n Should be fetched from the well-known configuration file of the OIDC provider."
+        fieldMapping:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.FieldMapping'
+          title: field_mapping
+          description: Mapping configuration for user attributes from OIDC claims.
+        skipTlsVerify:
+          type: boolean
+          title: skip_tls_verify
+          description: Whether to skip TLS certificate verification.
+        authStyle:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.OAuth2AuthStyle'
+          title: auth_style
+          description: The authentication style for client credentials.
+        authEndpoint:
+          type: string
+          title: auth_endpoint
+          description: "The authorization endpoint of the OIDC provider.\n Should be fetched from the well-known configuration file of the OIDC provider."
+          readOnly: true
+      title: OIDCIdentityProviderConfig
+      additionalProperties: false
+      description: OIDCIdentityProviderConfig is the structure for OIDC identity provider config.
+    bytebase.v1.OAuth2IdentityProviderConfig:
+      type: object
+      properties:
+        authUrl:
+          type: string
+          title: auth_url
+          description: The authorization endpoint URL for OAuth2 flow.
+        tokenUrl:
+          type: string
+          title: token_url
+          description: The token endpoint URL for exchanging authorization code.
+        userInfoUrl:
+          type: string
+          title: user_info_url
+          description: The user information endpoint URL.
+        clientId:
+          type: string
+          title: client_id
+          description: The OAuth2 client identifier.
+        clientSecret:
+          type: string
+          title: client_secret
+          description: The OAuth2 client secret for authentication.
+        scopes:
+          type: array
+          items:
+            type: string
+          title: scopes
+          description: The list of OAuth2 scopes to request.
+        fieldMapping:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.FieldMapping'
+          title: field_mapping
+          description: Mapping configuration for user attributes from OAuth2 response.
+        skipTlsVerify:
+          type: boolean
+          title: skip_tls_verify
+          description: Whether to skip TLS certificate verification.
+        authStyle:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.OAuth2AuthStyle'
+          title: auth_style
+          description: The authentication style for client credentials.
+      title: OAuth2IdentityProviderConfig
+      additionalProperties: false
+      description: OAuth2IdentityProviderConfig is the structure for OAuth2 identity provider config.
+    bytebase.v1.TestIdentityProviderRequest:
+      type: object
+      anyOf:
+      - type: object
+        properties:
+          ldapContext:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.LDAPIdentityProviderTestRequestContext'
+            title: ldap_context
+            description: LDAP credentials context for test connection.
+        title: ldap_context
+      - type: object
+        properties:
+          oauth2Context:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.OAuth2IdentityProviderTestRequestContext'
+            title: oauth2_context
+        title: oauth2_context
+      - type: object
+        properties:
+          oidcContext:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.OIDCIdentityProviderTestRequestContext'
+            title: oidc_context
+            description: OIDC authentication context for test connection.
+        title: oidc_context
+      unevaluatedProperties: false
+      not:
+        allOf:
+        - anyOf:
+          - required:
+            - ldapContext
+          - required:
+            - oauth2Context
+          - required:
+            - oidcContext
+        - not:
+            oneOf:
+            - required:
+              - ldapContext
+            - required:
+              - oauth2Context
+            - required:
+              - oidcContext
+      properties:
+        identityProvider:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.IdentityProvider'
+          title: identity_provider
+          description: The identity provider to test connection including uncreated.
+      title: TestIdentityProviderRequest
+    bytebase.v1.OAuth2IdentityProviderTestRequestContext:
+      type: object
+      properties:
+        code:
+          type: string
+          title: code
+          description: Authorize code from website.
+      title: OAuth2IdentityProviderTestRequestContext
+      additionalProperties: false
+    bytebase.v1.LDAPIdentityProviderConfig.SecurityProtocol:
+      type: string
+      title: SecurityProtocol
+      enum:
+      - SECURITY_PROTOCOL_UNSPECIFIED
+      - START_TLS
+      - LDAPS
+    bytebase.v1.IdentityProvider:
+      type: object
+      properties:
+        name:
+          type: string
+          title: name
+          description: "The name of the identity provider.\n Format: idps/{idp}"
+        title:
+          type: string
+          title: title
+          maxLength: 200
+          description: The display title of the identity provider.
+        domain:
+          type: string
+          title: domain
+          description: The domain for email matching when using this identity provider.
+        type:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.IdentityProviderType'
+          title: type
+          description: The type of identity provider protocol.
+        config:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.IdentityProviderConfig'
+          title: config
+          description: The configuration details for the identity provider.
+      title: IdentityProvider
+      additionalProperties: false
+    bytebase.v1.IdentityProviderConfig:
+      type: object
+      anyOf:
+      - type: object
+        properties:
+          ldapConfig:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.LDAPIdentityProviderConfig'
+            title: ldap_config
+            description: LDAP protocol configuration.
+        title: ldap_config
+      - type: object
+        properties:
+          oauth2Config:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.OAuth2IdentityProviderConfig'
+            title: oauth2_config
+            description: OAuth2 protocol configuration.
+        title: oauth2_config
+      - type: object
+        properties:
+          oidcConfig:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.OIDCIdentityProviderConfig'
+            title: oidc_config
+            description: OIDC protocol configuration.
+        title: oidc_config
+      unevaluatedProperties: false
+      not:
+        allOf:
+        - anyOf:
+          - required:
+            - ldapConfig
+          - required:
+            - oauth2Config
+          - required:
+            - oidcConfig
+        - not:
+            oneOf:
+            - required:
+              - ldapConfig
+            - required:
+              - oauth2Config
+            - required:
+              - oidcConfig
+      title: IdentityProviderConfig
+    bytebase.v1.IdentityProviderType:
+      type: string
+      title: IdentityProviderType
+      enum:
+      - IDENTITY_PROVIDER_TYPE_UNSPECIFIED
+      - OAUTH2
+      - OIDC
+      - LDAP
+    bytebase.v1.FieldMapping:
+      type: object
+      properties:
+        identifier:
+          type: string
+          title: identifier
+          description: Identifier is the field name of the unique identifier in 3rd-party idp user info. Required.
+        displayName:
+          type: string
+          title: display_name
+          description: DisplayName is the field name of display name in 3rd-party idp user info. Optional.
+        phone:
+          type: string
+          title: phone
+          description: Phone is the field name of primary phone in 3rd-party idp user info. Optional.
+        groups:
+          type: string
+          title: groups
+          description: "Groups is the field name of groups in 3rd-party idp user info. Optional.\n Mainly used for OIDC: https://developer.okta.com/docs/guides/customize-tokens-groups-claim/main/"
+      title: FieldMapping
+      additionalProperties: false
+      description: "FieldMapping saves the field names from user info API of identity provider.\n As we save all raw json string of user info response data into `principal.idp_user_info`,\n we can extract the relevant data based with `FieldMapping`."
+    bytebase.v1.TestIdentityProviderResponse:
+      type: object
+      properties:
+        claims:
+          type: object
+          title: claims
+          additionalProperties:
+            type: string
+            title: value
+          description: The map of claims returned by the identity provider.
+        userInfo:
+          type: object
+          title: user_info
+          additionalProperties:
+            type: string
+            title: value
+          description: The matched user info from the claims.
+      title: TestIdentityProviderResponse
+      additionalProperties: false
+    google.protobuf.Empty:
+      type: object
+      description: An empty JSON object.
+    bytebase.v1.LDAPIdentityProviderTestRequestContext:
+      type: object
+      properties:
+        username:
+          type: string
+          title: username
+          description: The username of a directory user, substituted into the user filter.
+        password:
+          type: string
+          title: password
+          description: The password of the directory user.
+      title: LDAPIdentityProviderTestRequestContext
+      additionalProperties: false

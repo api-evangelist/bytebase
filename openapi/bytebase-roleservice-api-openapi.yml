@@ -1,0 +1,201 @@
+openapi: 3.2.0
+info:
+  title: Bytebase API Reference Role Service API
+  description: API reference for Bytebase. Every endpoint is served by your own Bytebase instance.
+  version: 1.0.0
+security: []
+tags:
+- name: RoleService
+  description: RoleService manages workspace roles and permissions.
+paths:
+  /v1/roles:
+    get:
+      tags:
+      - RoleService
+      summary: ListRoles
+      description: 'Lists roles in the workspace.
+
+        Permissions required: bb.roles.list'
+      operationId: RoleService_ListRoles
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ListRolesResponse'
+    post:
+      tags:
+      - RoleService
+      summary: CreateRole
+      description: 'Creates a new custom role.
+
+        Permissions required: bb.roles.create'
+      operationId: RoleService_CreateRole
+      parameters:
+      - name: roleId
+        in: query
+        description: "The ID to use for the role, which will become the final component\n of the role's resource name.\n\n This value should be 4-63 characters, and valid characters\n are /[a-z][A-Z][0-9]/."
+        required: true
+        schema:
+          type: string
+          title: role_id
+      requestBody:
+        description: The role to create.
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.Role'
+              title: role
+              description: The role to create.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Role'
+  /v1/roles/{role}:
+    get:
+      tags:
+      - RoleService
+      summary: GetRole
+      description: 'Retrieves a role by name.
+
+        Permissions required: bb.roles.get'
+      operationId: RoleService_GetRole
+      parameters:
+      - name: role
+        in: path
+        description: The role id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Role'
+    delete:
+      tags:
+      - RoleService
+      summary: DeleteRole
+      description: 'Deletes a custom role.
+
+        Permissions required: bb.roles.delete'
+      operationId: RoleService_DeleteRole
+      parameters:
+      - name: role
+        in: path
+        description: The role id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/google.protobuf.Empty'
+    patch:
+      tags:
+      - RoleService
+      summary: UpdateRole
+      description: 'Updates a role''s properties.
+
+        Permissions required: bb.roles.update
+
+        When allow_missing=true, also requires: bb.roles.create'
+      operationId: RoleService_UpdateRole
+      parameters:
+      - name: role
+        in: path
+        description: The role id.
+        required: true
+        schema:
+          type: string
+      - name: updateMask
+        in: query
+        description: The list of fields to update.
+        schema:
+          type: string
+      - name: allowMissing
+        in: query
+        description: "If set to true, and the role is not found, a new role will be created.\n In this situation, `update_mask` is ignored."
+        schema:
+          type: boolean
+          title: allow_missing
+      requestBody:
+        description: The role to update.
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.Role'
+              title: role
+              description: The role to update.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Role'
+components:
+  schemas:
+    bytebase.v1.ListRolesResponse:
+      type: object
+      properties:
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.Role'
+          title: roles
+          description: The roles from the specified request.
+      title: ListRolesResponse
+      additionalProperties: false
+    bytebase.v1.Role.Type:
+      type: string
+      title: Type
+      enum:
+      - TYPE_UNSPECIFIED
+      - BUILT_IN
+      - CUSTOM
+    google.protobuf.Empty:
+      type: object
+      description: An empty JSON object.
+    bytebase.v1.Role:
+      type: object
+      properties:
+        name:
+          type: string
+          title: name
+          description: 'Resource name. Format: roles/{role}'
+        title:
+          type: string
+          title: title
+          maxLength: 200
+          description: Human-readable title.
+        description:
+          type: string
+          title: description
+          maxLength: 1000
+          description: Optional description of the role.
+        permissions:
+          type: array
+          items:
+            type: string
+          title: permissions
+          description: List of permission identifiers granted by this role.
+        type:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.Role.Type'
+          title: type
+          description: Role type indicating if it's built-in or custom.
+      title: Role
+      additionalProperties: false
+      description: Role defines a set of permissions that can be assigned to users.

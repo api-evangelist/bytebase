@@ -1,0 +1,1328 @@
+openapi: 3.2.0
+info:
+  title: Bytebase API Reference Project Service API
+  description: API reference for Bytebase. Every endpoint is served by your own Bytebase instance.
+  version: 1.0.0
+security: []
+tags:
+- name: ProjectService
+  description: ProjectService manages projects that group databases and changes.
+paths:
+  /v1/projects:
+    get:
+      tags:
+      - ProjectService
+      summary: ListProjects
+      description: 'Lists all projects in the workspace with optional filtering.
+
+        Permissions required: bb.projects.list'
+      operationId: ProjectService_ListProjects
+      parameters:
+      - name: pageSize
+        in: query
+        description: "The maximum number of projects to return. The service may return fewer than\n this value.\n If unspecified, at most 10 projects will be returned.\n The maximum value is 1000; values above 1000 will be coerced to 1000."
+        schema:
+          type: integer
+          title: page_size
+          format: int32
+      - name: pageToken
+        in: query
+        description: "A page token, received from a previous `ListProjects` call.\n Provide this to retrieve the subsequent page.\n\n When paginating, all other parameters provided to `ListProjects` must match\n the call that provided the page token."
+        schema:
+          type: string
+          title: page_token
+      - name: showDeleted
+        in: query
+        description: Show deleted projects if specified.
+        schema:
+          type: boolean
+          title: show_deleted
+      - name: filter
+        in: query
+        description: "Filter the project.\n Check filter for SearchProjectsRequest for details.\n Supports filtering by name, resource_id, state, and labels (e.g., labels.environment == \"production\")."
+        schema:
+          type: string
+          title: filter
+      - name: orderBy
+        in: query
+        description: "The order by of projects.\n Support title. The default sorting order is ascending.\n For example:\n - order_by = \"title\"\n - order_by = \"title desc\"\n - order_by = \"title asc\""
+        schema:
+          type: string
+          title: order_by
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ListProjectsResponse'
+    post:
+      tags:
+      - ProjectService
+      summary: CreateProject
+      description: 'Creates a new project in the workspace.
+
+        Permissions required: bb.projects.create'
+      operationId: ProjectService_CreateProject
+      parameters:
+      - name: projectId
+        in: query
+        description: "The ID to use for the project, which will become the final component of\n the project's resource name.\n\n This value should be 4-63 characters, and valid characters\n are /[a-z][0-9]-/."
+        schema:
+          type: string
+          title: project_id
+      requestBody:
+        description: The project to create.
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.Project'
+              title: project
+              description: The project to create.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Project'
+  /v1/projects/{project}:
+    get:
+      tags:
+      - ProjectService
+      summary: GetProject
+      description: 'GetProject retrieves a project by name.
+
+        Users with "bb.projects.get" permission on the workspace or the project owner can access this method.
+
+        Permissions required: bb.projects.get'
+      operationId: ProjectService_GetProject
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Project'
+    delete:
+      tags:
+      - ProjectService
+      summary: DeleteProject
+      description: 'Deletes (soft-delete or purge) a project.
+
+        Permissions required: bb.projects.delete'
+      operationId: ProjectService_DeleteProject
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: purge
+        in: query
+        description: "If set to true, permanently purge the soft-deleted project and all related resources.\n This operation is irreversible. Following AIP-165, this should only be used for\n administrative cleanup of old soft-deleted projects.\n The project must already be soft-deleted for this to work.\n When purge=true, all databases will be moved to the default project before deletion.\n When purge=false (soft delete/archive), the project and its databases/issues remain unchanged."
+        schema:
+          type: boolean
+          title: purge
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/google.protobuf.Empty'
+    patch:
+      tags:
+      - ProjectService
+      summary: UpdateProject
+      description: 'Updates an existing project''s properties.
+
+        Permissions required: bb.projects.update'
+      operationId: ProjectService_UpdateProject
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: updateMask
+        in: query
+        description: The list of fields to update.
+        schema:
+          type: string
+      - name: allowMissing
+        in: query
+        description: "If set to true, and the project is not found, a new project will be created.\n In this situation, `update_mask` is ignored."
+        schema:
+          type: boolean
+          title: allow_missing
+      requestBody:
+        description: "The project to update.\n\n The project's `name` field is used to identify the project to update.\n Format: projects/{project}"
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.Project'
+              title: project
+              description: "The project to update.\n\n The project's `name` field is used to identify the project to update.\n Format: projects/{project}"
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Project'
+  /v1/projects/{project}/webhooks/{webhook}:removeWebhook:
+    post:
+      tags:
+      - ProjectService
+      summary: RemoveWebhook
+      description: 'Removes a webhook from a project.
+
+        Permissions required: bb.projects.update'
+      operationId: ProjectService_RemoveWebhook
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: webhook
+        in: path
+        description: The webhook id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                webhook:
+                  allOf:
+                  - $ref: '#/components/schemas/bytebase.v1.Webhook'
+                  title: webhook
+                  description: The webhook to remove. Identified by its url.
+              title: RemoveWebhookRequest
+              required:
+              - webhook
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Project'
+  /v1/projects/{project}/webhooks/{webhook}:updateWebhook:
+    patch:
+      tags:
+      - ProjectService
+      summary: UpdateWebhook
+      description: 'Updates an existing webhook configuration.
+
+        Permissions required: bb.projects.update'
+      operationId: ProjectService_UpdateWebhook
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: webhook
+        in: path
+        description: The webhook id.
+        required: true
+        schema:
+          type: string
+      - name: updateMask
+        in: query
+        description: The list of fields to update.
+        schema:
+          type: string
+      - name: allowMissing
+        in: query
+        description: "If set to true, and the webhook is not found, a new webhook will be created.\n In this situation, `update_mask` is ignored."
+        schema:
+          type: boolean
+          title: allow_missing
+      requestBody:
+        description: The webhook to modify.
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.Webhook'
+              title: webhook
+              description: The webhook to modify.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Project'
+  /v1/projects/{project}:addWebhook:
+    post:
+      tags:
+      - ProjectService
+      summary: AddWebhook
+      description: 'Adds a webhook to a project for notifications.
+
+        Permissions required: bb.projects.update'
+      operationId: ProjectService_AddWebhook
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                webhook:
+                  allOf:
+                  - $ref: '#/components/schemas/bytebase.v1.Webhook'
+                  title: webhook
+                  description: The webhook to add.
+              title: AddWebhookRequest
+              required:
+              - webhook
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Project'
+  /v1/projects/{project}:getIamPolicy:
+    get:
+      tags:
+      - ProjectService
+      summary: GetIamPolicy
+      description: 'Retrieves the IAM policy for a project.
+
+        Permissions required: bb.projects.getIamPolicy'
+      operationId: ProjectService_GetIamPolicy
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.IamPolicy'
+  /v1/projects/{project}:setIamPolicy:
+    post:
+      tags:
+      - ProjectService
+      summary: SetIamPolicy
+      description: 'Sets the IAM policy for a project.
+
+        Permissions required: bb.projects.setIamPolicy'
+      operationId: ProjectService_SetIamPolicy
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                policy:
+                  allOf:
+                  - $ref: '#/components/schemas/bytebase.v1.IamPolicy'
+                  title: policy
+                etag:
+                  type: string
+                  title: etag
+                  description: "(OPTIONAL) The current etag of the policy. Equivalent to setting `policy.etag`;\n supplying both with different values returns INVALID_ARGUMENT."
+              title: SetIamPolicyRequest
+              required:
+              - policy
+              additionalProperties: false
+              description: Request message for setting an IAM policy.
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.IamPolicy'
+  /v1/projects/{project}:testWebhook:
+    post:
+      tags:
+      - ProjectService
+      summary: TestWebhook
+      description: 'Tests a webhook by sending a test notification.
+
+        Permissions required: bb.projects.update'
+      operationId: ProjectService_TestWebhook
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                webhook:
+                  allOf:
+                  - $ref: '#/components/schemas/bytebase.v1.Webhook'
+                  title: webhook
+                  description: "The webhook to test.\n\n The url is what gets posted to. Reads do not return a saved webhook's url,\n so leave url empty and set name to test the one already stored; set url to\n test a url before saving it."
+              title: TestWebhookRequest
+              required:
+              - webhook
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.TestWebhookResponse'
+  /v1/projects/{project}:undelete:
+    post:
+      tags:
+      - ProjectService
+      summary: UndeleteProject
+      description: 'Restores a soft-deleted project.
+
+        Permissions required: bb.projects.undelete'
+      operationId: ProjectService_UndeleteProject
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Project'
+  /v1/projects:batchDelete:
+    post:
+      tags:
+      - ProjectService
+      summary: BatchDeleteProjects
+      description: 'Deletes multiple projects in a single operation.
+
+        Permissions required: bb.projects.delete'
+      operationId: ProjectService_BatchDeleteProjects
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/bytebase.v1.BatchDeleteProjectsRequest'
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/google.protobuf.Empty'
+  /v1/projects:batchGet:
+    get:
+      tags:
+      - ProjectService
+      summary: BatchGetProjects
+      description: 'BatchGetProjects retrieves multiple projects by their names.
+
+        One resource per requested name, in request order. The first name that
+
+        does not resolve fails the whole call (AIP-231: no partial response).
+
+        Permissions required: bb.projects.get (on each named project)'
+      operationId: ProjectService_BatchGetProjects
+      parameters:
+      - name: names
+        in: query
+        description: "The names of projects to retrieve.\n Format: projects/{project}"
+        required: true
+        schema:
+          type: array
+          items:
+            type: string
+          title: names
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.BatchGetProjectsResponse'
+  /v1/projects:search:
+    post:
+      tags:
+      - ProjectService
+      summary: SearchProjects
+      description: 'Searches for projects with advanced filtering capabilities.
+
+        Permissions required: bb.projects.get (or project-level bb.projects.get for specific projects)'
+      operationId: ProjectService_SearchProjects
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/bytebase.v1.SearchProjectsRequest'
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.SearchProjectsResponse'
+components:
+  schemas:
+    bytebase.v1.BatchGetProjectsResponse:
+      type: object
+      properties:
+        projects:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.Project'
+          title: projects
+          description: One project per requested name, in the same order as `names`.
+      title: BatchGetProjectsResponse
+      additionalProperties: false
+    google.type.Color:
+      type: object
+      properties:
+        red:
+          type: number
+          title: red
+          format: float
+          description: The amount of red in the color as a value in the interval [0, 1].
+        green:
+          type: number
+          title: green
+          format: float
+          description: The amount of green in the color as a value in the interval [0, 1].
+        blue:
+          type: number
+          title: blue
+          format: float
+          description: The amount of blue in the color as a value in the interval [0, 1].
+        alpha:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.FloatValue'
+          title: alpha
+          description: "The fraction of this color that should be applied to the pixel. That is,\n the final pixel color is defined by the equation:\n\n   `pixel color = alpha * (this color) + (1.0 - alpha) * (background color)`\n\n This means that a value of 1.0 corresponds to a solid color, whereas\n a value of 0.0 corresponds to a completely transparent color. This\n uses a wrapper message rather than a simple float scalar so that it is\n possible to distinguish between a default value and the value being unset.\n If omitted, this color object is rendered as a solid color\n (as if the alpha value had been explicitly given a value of 1.0)."
+      title: Color
+      additionalProperties: false
+      description: "Represents a color in the RGBA color space. This representation is designed\n for simplicity of conversion to/from color representations in various\n languages over compactness. For example, the fields of this representation\n can be trivially provided to the constructor of `java.awt.Color` in Java; it\n can also be trivially provided to UIColor's `+colorWithRed:green:blue:alpha`\n method in iOS; and, with just a little work, it can be easily formatted into\n a CSS `rgba()` string in JavaScript.\n\n This reference page doesn't carry information about the absolute color\n space\n that should be used to interpret the RGB value (e.g. sRGB, Adobe RGB,\n DCI-P3, BT.2020, etc.). By default, applications should assume the sRGB color\n space.\n\n When color equality needs to be decided, implementations, unless\n documented otherwise, treat two colors as equal if all their red,\n green, blue, and alpha values each differ by at most 1e-5.\n\n Example (Java):\n\n      import com.google.type.Color;\n\n      // ...\n      public static java.awt.Color fromProto(Color protocolor) {\n        float alpha = protocolor.hasAlpha()\n            ? protocolor.getAlpha().getValue()\n            : 1.0;\n\n        return new java.awt.Color(\n            protocolor.getRed(),\n            protocolor.getGreen(),\n            protocolor.getBlue(),\n            alpha);\n      }\n\n      public static Color toProto(java.awt.Color color) {\n        float red = (float) color.getRed();\n        float green = (float) color.getGreen();\n        float blue = (float) color.getBlue();\n        float denominator = 255.0;\n        Color.Builder resultBuilder =\n            Color\n                .newBuilder()\n                .setRed(red / denominator)\n                .setGreen(green / denominator)\n                .setBlue(blue / denominator);\n        int alpha = color.getAlpha();\n        if (alpha != 255) {\n          result.setAlpha(\n              FloatValue\n                  .newBuilder()\n                  .setValue(((float) alpha) / denominator)\n                  .build());\n        }\n        return resultBuilder.build();\n      }\n      // ...\n\n Example (iOS / Obj-C):\n\n      // ...\n      static UIColor* fromProto(Color* protocolor) {\n         float red = [protocolor red];\n         float green = [protocolor green];\n         float blue = [protocolor blue];\n         FloatValue* alpha_wrapper = [protocolor alpha];\n         float alpha = 1.0;\n         if (alpha_wrapper != nil) {\n           alpha = [alpha_wrapper value];\n         }\n         return [UIColor colorWithRed:red green:green blue:blue alpha:alpha];\n      }\n\n      static Color* toProto(UIColor* color) {\n          CGFloat red, green, blue, alpha;\n          if (![color getRed:&red green:&green blue:&blue alpha:&alpha]) {\n            return nil;\n          }\n          Color* result = [[Color alloc] init];\n          [result setRed:red];\n          [result setGreen:green];\n          [result setBlue:blue];\n          if (alpha <= 0.9999) {\n            [result setAlpha:floatWrapperWithValue(alpha)];\n          }\n          [result autorelease];\n          return result;\n     }\n     // ...\n\n  Example (JavaScript):\n\n     // ...\n\n     var protoToCssColor = function(rgb_color) {\n        var redFrac = rgb_color.red || 0.0;\n        var greenFrac = rgb_color.green || 0.0;\n        var blueFrac = rgb_color.blue || 0.0;\n        var red = Math.floor(redFrac * 255);\n        var green = Math.floor(greenFrac * 255);\n        var blue = Math.floor(blueFrac * 255);\n\n        if (!('alpha' in rgb_color)) {\n           return rgbToCssColor(red, green, blue);\n        }\n\n        var alphaFrac = rgb_color.alpha.value || 0.0;\n        var rgbParams = [red, green, blue].join(',');\n        return ['rgba(', rgbParams, ',', alphaFrac, ')'].join('');\n     };\n\n     var rgbToCssColor = function(red, green, blue) {\n       var rgbNumber = new Number((red << 16) | (green << 8) | blue);\n       var hexString = rgbNumber.toString(16);\n       var missingZeros = 6 - hexString.length;\n       var resultBuilder = ['#'];\n       for (var i = 0; i < missingZeros; i++) {\n          resultBuilder.push('0');\n       }\n       resultBuilder.push(hexString);\n       return resultBuilder.join('');\n     };\n\n     // ..."
+    bytebase.v1.Binding:
+      type: object
+      properties:
+        role:
+          type: string
+          title: role
+          description: "The role that is assigned to the members.\n Format: roles/{role}"
+        members:
+          type: array
+          items:
+            type: string
+          title: members
+          description: "Specifies the principals requesting access for a Bytebase resource.\n For users, the member should be: user:{email}\n For groups, the member should be: group:{email}\n For service accounts, the member should be: serviceAccount:{email}\n For workload identities, the member should be: workloadIdentity:{email}"
+        condition:
+          allOf:
+          - $ref: '#/components/schemas/google.type.Expr'
+          title: condition
+          description: "The condition that is associated with this binding, only used in the project IAM policy.\n If the condition evaluates to true, then this binding applies to the current request.\n If the condition evaluates to false, then this binding does not apply to the current request. However, a different role binding might grant the same role to one or more of the principals in this binding.\n The syntax and semantics of CEL are documented at https://github.com/google/cel-spec\n\n Support variables:\n resource.database: the canonical database full name in \"instances/{instance}/databases/{database}\" or \"projects/{project}/instances/{instance}/databases/{database}\" format, used by any role with SQL Editor read (e.g. \"roles/sqlEditorUser\", \"roles/sqlEditorReadUser\") or write (bb.sql.ddl / bb.sql.dml) access, support \"==\" operator.\n resource.schema_name: the schema name, used by any role with SQL Editor read or write (bb.sql.ddl / bb.sql.dml) access; for writes it is evaluated per write-target table, support \"==\" operator.\n resource.table_name: the table name, used by any role with SQL Editor read or write (bb.sql.ddl / bb.sql.dml) access; for writes it is evaluated per write-target table, support \"==\" operator.\n resource.environment_id: the environment to allow the DDL/DML operation in the SQL Editor, only works for the role with bb.sql.ddl or bb.sql.dml permissions. Support \"in\" operator.\n request.time: the expiration. Only support \"<\" operation in `request.time < timestamp(\"{ISO datetime string format}\")`.\n\n Known limitations of table/schema-scoped DDL/DML grants:\n - The scope only gates the write target, not the read sources of a write: e.g. `INSERT INTO granted_table SELECT * FROM other_table` may read `other_table` without a grant on it, so a table-scoped write grant is not an exfiltration boundary.\n - It must be paired with a database/project-level read grant: a table-scoped grant alone does not satisfy the SQL Editor query method permission (bb.databases.get).\n - A resource.schema_name-scoped grant only authorizes a write whose schema is unambiguous — qualify the table (schema.table) or select the schema for the SQL Editor session. An unqualified write whose effective schema cannot be determined ahead of execution is denied (qualify it, or use a table-only grant).\n - Multi-statement batches are authorized at the database level: an earlier statement can rebind the session's default schema or database mid-batch, so per-table/schema scoping is dropped and a table/schema-scoped grant requires a database-level grant. The database-level check is still per target database — a qualified cross-database write is gated by a grant on its own database, not the request database — but an unqualified write whose session default is rebound mid-batch is evaluated against the database it literally names, so qualify cross-database writes or run them as single statements.\n - A write target in a different project than the SQL-Editor session's database is denied: the per-target check evaluates the session project's IAM policy, so a cross-project write is failed closed (to write it, open the SQL Editor on a database in the target project).\n - Enforcement is on the statement's literal write target; writes routed elsewhere by a view/synonym, or into a temporary schema (e.g. pg_temp), are evaluated against what the statement names, not the ultimate base object.\n - Write-target gating uses an ALLOWLIST of statement types the resolver models. It does NOT cover every syntactically-identifiable cross-database write; statement types off the allowlist are authorized against the request database. The allowlist is:\n     - Modeled table/data writes (per-table/schema-scopable): INSERT/UPDATE/DELETE/TRUNCATE/MERGE, LOAD DATA, IMPORT INTO, CREATE TABLE AS / SELECT INTO, and table-level CREATE/DROP/ALTER/RENAME/index.\n     - Modeled non-table object DDL (gated at the DATABASE level by the object's own explicit database/schema qualifier; an unqualified name keeps the request-database check): CREATE/ALTER/DROP of view, procedure/function/routine, trigger, sequence, synonym, type, and (Oracle) package and cluster; plus Oracle ALTER/DROP MATERIALIZED VIEW (Oracle CREATE MATERIALIZED VIEW is not modeled — see below).\n   NOT modeled (these fall back to the request-database check, so a qualified cross-database one is authorized against the request database): MySQL CREATE TRIGGER and CREATE/ALTER/DROP EVENT (bare-string AST names); MSSQL ALTER of view/procedure/function/trigger (no ALTER node in the grammar); Oracle CREATE MATERIALIZED VIEW and the niche object DDL — dimension, attribute dimension, hierarchy, analytic view, JSON duality view, materialized zonemap, operator, in-memory join group, property graph, vector index, index type, domain; COPY ... FROM; and engine-specific bulk-load / deprecated text writes. A structural \"write-target object database\" extraction layer to remove this allowlist dependence is tracked as a follow-up.\n     - Out of scope (read sources / indirect effects): the tables a write READS (INSERT … SELECT, MERGE … USING, CREATE TABLE AS … SELECT) and objects reached indirectly via views/synonyms/function bodies/triggers are NOT gated.\n   Invariant: for a statement ON the modeled allowlist that explicitly names a different database as its write target, the ACL uses that target database, not the request database. Statement types OFF the allowlist are authorized against the request database.\n\n For example:\n resource.database == \"instances/local-pg/databases/postgres\" && resource.schema_name in [\"public\",\"another_schema\"]\n resource.database == \"instances/local-pg/databases/bytebase\" && resource.schema_name == \"public\" && resource.table_name in [\"audit_log\"]\n resource.database == \"instances/local-pg/databases/postgres\" && resource.environment_id in [\"test\"]\n request.time < timestamp(\"2025-04-26T11:24:48.655Z\")"
+        parsedExpr:
+          allOf:
+          - $ref: '#/components/schemas/google.api.expr.v1alpha1.Expr'
+          title: parsed_expr
+          description: The parsed expression of the condition.
+          readOnly: true
+      title: Binding
+      additionalProperties: false
+      description: Binding associates members with a role and optional conditions.
+    google.api.expr.v1alpha1.Expr.Comprehension:
+      type: object
+      properties:
+        iterVar:
+          type: string
+          title: iter_var
+          description: "The name of the first iteration variable.\n When the iter_range is a list, this variable is the list element.\n When the iter_range is a map, this variable is the map entry key."
+        iterVar2:
+          type: string
+          title: iter_var2
+          description: "The name of the second iteration variable, empty if not set.\n When the iter_range is a list, this variable is the integer index.\n When the iter_range is a map, this variable is the map entry value.\n This field is only set for comprehension v2 macros."
+        iterRange:
+          allOf:
+          - $ref: '#/components/schemas/google.api.expr.v1alpha1.Expr'
+          title: iter_range
+          description: The range over which the comprehension iterates.
+        accuVar:
+          type: string
+          title: accu_var
+          description: The name of the variable used for accumulation of the result.
+        accuInit:
+          allOf:
+          - $ref: '#/components/schemas/google.api.expr.v1alpha1.Expr'
+          title: accu_init
+          description: The initial value of the accumulator.
+        loopCondition:
+          allOf:
+          - $ref: '#/components/schemas/google.api.expr.v1alpha1.Expr'
+          title: loop_condition
+          description: "An expression which can contain iter_var, iter_var2, and accu_var.\n\n Returns false when the result has been computed and may be used as\n a hint to short-circuit the remainder of the comprehension."
+        loopStep:
+          allOf:
+          - $ref: '#/components/schemas/google.api.expr.v1alpha1.Expr'
+          title: loop_step
+          description: "An expression which can contain iter_var, iter_var2, and accu_var.\n\n Computes the next value of accu_var."
+        result:
+          allOf:
+          - $ref: '#/components/schemas/google.api.expr.v1alpha1.Expr'
+          title: result
+          description: "An expression which can contain accu_var.\n\n Computes the result."
+      title: Comprehension
+      additionalProperties: false
+      description: "A comprehension expression applied to a list or map.\n\n Comprehensions are not part of the core syntax, but enabled with macros.\n A macro matches a specific call signature within a parsed AST and replaces\n the call with an alternate AST block. Macro expansion happens at parse\n time.\n\n The following macros are supported within CEL:\n\n Aggregate type macros may be applied to all elements in a list or all keys\n in a map:\n\n *  `all`, `exists`, `exists_one` -  test a predicate expression against\n    the inputs and return `true` if the predicate is satisfied for all,\n    any, or only one value `list.all(x, x < 10)`.\n *  `filter` - test a predicate expression against the inputs and return\n    the subset of elements which satisfy the predicate:\n    `payments.filter(p, p > 1000)`.\n *  `map` - apply an expression to all elements in the input and return the\n    output aggregate type: `[1, 2, 3].map(i, i * i)`.\n\n The `has(m.x)` macro tests whether the property `x` is present in struct\n `m`. The semantics of this macro depend on the type of `m`. For proto2\n messages `has(m.x)` is defined as 'defined, but not set`. For proto3, the\n macro tests whether the property is set to its default. For map and struct\n types, the macro tests whether the property `x` is defined on `m`.\n\n Comprehensions for the standard environment macros evaluation can be best\n visualized as the following pseudocode:\n\n ```\n let `accu_var` = `accu_init`\n for (let `iter_var` in `iter_range`) {\n   if (!`loop_condition`) {\n     break\n   }\n   `accu_var` = `loop_step`\n }\n return `result`\n ```\n\n Comprehensions for the optional V2 macros which support map-to-map\n translation differ slightly from the standard environment macros in that\n they expose both the key or index in addition to the value for each list\n or map entry:\n\n ```\n let `accu_var` = `accu_init`\n for (let `iter_var`, `iter_var2` in `iter_range`) {\n   if (!`loop_condition`) {\n     break\n   }\n   `accu_var` = `loop_step`\n }\n return `result`\n ```"
+    bytebase.v1.State:
+      type: string
+      title: State
+      enum:
+      - STATE_UNSPECIFIED
+      - ACTIVE
+      - DELETED
+      description: Resource lifecycle state.
+    bytebase.v1.WebhookType:
+      type: string
+      title: WebhookType
+      enum:
+      - WEBHOOK_TYPE_UNSPECIFIED
+      - SLACK
+      - DISCORD
+      - TEAMS
+      - DINGTALK
+      - FEISHU
+      - WECOM
+      - LARK
+      - GOOGLE_CHAT
+      description: Webhook integration type.
+    google.protobuf.NullValue:
+      type: string
+      title: NullValue
+      enum:
+      - NULL_VALUE
+      description: "`NullValue` is a singleton enumeration to represent the null value for the\n `Value` type union.\n\n The JSON representation for `NullValue` is JSON `null`."
+    bytebase.v1.ListProjectsResponse:
+      type: object
+      properties:
+        projects:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.Project'
+          title: projects
+          description: The projects from the specified request.
+        nextPageToken:
+          type: string
+          title: next_page_token
+          description: "A token, which can be sent as `page_token` to retrieve the next page.\n If this field is omitted, there are no subsequent pages."
+      title: ListProjectsResponse
+      additionalProperties: false
+    google.type.Expr:
+      type: object
+      properties:
+        expression:
+          type: string
+          title: expression
+          description: "Textual representation of an expression in Common Expression Language\n syntax."
+        title:
+          type: string
+          title: title
+          description: "Optional. Title for the expression, i.e. a short string describing\n its purpose. This can be used e.g. in UIs which allow to enter the\n expression."
+        description:
+          type: string
+          title: description
+          description: "Optional. Description of the expression. This is a longer text which\n describes the expression, e.g. when hovered over it in a UI."
+        location:
+          type: string
+          title: location
+          description: "Optional. String indicating the location of the expression for error\n reporting, e.g. a file name and a position in the file."
+      title: Expr
+      additionalProperties: false
+      description: "Represents a textual expression in the Common Expression Language (CEL)\n syntax. CEL is a C-like expression language. The syntax and semantics of CEL\n are documented at https://github.com/google/cel-spec.\n\n Example (Comparison):\n\n     title: \"Summary size limit\"\n     description: \"Determines if a summary is less than 100 chars\"\n     expression: \"document.summary.size() < 100\"\n\n Example (Equality):\n\n     title: \"Requestor is owner\"\n     description: \"Determines if requestor is the document owner\"\n     expression: \"document.owner == request.auth.claims.email\"\n\n Example (Logic):\n\n     title: \"Public documents\"\n     description: \"Determine whether the document should be publicly visible\"\n     expression: \"document.type != 'private' && document.type != 'internal'\"\n\n Example (Data Manipulation):\n\n     title: \"Notification string\"\n     description: \"Create a notification string with a timestamp.\"\n     expression: \"'New message received at ' + string(document.create_time)\"\n\n The exact variables and functions that may be referenced within an expression\n are determined by the service that evaluates it. See the service\n documentation for additional information."
+    bytebase.v1.Webhook:
+      type: object
+      properties:
+        name:
+          type: string
+          title: name
+          description: "name is the name of the webhook, generated by the server.\n format: projects/{project}/webhooks/{webhook}"
+        type:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.WebhookType'
+          title: type
+          description: "Webhook integration type.\n type is the type of the webhook."
+        title:
+          type: string
+          title: title
+          description: title is the title of the webhook.
+        url:
+          type: string
+          title: url
+          description: "url is the url of the webhook, should be unique within the project.\n\n Write-only: an incoming-webhook url is the whole credential for posting\n into the customer's chat, so reads leave it empty, the same way a data\n source's password and SSL material are left empty. Set it to change it.\n\n Required to create a webhook. Not required on TestWebhook, where an empty\n url on a request that names a webhook means the one already stored, so the\n field carries no REQUIRED behavior it would contradict there."
+          writeOnly: true
+        urlSupportsDirectMessage:
+          type: boolean
+          title: url_supports_direct_message
+          description: "Whether the stored url's endpoint form can carry a direct message to the\n users an event mentions, rather than only a post to the channel the url\n names. False for a Microsoft Teams Power Automate workflow endpoint, which\n direct messages bypass entirely: a webhook with direct_message set sends\n them and returns, so the workflow post never happens.\n\n Reads do not return the url, so a client editing a saved webhook cannot\n work this out for itself. It is a fact about the stored url and says\n nothing about what the url is."
+          readOnly: true
+        directMessage:
+          type: boolean
+          title: direct_message
+          description: "if direct_message is set, the notification is sent directly\n to the persons and url will be ignored.\n IM integration setting should be set for this function to work."
+        notificationTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.Activity.Type'
+          title: notification_types
+          description: "(UNORDERED_LIST) notification_types is the list of activities types that the webhook is interested in.\n Bytebase will only send notifications to the webhook if the activity type is in the list.\n It should not be empty, and should be a subset of the following:\n - ISSUE_CREATED\n - ISSUE_APPROVAL_REQUESTED\n - ISSUE_SENT_BACK\n - ISSUE_APPROVED\n - PIPELINE_FAILED\n - PIPELINE_COMPLETED"
+      title: Webhook
+      required:
+      - type
+      - title
+      additionalProperties: false
+    google.protobuf.Empty:
+      type: object
+      description: An empty JSON object.
+    google.protobuf.FloatValue:
+      oneOf:
+      - type: string
+      - type: number
+      description: A single-precision number. The non-finite values `NaN`, `Infinity`, and `-Infinity` are encoded as strings; `null` is also accepted.
+    bytebase.v1.Activity.Type:
+      type: string
+      title: Type
+      enum:
+      - TYPE_UNSPECIFIED
+      - ISSUE_CREATED
+      - ISSUE_APPROVAL_REQUESTED
+      - ISSUE_SENT_BACK
+      - PIPELINE_FAILED
+      - PIPELINE_COMPLETED
+      - ISSUE_APPROVED
+      description: Activity type enumeration.
+    bytebase.v1.BatchDeleteProjectsRequest:
+      type: object
+      properties:
+        names:
+          type: array
+          items:
+            type: string
+          title: names
+          description: "The names of the projects to delete.\n Format: projects/{project}"
+        purge:
+          type: boolean
+          title: purge
+          description: "If set to true, permanently purge the soft-deleted projects and all related resources.\n This operation is irreversible. Following AIP-165, this should only be used for\n administrative cleanup of old soft-deleted projects.\n All projects must already be soft-deleted for this to work.\n When purge=true, all databases will be moved to the default project before deletion.\n When purge=false (soft delete/archive), the projects and their databases/issues remain unchanged."
+      title: BatchDeleteProjectsRequest
+      required:
+      - names
+      additionalProperties: false
+    bytebase.v1.SearchProjectsRequest:
+      type: object
+      properties:
+        showDeleted:
+          type: boolean
+          title: show_deleted
+          description: Show deleted projects if specified.
+        filter:
+          type: string
+          title: filter
+          description: "Filter the project.\n The syntax and semantics of CEL are documented at https://github.com/google/cel-spec\n\n Supported filters:\n - name: the project name, support \"==\" and \".contains()\" operator.\n - resource_id: the project id, support \"==\" and \".contains()\" operator.\n - exclude_default: if not include the default project, should be \"true\" or \"false\", support \"==\" operator.\n - state: check the State enum for the values, support \"==\" operator.\n - labels.{key}: the project label, support \"==\" and \"in\" operators.\n\n For example:\n name == \"project name\"\n name.contains(\"project name\")\n resource_id == \"project id\"\n resource_id.contains(\"project id\")\n exclude_default == true\n state == \"DELETED\"\n labels.environment == \"production\"\n labels.tier == \"critical\"\n labels.environment in [\"staging\", \"prod\"]\n You can combine filter conditions like:\n name == \"project name\" && resource_id.contains(\"project id\")\n name.contains(\"project name\") || resource_id == \"project id\"\n labels.environment == \"production\" && labels.tier == \"critical\""
+        pageSize:
+          type: integer
+          title: page_size
+          format: int32
+          description: "The maximum number of projects to return. The service may return fewer than\n this value.\n If unspecified, at most 10 projects will be returned.\n The maximum value is 1000; values above 1000 will be coerced to 1000."
+        pageToken:
+          type: string
+          title: page_token
+          description: "A page token, received from a previous `SearchProjects` call.\n Provide this to retrieve the subsequent page.\n\n When paginating, all other parameters provided to `SearchProjects` must match\n the call that provided the page token."
+        orderBy:
+          type: string
+          title: order_by
+          description: "The order by of projects.\n Support title. The default sorting order is ascending.\n For example:\n - order_by = \"title\"\n - order_by = \"title desc\"\n - order_by = \"title asc\""
+      title: SearchProjectsRequest
+      additionalProperties: false
+    google.api.expr.v1alpha1.Expr.Select:
+      type: object
+      properties:
+        operand:
+          allOf:
+          - $ref: '#/components/schemas/google.api.expr.v1alpha1.Expr'
+          title: operand
+          description: "Required. The target of the selection expression.\n\n For example, in the select expression `request.auth`, the `request`\n portion of the expression is the `operand`."
+        field:
+          type: string
+          title: field
+          description: "Required. The name of the field to select.\n\n For example, in the select expression `request.auth`, the `auth` portion\n of the expression would be the `field`."
+        testOnly:
+          type: boolean
+          title: test_only
+          description: "Whether the select is to be interpreted as a field presence test.\n\n This results from the macro `has(request.auth)`."
+      title: Select
+      additionalProperties: false
+      description: A field selection expression. e.g. `request.auth`.
+    bytebase.v1.IamPolicy:
+      type: object
+      properties:
+        bindings:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.Binding'
+          title: bindings
+          description: "Collection of binding.\n A binding binds one or more project members to a single project role."
+        etag:
+          type: string
+          title: etag
+          description: "The current etag of the policy, returned by GetIamPolicy and SetIamPolicy.\n Sending it back on SetIamPolicy makes the write conditional: if the policy\n changed since the read, the call returns ABORTED. Omitting it applies the\n write unconditionally, overwriting any concurrent change (AIP-154)."
+      title: IamPolicy
+      additionalProperties: false
+      description: IAM policy that binds members to roles.
+    google.protobuf.Timestamp:
+      type: string
+      examples:
+      - '2023-01-15T01:30:15.01Z'
+      - '2024-12-25T12:00:00Z'
+      format: date-time
+      description: A point in time in RFC 3339 format, with up to nanosecond precision. Output uses UTC (`Z`); input may use an offset from UTC.
+    google.api.expr.v1alpha1.Expr.CreateStruct.Entry:
+      type: object
+      anyOf:
+      - type: object
+        properties:
+          fieldKey:
+            type: string
+            title: field_key
+            description: The field key for a message creator statement.
+        title: field_key
+      - type: object
+        properties:
+          mapKey:
+            allOf:
+            - $ref: '#/components/schemas/google.api.expr.v1alpha1.Expr'
+            title: map_key
+            description: The key expression for a map creation statement.
+        title: map_key
+      unevaluatedProperties: false
+      not:
+        allOf:
+        - anyOf:
+          - required:
+            - fieldKey
+          - required:
+            - mapKey
+        - not:
+            oneOf:
+            - required:
+              - fieldKey
+            - required:
+              - mapKey
+      properties:
+        id:
+          type: string
+          title: id
+          format: int64
+          description: "Required. An id assigned to this node by the parser which is unique\n in a given expression tree. This is used to associate type\n information and other attributes to the node."
+        value:
+          allOf:
+          - $ref: '#/components/schemas/google.api.expr.v1alpha1.Expr'
+          title: value
+          description: "Required. The value assigned to the key.\n\n If the optional_entry field is true, the expression must resolve to an\n optional-typed value. If the optional value is present, the key will be\n set; however, if the optional value is absent, the key will be unset."
+        optionalEntry:
+          type: boolean
+          title: optional_entry
+          description: Whether the key-value pair is optional.
+      title: Entry
+      description: Represents an entry.
+    google.api.expr.v1alpha1.Expr.Ident:
+      type: object
+      properties:
+        name:
+          type: string
+          title: name
+          description: "Required. Holds a single, unqualified identifier, possibly preceded by a\n '.'.\n\n Qualified names are represented by the\n [Expr.Select][google.api.expr.v1alpha1.Expr.Select] expression."
+      title: Ident
+      additionalProperties: false
+      description: An identifier expression. e.g. `request`.
+    google.api.expr.v1alpha1.Constant:
+      type: object
+      anyOf:
+      - type: object
+        properties:
+          boolValue:
+            type: boolean
+            title: bool_value
+            description: boolean value.
+        title: bool_value
+      - type: object
+        properties:
+          bytesValue:
+            type: string
+            title: bytes_value
+            format: byte
+            description: bytes value.
+        title: bytes_value
+      - type: object
+        properties:
+          doubleValue:
+            type: number
+            title: double_value
+            format: double
+            description: double value.
+        title: double_value
+      - type: object
+        properties:
+          durationValue:
+            allOf:
+            - $ref: '#/components/schemas/google.protobuf.Duration'
+            title: duration_value
+            description: "protobuf.Duration value.\n\n Deprecated: duration is no longer considered a builtin cel type."
+            deprecated: true
+        title: duration_value
+      - type: object
+        properties:
+          int64Value:
+            type: string
+            title: int64_value
+            format: int64
+            description: int64 value.
+        title: int64_value
+      - type: object
+        properties:
+          nullValue:
+            allOf:
+            - $ref: '#/components/schemas/google.protobuf.NullValue'
+            title: null_value
+            description: null value.
+        title: null_value
+      - type: object
+        properties:
+          stringValue:
+            type: string
+            title: string_value
+            description: string value.
+        title: string_value
+      - type: object
+        properties:
+          timestampValue:
+            allOf:
+            - $ref: '#/components/schemas/google.protobuf.Timestamp'
+            title: timestamp_value
+            description: "protobuf.Timestamp value.\n\n Deprecated: timestamp is no longer considered a builtin cel type."
+            deprecated: true
+        title: timestamp_value
+      - type: object
+        properties:
+          uint64Value:
+            type: string
+            title: uint64_value
+            format: int64
+            description: uint64 value.
+        title: uint64_value
+      unevaluatedProperties: false
+      not:
+        allOf:
+        - anyOf:
+          - required:
+            - boolValue
+          - required:
+            - bytesValue
+          - required:
+            - doubleValue
+          - required:
+            - durationValue
+          - required:
+            - int64Value
+          - required:
+            - nullValue
+          - required:
+            - stringValue
+          - required:
+            - timestampValue
+          - required:
+            - uint64Value
+        - not:
+            oneOf:
+            - required:
+              - boolValue
+            - required:
+              - bytesValue
+            - required:
+              - doubleValue
+            - required:
+              - durationValue
+            - required:
+              - int64Value
+            - required:
+              - nullValue
+            - required:
+              - stringValue
+            - required:
+              - timestampValue
+            - required:
+              - uint64Value
+      title: Constant
+      description: "Represents a primitive literal.\n\n Named 'Constant' here for backwards compatibility.\n\n This is similar as the primitives supported in the well-known type\n `google.protobuf.Value`, but richer so it can represent CEL's full range of\n primitives.\n\n Lists and structs are not included as constants as these aggregate types may\n contain [Expr][google.api.expr.v1alpha1.Expr] elements which require\n evaluation and are thus not constant.\n\n Examples of literals include: `\"hello\"`, `b'bytes'`, `1u`, `4.2`, `-2`,\n `true`, `null`."
+    bytebase.v1.SearchProjectsResponse:
+      type: object
+      properties:
+        projects:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.Project'
+          title: projects
+          description: The projects from the specified request.
+        nextPageToken:
+          type: string
+          title: next_page_token
+          description: "A token, which can be sent as `page_token` to retrieve the next page.\n If this field is omitted, there are no subsequent pages."
+      title: SearchProjectsResponse
+      additionalProperties: false
+    bytebase.v1.Project.ExecutionRetryPolicy:
+      type: object
+      properties:
+        maximumRetries:
+          type: integer
+          title: maximum_retries
+          format: int32
+          description: The maximum number of retries for lock timeout errors.
+      title: ExecutionRetryPolicy
+      additionalProperties: false
+      description: Execution retry policy configuration.
+    google.api.expr.v1alpha1.Expr:
+      type: object
+      anyOf:
+      - type: object
+        properties:
+          callExpr:
+            allOf:
+            - $ref: '#/components/schemas/google.api.expr.v1alpha1.Expr.Call'
+            title: call_expr
+            description: A call expression, including calls to predefined functions and operators.
+        title: call_expr
+      - type: object
+        properties:
+          comprehensionExpr:
+            allOf:
+            - $ref: '#/components/schemas/google.api.expr.v1alpha1.Expr.Comprehension'
+            title: comprehension_expr
+            description: A comprehension expression.
+        title: comprehension_expr
+      - type: object
+        properties:
+          constExpr:
+            allOf:
+            - $ref: '#/components/schemas/google.api.expr.v1alpha1.Constant'
+            title: const_expr
+            description: A literal expression.
+        title: const_expr
+      - type: object
+        properties:
+          identExpr:
+            allOf:
+            - $ref: '#/components/schemas/google.api.expr.v1alpha1.Expr.Ident'
+            title: ident_expr
+            description: An identifier expression.
+        title: ident_expr
+      - type: object
+        properties:
+          listExpr:
+            allOf:
+            - $ref: '#/components/schemas/google.api.expr.v1alpha1.Expr.CreateList'
+            title: list_expr
+            description: A list creation expression.
+        title: list_expr
+      - type: object
+        properties:
+          selectExpr:
+            allOf:
+            - $ref: '#/components/schemas/google.api.expr.v1alpha1.Expr.Select'
+            title: select_expr
+            description: A field selection expression, e.g. `request.auth`.
+        title: select_expr
+      - type: object
+        properties:
+          structExpr:
+            allOf:
+            - $ref: '#/components/schemas/google.api.expr.v1alpha1.Expr.CreateStruct'
+            title: struct_expr
+            description: A map or message creation expression.
+        title: struct_expr
+      unevaluatedProperties: false
+      not:
+        allOf:
+        - anyOf:
+          - required:
+            - callExpr
+          - required:
+            - comprehensionExpr
+          - required:
+            - constExpr
+          - required:
+            - identExpr
+          - required:
+            - listExpr
+          - required:
+            - selectExpr
+          - required:
+            - structExpr
+        - not:
+            oneOf:
+            - required:
+              - callExpr
+            - required:
+              - comprehensionExpr
+            - required:
+              - constExpr
+            - required:
+              - identExpr
+            - required:
+              - listExpr
+            - required:
+              - selectExpr
+            - required:
+              - structExpr
+      properties:
+        id:
+          type: string
+          title: id
+          format: int64
+          description: "Required. An id assigned to this node by the parser which is unique in a\n given expression tree. This is used to associate type information and other\n attributes to a node in the parse tree."
+      title: Expr
+      description: "An abstract representation of a common expression.\n\n Expressions are abstractly represented as a collection of identifiers,\n select statements, function calls, literals, and comprehensions. All\n operators with the exception of the '.' operator are modelled as function\n calls. This makes it easy to represent new operators into the existing AST.\n\n All references within expressions must resolve to a\n [Decl][google.api.expr.v1alpha1.Decl] provided at type-check for an\n expression to be valid. A reference may either be a bare identifier `name` or\n a qualified identifier `google.api.name`. References may either refer to a\n value or a function declaration.\n\n For example, the expression `google.api.name.startsWith('expr')` references\n the declaration `google.api.name` within a\n [Expr.Select][google.api.expr.v1alpha1.Expr.Select] expression, and the\n function declaration `startsWith`."
+    google.protobuf.Duration:
+      type: string
+      format: duration
+      description: A signed duration in seconds, with up to nine fractional digits and an `s` suffix (for example, `3s` or `-0.001s`).
+    bytebase.v1.Project:
+      type: object
+      properties:
+        name:
+          type: string
+          title: name
+          description: "The name of the project.\n Format: projects/{project}"
+        state:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.State'
+          title: state
+          description: The lifecycle state of the project.
+        title:
+          type: string
+          title: title
+          maxLength: 200
+          description: The title or name of a project. It's not unique within the workspace.
+        webhooks:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.Webhook'
+          title: webhooks
+          description: The list of webhooks configured for the project.
+        dataClassificationConfigId:
+          type: string
+          title: data_classification_config_id
+          description: The data classification configuration ID for the project.
+        issueLabels:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.Label'
+          title: issue_labels
+          description: Labels available for tagging issues in this project.
+        forceIssueLabels:
+          type: boolean
+          title: force_issue_labels
+          description: Force issue labels to be used when creating an issue.
+        enforceIssueTitle:
+          type: boolean
+          title: enforce_issue_title
+          description: Enforce issue title to be created by user instead of generated by Bytebase.
+        postgresDatabaseTenantMode:
+          type: boolean
+          title: postgres_database_tenant_mode
+          description: "Whether to enable database tenant mode for PostgreSQL.\n If enabled, issues will include \"set role <db_owner>\" statement."
+        allowSelfApproval:
+          type: boolean
+          title: allow_self_approval
+          description: Whether to allow issue creators to self-approve their own issues.
+        executionRetryPolicy:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.Project.ExecutionRetryPolicy'
+          title: execution_retry_policy
+          description: Execution retry policy for task runs.
+        ciSamplingSize:
+          type: integer
+          title: ci_sampling_size
+          format: int32
+          description: "The maximum number of databases to sample during CI data validation and\n AI review. Without specification, sampling is disabled, resulting in full\n validation."
+        parallelTasksPerRollout:
+          type: integer
+          title: parallel_tasks_per_rollout
+          format: int32
+          description: The maximum number of parallel tasks allowed during rollout execution.
+        labels:
+          type: object
+          title: labels
+          additionalProperties:
+            type: string
+            title: value
+          description: "Labels are key-value pairs that can be attached to the project.\n For example, { \"environment\": \"production\", \"team\": \"backend\" }"
+        enforceSqlReview:
+          type: boolean
+          title: enforce_sql_review
+          description: "Whether to enforce SQL review checks to pass before issue creation.\n If enabled, issues cannot be created when SQL review finds errors."
+        requireIssueApproval:
+          type: boolean
+          title: require_issue_approval
+          description: Whether to require issue approval before rollout.
+        requirePlanCheckNoError:
+          type: boolean
+          title: require_plan_check_no_error
+          description: Whether to require plan check to have no error before rollout.
+        allowRequestRole:
+          type: boolean
+          title: allow_request_role
+        allowJustInTimeAccess:
+          type: boolean
+          title: allow_just_in_time_access
+          description: Once enabled, users can request and use the just-in-time access in the SQL Editor.
+        allowLastPlanEditorApproval:
+          type: boolean
+          title: allow_last_plan_editor_approval
+          description: Whether to allow the last Plan editor to approve a database change issue.
+      title: Project
+      additionalProperties: false
+    google.api.expr.v1alpha1.Expr.Call:
+      type: object
+      properties:
+        target:
+          allOf:
+          - $ref: '#/components/schemas/google.api.expr.v1alpha1.Expr'
+          title: target
+          description: "The target of an method call-style expression. For example, `x` in\n `x.f()`."
+        function:
+          type: string
+          title: function
+          description: Required. The name of the function or method being called.
+        args:
+          type: array
+          items:
+            $ref: '#/components/schemas/google.api.expr.v1alpha1.Expr'
+          title: args
+          description: The arguments.
+      title: Call
+      additionalProperties: false
+      description: "A call expression, including calls to predefined functions and operators.\n\n For example, `value == 10`, `size(map_value)`."
+    google.api.expr.v1alpha1.Expr.CreateList:
+      type: object
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/google.api.expr.v1alpha1.Expr'
+          title: elements
+          description: The elements part of the list.
+        optionalIndices:
+          type: array
+          items:
+            type: integer
+            format: int32
+          title: optional_indices
+          description: "The indices within the elements list which are marked as optional\n elements.\n\n When an optional-typed value is present, the value it contains\n is included in the list. If the optional-typed value is absent, the list\n element is omitted from the CreateList result."
+      title: CreateList
+      additionalProperties: false
+      description: "A list creation expression.\n\n Lists may either be homogenous, e.g. `[1, 2, 3]`, or heterogeneous, e.g.\n `dyn([1, 'hello', 2.0])`"
+    bytebase.v1.Label:
+      type: object
+      properties:
+        value:
+          type: string
+          title: value
+          description: The label value/name.
+        color:
+          allOf:
+          - $ref: '#/components/schemas/google.type.Color'
+          title: color
+          description: The label color.
+        group:
+          type: string
+          title: group
+          description: The group this label belongs to.
+      title: Label
+      additionalProperties: false
+      description: A label for categorizing and organizing issues.
+    bytebase.v1.TestWebhookResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          title: error
+          description: The result of the test, empty if the test is successful.
+      title: TestWebhookResponse
+      additionalProperties: false
+    google.api.expr.v1alpha1.Expr.CreateStruct:
+      type: object
+      properties:
+        messageName:
+          type: string
+          title: message_name
+          description: "The type name of the message to be created, empty when creating map\n literals."
+        entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/google.api.expr.v1alpha1.Expr.CreateStruct.Entry'
+          title: entries
+          description: The entries in the creation expression.
+      title: CreateStruct
+      additionalProperties: false
+      description: "A map or message creation expression.\n\n Maps are constructed as `{'key_name': 'value'}`. Message construction is\n similar, but prefixed with a type name and composed of field ids:\n `types.MyType{field_id: 'value'}`."

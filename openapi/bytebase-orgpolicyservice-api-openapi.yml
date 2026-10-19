@@ -1,0 +1,870 @@
+openapi: 3.2.0
+info:
+  title: Bytebase API Reference Org Policy Service API
+  description: API reference for Bytebase. Every endpoint is served by your own Bytebase instance.
+  version: 1.0.0
+security: []
+tags:
+- name: OrgPolicyService
+  description: OrgPolicyService manages organizational policies at various resource levels.
+paths:
+  /v1/environments/{environment}/policies:
+    get:
+      tags:
+      - OrgPolicyService
+      summary: ListPolicies
+      description: 'Lists policies at a specified resource level.
+
+        Permissions required: bb.policies.list'
+      operationId: OrgPolicyService_ListPolicies3
+      parameters:
+      - name: environment
+        in: path
+        description: The environment id.
+        required: true
+        schema:
+          type: string
+      - name: policyType
+        in: query
+        description: Filter by specific policy type.
+        schema:
+          oneOf:
+          - $ref: '#/components/schemas/bytebase.v1.PolicyType'
+          - type: 'null'
+          title: policy_type
+      - name: showDeleted
+        in: query
+        description: Show deleted policies if specified.
+        schema:
+          type: boolean
+          title: show_deleted
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ListPoliciesResponse'
+    post:
+      tags:
+      - OrgPolicyService
+      summary: CreatePolicy
+      description: 'Creates a new organizational policy.
+
+        Permissions required: bb.policies.create'
+      operationId: OrgPolicyService_CreatePolicy3
+      parameters:
+      - name: environment
+        in: path
+        description: The environment id.
+        required: true
+        schema:
+          type: string
+      - name: type
+        in: query
+        description: The type of policy to create.
+        schema:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.PolicyType'
+          title: type
+      requestBody:
+        description: The policy to create.
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.Policy'
+              title: policy
+              description: The policy to create.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Policy'
+  /v1/environments/{environment}/policies/{policy}:
+    get:
+      tags:
+      - OrgPolicyService
+      summary: GetPolicy
+      description: 'Retrieves a policy by name.
+
+        Permissions required: bb.policies.get'
+      operationId: OrgPolicyService_GetPolicy3
+      parameters:
+      - name: environment
+        in: path
+        description: The environment id.
+        required: true
+        schema:
+          type: string
+      - name: policy
+        in: path
+        description: The policy id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Policy'
+    delete:
+      tags:
+      - OrgPolicyService
+      summary: DeletePolicy
+      description: 'Deletes an organizational policy.
+
+        Permissions required: bb.policies.delete'
+      operationId: OrgPolicyService_DeletePolicy3
+      parameters:
+      - name: environment
+        in: path
+        description: The environment id.
+        required: true
+        schema:
+          type: string
+      - name: policy
+        in: path
+        description: The policy id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/google.protobuf.Empty'
+    patch:
+      tags:
+      - OrgPolicyService
+      summary: UpdatePolicy
+      description: 'Updates an existing organizational policy.
+
+        Permissions required: bb.policies.update'
+      operationId: OrgPolicyService_UpdatePolicy3
+      parameters:
+      - name: environment
+        in: path
+        description: The environment id.
+        required: true
+        schema:
+          type: string
+      - name: policy
+        in: path
+        description: The policy id.
+        required: true
+        schema:
+          type: string
+      - name: updateMask
+        in: query
+        description: The list of fields to update.
+        schema:
+          type: string
+      - name: allowMissing
+        in: query
+        description: "If set to true, and the policy is not found, a new policy will be created.\n In this situation, `update_mask` is ignored."
+        schema:
+          type: boolean
+          title: allow_missing
+      requestBody:
+        description: "The policy to update.\n\n The policy's `name` field is used to identify the instance to update.\n Format: {resource name}/policies/{policy type}\n Workspace resource name: workspaces/{workspace-id}.\n Environment resource name: environments/environment-id."
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.Policy'
+              title: policy
+              description: "The policy to update.\n\n The policy's `name` field is used to identify the instance to update.\n Format: {resource name}/policies/{policy type}\n Workspace resource name: workspaces/{workspace-id}.\n Environment resource name: environments/environment-id."
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Policy'
+  /v1/projects/{project}/policies:
+    get:
+      tags:
+      - OrgPolicyService
+      summary: ListPolicies
+      description: 'Lists policies at a specified resource level.
+
+        Permissions required: bb.policies.list'
+      operationId: OrgPolicyService_ListPolicies2
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: policyType
+        in: query
+        description: Filter by specific policy type.
+        schema:
+          oneOf:
+          - $ref: '#/components/schemas/bytebase.v1.PolicyType'
+          - type: 'null'
+          title: policy_type
+      - name: showDeleted
+        in: query
+        description: Show deleted policies if specified.
+        schema:
+          type: boolean
+          title: show_deleted
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ListPoliciesResponse'
+    post:
+      tags:
+      - OrgPolicyService
+      summary: CreatePolicy
+      description: 'Creates a new organizational policy.
+
+        Permissions required: bb.policies.create'
+      operationId: OrgPolicyService_CreatePolicy2
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: type
+        in: query
+        description: The type of policy to create.
+        schema:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.PolicyType'
+          title: type
+      requestBody:
+        description: The policy to create.
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.Policy'
+              title: policy
+              description: The policy to create.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Policy'
+  /v1/projects/{project}/policies/{policy}:
+    get:
+      tags:
+      - OrgPolicyService
+      summary: GetPolicy
+      description: 'Retrieves a policy by name.
+
+        Permissions required: bb.policies.get'
+      operationId: OrgPolicyService_GetPolicy2
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: policy
+        in: path
+        description: The policy id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Policy'
+    delete:
+      tags:
+      - OrgPolicyService
+      summary: DeletePolicy
+      description: 'Deletes an organizational policy.
+
+        Permissions required: bb.policies.delete'
+      operationId: OrgPolicyService_DeletePolicy2
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: policy
+        in: path
+        description: The policy id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/google.protobuf.Empty'
+    patch:
+      tags:
+      - OrgPolicyService
+      summary: UpdatePolicy
+      description: 'Updates an existing organizational policy.
+
+        Permissions required: bb.policies.update'
+      operationId: OrgPolicyService_UpdatePolicy2
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: policy
+        in: path
+        description: The policy id.
+        required: true
+        schema:
+          type: string
+      - name: updateMask
+        in: query
+        description: The list of fields to update.
+        schema:
+          type: string
+      - name: allowMissing
+        in: query
+        description: "If set to true, and the policy is not found, a new policy will be created.\n In this situation, `update_mask` is ignored."
+        schema:
+          type: boolean
+          title: allow_missing
+      requestBody:
+        description: "The policy to update.\n\n The policy's `name` field is used to identify the instance to update.\n Format: {resource name}/policies/{policy type}\n Workspace resource name: workspaces/{workspace-id}.\n Environment resource name: environments/environment-id."
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.Policy'
+              title: policy
+              description: "The policy to update.\n\n The policy's `name` field is used to identify the instance to update.\n Format: {resource name}/policies/{policy type}\n Workspace resource name: workspaces/{workspace-id}.\n Environment resource name: environments/environment-id."
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Policy'
+  /v1/workspaces/{workspace}/policies:
+    get:
+      tags:
+      - OrgPolicyService
+      summary: ListPolicies
+      description: 'Lists policies at a specified resource level.
+
+        Permissions required: bb.policies.list'
+      operationId: OrgPolicyService_ListPolicies
+      parameters:
+      - name: workspace
+        in: path
+        description: The workspace id.
+        required: true
+        schema:
+          type: string
+      - name: policyType
+        in: query
+        description: Filter by specific policy type.
+        schema:
+          oneOf:
+          - $ref: '#/components/schemas/bytebase.v1.PolicyType'
+          - type: 'null'
+          title: policy_type
+      - name: showDeleted
+        in: query
+        description: Show deleted policies if specified.
+        schema:
+          type: boolean
+          title: show_deleted
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ListPoliciesResponse'
+    post:
+      tags:
+      - OrgPolicyService
+      summary: CreatePolicy
+      description: 'Creates a new organizational policy.
+
+        Permissions required: bb.policies.create'
+      operationId: OrgPolicyService_CreatePolicy
+      parameters:
+      - name: workspace
+        in: path
+        description: The workspace id.
+        required: true
+        schema:
+          type: string
+      - name: type
+        in: query
+        description: The type of policy to create.
+        schema:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.PolicyType'
+          title: type
+      requestBody:
+        description: The policy to create.
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.Policy'
+              title: policy
+              description: The policy to create.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Policy'
+  /v1/workspaces/{workspace}/policies/{policy}:
+    get:
+      tags:
+      - OrgPolicyService
+      summary: GetPolicy
+      description: 'Retrieves a policy by name.
+
+        Permissions required: bb.policies.get'
+      operationId: OrgPolicyService_GetPolicy
+      parameters:
+      - name: workspace
+        in: path
+        description: The workspace id.
+        required: true
+        schema:
+          type: string
+      - name: policy
+        in: path
+        description: The policy id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Policy'
+    delete:
+      tags:
+      - OrgPolicyService
+      summary: DeletePolicy
+      description: 'Deletes an organizational policy.
+
+        Permissions required: bb.policies.delete'
+      operationId: OrgPolicyService_DeletePolicy
+      parameters:
+      - name: workspace
+        in: path
+        description: The workspace id.
+        required: true
+        schema:
+          type: string
+      - name: policy
+        in: path
+        description: The policy id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/google.protobuf.Empty'
+    patch:
+      tags:
+      - OrgPolicyService
+      summary: UpdatePolicy
+      description: 'Updates an existing organizational policy.
+
+        Permissions required: bb.policies.update'
+      operationId: OrgPolicyService_UpdatePolicy
+      parameters:
+      - name: workspace
+        in: path
+        description: The workspace id.
+        required: true
+        schema:
+          type: string
+      - name: policy
+        in: path
+        description: The policy id.
+        required: true
+        schema:
+          type: string
+      - name: updateMask
+        in: query
+        description: The list of fields to update.
+        schema:
+          type: string
+      - name: allowMissing
+        in: query
+        description: "If set to true, and the policy is not found, a new policy will be created.\n In this situation, `update_mask` is ignored."
+        schema:
+          type: boolean
+          title: allow_missing
+      requestBody:
+        description: "The policy to update.\n\n The policy's `name` field is used to identify the instance to update.\n Format: {resource name}/policies/{policy type}\n Workspace resource name: workspaces/{workspace-id}.\n Environment resource name: environments/environment-id."
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.Policy'
+              title: policy
+              description: "The policy to update.\n\n The policy's `name` field is used to identify the instance to update.\n Format: {resource name}/policies/{policy type}\n Workspace resource name: workspaces/{workspace-id}.\n Environment resource name: environments/environment-id."
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Policy'
+components:
+  schemas:
+    bytebase.v1.PolicyType:
+      type: string
+      title: PolicyType
+      enum:
+      - POLICY_TYPE_UNSPECIFIED
+      - MASKING_RULE
+      - MASKING_EXEMPTION
+      - ROLLOUT_POLICY
+      - TAG
+      - DATA_QUERY
+      - REVIEW_RULE
+      - REVIEW_AI
+      description: The type of organizational policy.
+    bytebase.v1.TagPolicy:
+      type: object
+      properties:
+        tags:
+          type: object
+          title: tags
+          additionalProperties:
+            type: string
+            title: value
+          description: "tags is the key - value map for resources.\n for example, the environment resource can have the sql review config tag, like \"bb.tag.review_config\": \"reviewConfigs/{review config resource id}\""
+      title: TagPolicy
+      additionalProperties: false
+      description: Policy for tagging resources with metadata.
+    bytebase.v1.ReviewRuleType:
+      type: string
+      title: ReviewRuleType
+      enum:
+      - REVIEW_RULE_TYPE_UNSPECIFIED
+      - SYNTAX
+      - WALK_THROUGH
+      - ONLINE_MIGRATION
+      - PRIOR_BACKUP
+      - REQUIRE_IS_NULL
+      - REQUIRE_WHERE
+      - DISALLOW_DROP_OBJECT
+      - DISALLOW_TRUNCATE
+      - DISALLOW_DROP_CONSTRAINT
+      - DISALLOW_RENAME
+      - REQUIRE_PRIMARY_KEY
+      description: "ReviewRuleType is the standard review rule set. The rules are fixed:\n every project gets them without configuration, and the only setting is a\n switch (see ReviewRulePolicy).\n\n A rule id names what the rule examines. An execution check is named for\n what it checks; a rule about the SQL itself carries REQUIRE or DISALLOW so\n the id says which way it cuts. DISALLOW on a P1 rule means the operation\n needs a person's acceptance, not that it is forbidden."
+    bytebase.v1.PolicyResourceType:
+      type: string
+      title: PolicyResourceType
+      enum:
+      - RESOURCE_TYPE_UNSPECIFIED
+      - WORKSPACE
+      - ENVIRONMENT
+      - PROJECT
+      description: The resource type that a policy can be attached to.
+    bytebase.v1.ReviewAIPolicy:
+      type: object
+      properties:
+        content:
+          type: string
+          title: content
+          description: The policy text. Must not be blank, at most 64 KiB.
+      title: ReviewAIPolicy
+      additionalProperties: false
+      description: "Natural-language policy for the AI review. Unlike the review rule policy,\n both levels apply: the workspace policy and the project policy both reach\n the reviewer, and the project policy wins where they conflict."
+    bytebase.v1.ListPoliciesResponse:
+      type: object
+      properties:
+        policies:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.Policy'
+          title: policies
+          description: The policies from the specified request.
+      title: ListPoliciesResponse
+      additionalProperties: false
+    bytebase.v1.MaskingRulePolicy.MaskingRule:
+      type: object
+      properties:
+        id:
+          type: string
+          title: id
+          description: A unique identifier for the rule in UUID format.
+        condition:
+          allOf:
+          - $ref: '#/components/schemas/google.type.Expr'
+          title: condition
+          description: "The condition for the masking rule.\n The syntax and semantics of CEL are documented at https://github.com/google/cel-spec\n\n Support variables:\n resource.environment_id: the environment resource id.\n resource.project_id: the project resource id.\n resource.instance_id: the instance resource id.\n resource.database_name: the database name.\n resource.table_name: the table name.\n resource.column_name: the column name.\n resource.classification_level: the classification level (integer).\n\n Each variable support following operations:\n ==: the value equals the target.\n !=: the value not equals the target.\n in: the value matches one of the targets.\n !(in): the value not matches any of the targets.\n <, <=, >, >=: numeric comparison (classification_level only).\n\n For example:\n resource.environment_id == \"test\" && resource.project_id == \"sample-project\"\n resource.instance_id == \"sample-instance\" && resource.database_name == \"employee\" && resource.table_name in [\"table1\", \"table2\"]\n resource.environment_id != \"test\" || !(resource.project_id in [\"poject1\", \"prject2\"])\n resource.instance_id == \"sample-instance\" && (resource.database_name == \"db1\" || resource.database_name == \"db2\")"
+        semanticType:
+          type: string
+          title: semantic_type
+          description: The semantic type of data to mask (e.g., "SSN", "EMAIL").
+      title: MaskingRule
+      additionalProperties: false
+      description: A rule that defines when and how to mask data.
+    bytebase.v1.MaskingExemptionPolicy:
+      type: object
+      properties:
+        exemptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.MaskingExemptionPolicy.Exemption'
+          title: exemptions
+      title: MaskingExemptionPolicy
+      additionalProperties: false
+      description: MaskingExemptionPolicy is the allowlist of users who can access sensitive data.
+    bytebase.v1.ReviewRulePolicy:
+      type: object
+      properties:
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.ReviewRuleType'
+          title: rules
+          description: The rules switched on. Unknown or unspecified values are rejected.
+      title: ReviewRulePolicy
+      additionalProperties: false
+      description: "Standard review rule policy: the rules switched on. The nearest policy\n wins: a project's own policy applies as is; a project without one uses\n the workspace policy; with neither, every rule is on. Getting the policy\n of a project without its own is NOT_FOUND; getting the workspace's when it\n has none returns every rule on.\n\n SYNTAX gates the rest: the other rules judge only SQL that parses, so a\n list without SYNTAX switches every rule off.\n\n A saved list is explicit, so a rule added to the standard set in a later\n release is appended to every saved policy by a data migration in that\n release."
+    bytebase.v1.MaskingRulePolicy:
+      type: object
+      properties:
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.MaskingRulePolicy.MaskingRule'
+          title: rules
+          description: The list of masking rules.
+      title: MaskingRulePolicy
+      additionalProperties: false
+      description: Policy for configuring data masking rules.
+    google.type.Expr:
+      type: object
+      properties:
+        expression:
+          type: string
+          title: expression
+          description: "Textual representation of an expression in Common Expression Language\n syntax."
+        title:
+          type: string
+          title: title
+          description: "Optional. Title for the expression, i.e. a short string describing\n its purpose. This can be used e.g. in UIs which allow to enter the\n expression."
+        description:
+          type: string
+          title: description
+          description: "Optional. Description of the expression. This is a longer text which\n describes the expression, e.g. when hovered over it in a UI."
+        location:
+          type: string
+          title: location
+          description: "Optional. String indicating the location of the expression for error\n reporting, e.g. a file name and a position in the file."
+      title: Expr
+      additionalProperties: false
+      description: "Represents a textual expression in the Common Expression Language (CEL)\n syntax. CEL is a C-like expression language. The syntax and semantics of CEL\n are documented at https://github.com/google/cel-spec.\n\n Example (Comparison):\n\n     title: \"Summary size limit\"\n     description: \"Determines if a summary is less than 100 chars\"\n     expression: \"document.summary.size() < 100\"\n\n Example (Equality):\n\n     title: \"Requestor is owner\"\n     description: \"Determines if requestor is the document owner\"\n     expression: \"document.owner == request.auth.claims.email\"\n\n Example (Logic):\n\n     title: \"Public documents\"\n     description: \"Determine whether the document should be publicly visible\"\n     expression: \"document.type != 'private' && document.type != 'internal'\"\n\n Example (Data Manipulation):\n\n     title: \"Notification string\"\n     description: \"Create a notification string with a timestamp.\"\n     expression: \"'New message received at ' + string(document.create_time)\"\n\n The exact variables and functions that may be referenced within an expression\n are determined by the service that evaluates it. See the service\n documentation for additional information."
+    bytebase.v1.MaskingExemptionPolicy.Exemption:
+      type: object
+      properties:
+        members:
+          type: array
+          items:
+            type: string
+          title: members
+          description: "Specifies the principals who are exempt from masking.\n For users, the member should be: user:{email}\n For groups, the member should be: group:{email}\n For service accounts, the member should be: serviceAccount:{email}\n For workload identities, the member should be: workloadIdentity:{email}"
+        condition:
+          allOf:
+          - $ref: '#/components/schemas/google.type.Expr'
+          title: condition
+          description: "The condition that is associated with this exception policy instance.\n The syntax and semantics of CEL are documented at https://github.com/google/cel-spec\n If the condition is empty, means the user can access all databases without expiration.\n\n Support variables:\n resource.instance_id: the instance resource id. Only support \"==\" operation.\n resource.database_name: the database name. Only support \"==\" operation.\n resource.schema_name: the schema name. Only support \"==\" operation.\n resource.table_name: the table name. Only support \"==\" operation.\n resource.column_name: the column name. Only support \"==\" operation.\n request.time: the expiration. Only support \"<\" operation in `request.time < timestamp(\"{ISO datetime string format}\")`\n All variables should join with \"&&\" condition.\n\n For example:\n resource.instance_id == \"local\" && resource.database_name == \"employee\" && request.time < timestamp(\"2025-04-30T11:10:39.000Z\")\n resource.instance_id == \"local\" && resource.database_name == \"employee\""
+      title: Exemption
+      additionalProperties: false
+    bytebase.v1.Policy:
+      type: object
+      anyOf:
+      - type: object
+        properties:
+          maskingExemptionPolicy:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.MaskingExemptionPolicy'
+            title: masking_exemption_policy
+        title: masking_exemption_policy
+      - type: object
+        properties:
+          maskingRulePolicy:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.MaskingRulePolicy'
+            title: masking_rule_policy
+        title: masking_rule_policy
+      - type: object
+        properties:
+          queryDataPolicy:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.QueryDataPolicy'
+            title: query_data_policy
+        title: query_data_policy
+      - type: object
+        properties:
+          reviewAiPolicy:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.ReviewAIPolicy'
+            title: review_ai_policy
+        title: review_ai_policy
+      - type: object
+        properties:
+          reviewRulePolicy:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.ReviewRulePolicy'
+            title: review_rule_policy
+        title: review_rule_policy
+      - type: object
+        properties:
+          rolloutPolicy:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.RolloutPolicy'
+            title: rollout_policy
+        title: rollout_policy
+      - type: object
+        properties:
+          tagPolicy:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.TagPolicy'
+            title: tag_policy
+        title: tag_policy
+      unevaluatedProperties: false
+      not:
+        allOf:
+        - anyOf:
+          - required:
+            - maskingExemptionPolicy
+          - required:
+            - maskingRulePolicy
+          - required:
+            - queryDataPolicy
+          - required:
+            - reviewAiPolicy
+          - required:
+            - reviewRulePolicy
+          - required:
+            - rolloutPolicy
+          - required:
+            - tagPolicy
+        - not:
+            oneOf:
+            - required:
+              - maskingExemptionPolicy
+            - required:
+              - maskingRulePolicy
+            - required:
+              - queryDataPolicy
+            - required:
+              - reviewAiPolicy
+            - required:
+              - reviewRulePolicy
+            - required:
+              - rolloutPolicy
+            - required:
+              - tagPolicy
+      properties:
+        name:
+          type: string
+          title: name
+          description: "The name of the policy.\n Format: {resource name}/policies/{policy type}\n Workspace resource name: workspaces/{workspace-id}.\n Environment resource name: environments/environment-id."
+        inheritFromParent:
+          type: boolean
+          title: inherit_from_parent
+          description: Whether this policy inherits from its parent resource.
+        type:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.PolicyType'
+          title: type
+          description: The type of policy.
+        enforce:
+          type: boolean
+          title: enforce
+          description: Whether the policy is enforced.
+        resourceType:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.PolicyResourceType'
+          title: resource_type
+          description: The resource type for the policy.
+          readOnly: true
+      title: Policy
+    bytebase.v1.QueryDataPolicy:
+      type: object
+      properties:
+        maximumResultRows:
+          type: integer
+          title: maximum_result_rows
+          format: int32
+          description: "Support both project-level and workspace-level.\n The maximum number of rows to return in the SQL editor.\n The default value <= 0, means no limit."
+        disableExport:
+          type: boolean
+          title: disable_export
+          description: "workspace-level policy\n Disable data export in the SQL editor."
+        disableCopyData:
+          type: boolean
+          title: disable_copy_data
+          description: "workspace-level policy\n Disable copying query results in the SQL editor."
+        allowAdminDataSource:
+          type: boolean
+          title: allow_admin_data_source
+          description: "workspace-level policy\n Allow using the admin data source to query in the SQL editor.\n If true, users can select the admin data source or read-only data source\n If false,\n 1. when read-only data source is configured, users're force to use the read-only data source\n 2. otherwise fallback to use the admin data source."
+      title: QueryDataPolicy
+      additionalProperties: false
+      description: QueryDataPolicy is the policy configuration for querying data in the SQL Editor.
+    google.protobuf.Empty:
+      type: object
+      description: An empty JSON object.
+    bytebase.v1.RolloutPolicy:
+      type: object
+      properties:
+        automatic:
+          type: boolean
+          title: automatic
+          description: Whether rollout is automatic without manual approval.
+        roles:
+          type: array
+          items:
+            type: string
+          title: roles
+          description: The roles that can approve rollout execution.
+      title: RolloutPolicy
+      additionalProperties: false
+      description: Rollout policy configuration.

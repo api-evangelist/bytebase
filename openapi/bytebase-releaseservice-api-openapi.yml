@@ -1,0 +1,610 @@
+openapi: 3.2.0
+info:
+  title: Bytebase API Reference Release Service API
+  description: API reference for Bytebase. Every endpoint is served by your own Bytebase instance.
+  version: 1.0.0
+security: []
+tags:
+- name: ReleaseService
+  description: ReleaseService manages releases for coordinating deployments.
+paths:
+  /v1/projects/{project}/releases:
+    get:
+      tags:
+      - ReleaseService
+      summary: ListReleases
+      description: 'Lists releases in a project.
+
+        Permissions required: bb.releases.list'
+      operationId: ReleaseService_ListReleases
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: "The maximum number of releases to return. The service may return fewer than this value.\n If unspecified, at most 10 releases will be returned.\n The maximum value is 1000; values above 1000 will be coerced to 1000."
+        schema:
+          type: integer
+          title: page_size
+          format: int32
+      - name: pageToken
+        in: query
+        description: "A page token, received from a previous `ListReleases` call.\n Provide this to retrieve the subsequent page.\n\n When paginating, all other parameters provided to `ListReleases` must match\n the call that provided the page token."
+        schema:
+          type: string
+          title: page_token
+      - name: showDeleted
+        in: query
+        description: Show deleted releases if specified.
+        schema:
+          type: boolean
+          title: show_deleted
+      - name: filter
+        in: query
+        description: "Filter is used to filter releases returned in the list.\n The syntax and semantics of CEL are documented at https://github.com/google/cel-spec\n\n Supported filters:\n - category: release category, support \"==\" operator.\n\n For example:\n category == \"webapp\""
+        schema:
+          type: string
+          title: filter
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ListReleasesResponse'
+    post:
+      tags:
+      - ReleaseService
+      summary: CreateRelease
+      description: 'Creates a new release with SQL files.
+
+        Permissions required: bb.releases.create'
+      operationId: ReleaseService_CreateRelease
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: releaseIdTemplate
+        in: query
+        description: "Template for release ID generation.\n Available variables: {date}, {time}, {timestamp}, {iteration}.\n Example: \"release_{date}-RC{iteration}\" generates \"release_20260119-RC00\".\n Default: \"release_{date}-RC{iteration}\"."
+        schema:
+          type: string
+          title: release_id_template
+      - name: releaseIdTimezone
+        in: query
+        description: "Timezone for {date} and {time} variables in the template.\n Must be a valid IANA timezone (e.g., \"UTC\", \"America/Los_Angeles\").\n Default: \"UTC\"."
+        schema:
+          type: string
+          title: release_id_timezone
+      requestBody:
+        description: The release to create.
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.Release'
+              title: release
+              description: The release to create.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Release'
+  /v1/projects/{project}/releases/{release}:
+    get:
+      tags:
+      - ReleaseService
+      summary: GetRelease
+      description: 'Retrieves a release by name.
+
+        Permissions required: bb.releases.get'
+      operationId: ReleaseService_GetRelease
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: release
+        in: path
+        description: The release id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Release'
+    delete:
+      tags:
+      - ReleaseService
+      summary: DeleteRelease
+      description: 'Deletes a release.
+
+        Permissions required: bb.releases.delete'
+      operationId: ReleaseService_DeleteRelease
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: release
+        in: path
+        description: The release id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/google.protobuf.Empty'
+    patch:
+      tags:
+      - ReleaseService
+      summary: UpdateRelease
+      description: 'Updates an existing release.
+
+        Permissions required: bb.releases.update
+
+        When allow_missing=true, also requires: bb.releases.create'
+      operationId: ReleaseService_UpdateRelease
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: release
+        in: path
+        description: The release id.
+        required: true
+        schema:
+          type: string
+      - name: updateMask
+        in: query
+        description: The list of fields to be updated.
+        schema:
+          type: string
+      requestBody:
+        description: The release to update.
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.Release'
+              title: release
+              description: The release to update.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Release'
+  /v1/projects/{project}/releases/{release}:undelete:
+    post:
+      tags:
+      - ReleaseService
+      summary: UndeleteRelease
+      description: 'Restores a deleted release.
+
+        Permissions required: bb.releases.undelete'
+      operationId: ReleaseService_UndeleteRelease
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: release
+        in: path
+        description: The release id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Release'
+  /v1/projects/{project}/releases:check:
+    post:
+      tags:
+      - ReleaseService
+      summary: CheckRelease
+      description: 'Validates a release by dry-running checks on target databases.
+
+        Permissions required: bb.releases.check'
+      operationId: ReleaseService_CheckRelease
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                release:
+                  allOf:
+                  - $ref: '#/components/schemas/bytebase.v1.Release'
+                  title: release
+                  description: The release to check.
+                targets:
+                  type: array
+                  items:
+                    type: string
+                  title: targets
+                  description: "The targets to dry-run the release.\n Can be database or databaseGroup.\n Format:\n projects/{project}/databaseGroups/{databaseGroup}\n instances/{instance}/databases/{database}\n projects/{project}/instances/{instance}/databases/{database}"
+                customRules:
+                  type: string
+                  title: custom_rules
+                  description: "Custom linting rules in natural language for AI-powered validation.\n Each rule should be a clear statement describing the desired schema constraint.\n Example: \"All tables must have a primary key\"\n Example: \"VARCHAR columns should specify a maximum length\""
+                vcsUser:
+                  allOf:
+                  - $ref: '#/components/schemas/bytebase.v1.VCSUser'
+                  title: vcs_user
+                  description: "The non-bot VCS pull request or merge request creator observed by bytebase-release.\n If absent, Bytebase skips VCS user tracking and VCS user limit enforcement."
+              title: CheckReleaseRequest
+              required:
+              - release
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.CheckReleaseResponse'
+  /v1/projects/{project}/releases:listCategories:
+    get:
+      tags:
+      - ReleaseService
+      summary: ListReleaseCategories
+      description: 'Lists all unique categories in a project.
+
+        Permissions required: bb.releases.list'
+      operationId: ReleaseService_ListReleaseCategories
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ListReleaseCategoriesResponse'
+components:
+  schemas:
+    bytebase.v1.RiskLevel:
+      type: string
+      title: RiskLevel
+      enum:
+      - RISK_LEVEL_UNSPECIFIED
+      - LOW
+      - MODERATE
+      - HIGH
+      description: RiskLevel is the risk level.
+    bytebase.v1.VCSType:
+      type: string
+      title: VCSType
+      enum:
+      - VCS_TYPE_UNSPECIFIED
+      - GITHUB
+      - GITLAB
+      - BITBUCKET
+      - AZURE_DEVOPS
+      description: Version control system type.
+    google.protobuf.Timestamp:
+      type: string
+      examples:
+      - '2023-01-15T01:30:15.01Z'
+      - '2024-12-25T12:00:00Z'
+      format: date-time
+      description: A point in time in RFC 3339 format, with up to nanosecond precision. Output uses UTC (`Z`); input may use an offset from UTC.
+    bytebase.v1.VCSUser:
+      type: object
+      properties:
+        vcsType:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.VCSType'
+          title: vcs_type
+        userId:
+          type: string
+          title: user_id
+        userName:
+          type: string
+          title: user_name
+        displayName:
+          type: string
+          title: display_name
+      title: VCSUser
+      additionalProperties: false
+    bytebase.v1.Release.Type:
+      type: string
+      title: Type
+      enum:
+      - TYPE_UNSPECIFIED
+      - VERSIONED
+      - DECLARATIVE
+      description: The type of schema change.
+    bytebase.v1.Release.VCSSource:
+      type: object
+      properties:
+        vcsType:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.VCSType'
+          title: vcs_type
+          description: The type of VCS.
+        url:
+          type: string
+          title: url
+          description: The url link to the e.g., GitHub commit or pull request.
+      title: VCSSource
+      additionalProperties: false
+      description: Version control system source information.
+    bytebase.v1.Advice.RuleType:
+      type: string
+      title: RuleType
+      enum:
+      - RULE_TYPE_UNSPECIFIED
+      - PARSER_BASED
+      - AI_POWERED
+      description: RuleType indicates the source of the linting rule.
+    bytebase.v1.Release:
+      type: object
+      properties:
+        name:
+          type: string
+          title: name
+          description: 'Format: projects/{project}/releases/{release}'
+          readOnly: true
+        category:
+          type: string
+          title: category
+          description: "Category extracted from release name (e.g., \"webapp\", \"analytics\").\n Set by Bytebase action during release creation."
+        files:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.Release.File'
+          title: files
+          description: The SQL files included in the release.
+        vcsSource:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.Release.VCSSource'
+          title: vcs_source
+          description: The version control source of the release.
+        creator:
+          type: string
+          title: creator
+          description: 'Format: users/hello@world.com'
+          readOnly: true
+        createTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: create_time
+          readOnly: true
+        state:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.State'
+          title: state
+          description: The lifecycle state of the release.
+          readOnly: true
+        type:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.Release.Type'
+          title: type
+          description: The type of schema change for all files in this release.
+      title: Release
+      additionalProperties: false
+    bytebase.v1.Release.File:
+      type: object
+      properties:
+        path:
+          type: string
+          title: path
+          description: The path of the file. e.g., `2.2/V0001_create_table.sql`.
+        version:
+          type: string
+          title: version
+          description: The version identifier for the file.
+        sheet:
+          type: string
+          title: sheet
+          description: "For inputs, we must either use `sheet` or `statement`.\n For outputs, we always use `sheet`. `statement` is the preview of the sheet content.\n\n The sheet that holds the content.\n Format: projects/{project}/sheets/{sheet}"
+        statement:
+          type: string
+          title: statement
+          format: byte
+          description: The raw SQL statement content.
+          writeOnly: true
+        sheetSha256:
+          type: string
+          title: sheet_sha256
+          description: The SHA256 hash value of the sheet content or the statement.
+          readOnly: true
+      title: File
+      additionalProperties: false
+      description: A SQL file in a release.
+    bytebase.v1.Advice:
+      type: object
+      properties:
+        status:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.Advice.Level'
+          title: status
+          description: The advice level.
+        code:
+          type: integer
+          title: code
+          format: int32
+          description: The advice code.
+        title:
+          type: string
+          title: title
+          description: The advice title.
+        content:
+          type: string
+          title: content
+          description: The advice content.
+        startPosition:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.Position'
+          title: start_position
+          description: "The start_position is inclusive and the end_position is exclusive.\n TODO: use range instead"
+        endPosition:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.Position'
+          title: end_position
+        ruleType:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.Advice.RuleType'
+          title: rule_type
+          description: The type of linting rule that generated this advice.
+      title: Advice
+      additionalProperties: false
+    bytebase.v1.State:
+      type: string
+      title: State
+      enum:
+      - STATE_UNSPECIFIED
+      - ACTIVE
+      - DELETED
+      description: Resource lifecycle state.
+    bytebase.v1.Advice.Level:
+      type: string
+      title: Level
+      enum:
+      - ADVICE_LEVEL_UNSPECIFIED
+      - SUCCESS
+      - WARNING
+      - ERROR
+      description: Level represents the severity level of the advice.
+    bytebase.v1.Position:
+      type: object
+      properties:
+        line:
+          type: integer
+          title: line
+          format: int32
+          description: "Line position in a text (one-based).\n First line of the text is line 1.\n A value of 0 indicates the line information is unknown."
+        column:
+          type: integer
+          title: column
+          format: int32
+          description: "Column position in a text (one-based).\n Column is measured in Unicode code points (characters/runes), not bytes or grapheme clusters.\n First character of the line is column 1.\n A value of 0 indicates the column information is unknown.\n\n Examples:\n - \"SELECT * FROM t\" - column 8 is '*'\n - \"SELECT 你好 FROM t\" - column 8 is '你' (even though it's at byte offset 7)\n - \"SELECT \U0001F600 FROM t\" - column 8 is '\U0001F600' (even though it's 4 bytes in UTF-8)"
+      title: Position
+      additionalProperties: false
+      description: "Position in a text expressed as one-based line and one-based column.\n We use 1-based numbering to match the majority of industry standards:\n - Monaco Editor uses 1-based (https://microsoft.github.io/monaco-editor/typedoc/interfaces/IPosition.html)\n - GitHub Actions uses 1-based (https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-error-message)\n - Most text editors display 1-based positions to users\n Note: LSP uses 0-based (https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#position),\n but we follow the canonical user-facing standards.\n\n Handling unknown positions:\n - If the entire position is unknown, leave this field as nil/undefined\n - If only line is known, set line and leave column as 0 (e.g., line=5, column=0)\n - If only column is known (rare), set column and leave line as 0\n Frontends should check for nil/undefined/zero values and handle them appropriately."
+    bytebase.v1.CheckReleaseResponse.CheckResult:
+      type: object
+      properties:
+        file:
+          type: string
+          title: file
+          description: The file path that is being checked.
+        target:
+          type: string
+          title: target
+          description: "The target that the check is performed on.\n Should be a database.\n Format: instances/{instance}/databases/{database} or projects/{project}/instances/{instance}/databases/{database}"
+        advices:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.Advice'
+          title: advices
+          description: The list of advice for the file and the target.
+        affectedRows:
+          type: string
+          title: affected_rows
+          format: int64
+          description: The count of affected rows of the statement on the target.
+        riskLevel:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.RiskLevel'
+          title: risk_level
+          description: The risk level of the statement on the target.
+      title: CheckResult
+      additionalProperties: false
+      description: Check result for a single release file on a target database.
+    bytebase.v1.CheckReleaseResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.CheckReleaseResponse.CheckResult'
+          title: results
+          description: The check results for each file and target combination.
+        affectedRows:
+          type: string
+          title: affected_rows
+          format: int64
+          description: The total affected rows across all checks.
+        riskLevel:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.RiskLevel'
+          title: risk_level
+          description: The aggregated risk level of the check.
+      title: CheckReleaseResponse
+      additionalProperties: false
+    bytebase.v1.ListReleaseCategoriesResponse:
+      type: object
+      properties:
+        categories:
+          type: array
+          items:
+            type: string
+          title: categories
+          description: The unique category values in the project.
+      title: ListReleaseCategoriesResponse
+      additionalProperties: false
+    google.protobuf.Empty:
+      type: object
+      description: An empty JSON object.
+    bytebase.v1.ListReleasesResponse:
+      type: object
+      properties:
+        releases:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.Release'
+          title: releases
+          description: The releases from the specified request.
+        nextPageToken:
+          type: string
+          title: next_page_token
+          description: "A token, which can be sent as `page_token` to retrieve the next page.\n If this field is omitted, there are no subsequent pages."
+      title: ListReleasesResponse
+      additionalProperties: false

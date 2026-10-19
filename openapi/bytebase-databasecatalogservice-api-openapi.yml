@@ -1,0 +1,356 @@
+openapi: 3.2.0
+info:
+  title: Bytebase API Reference Database Catalog Service API
+  description: API reference for Bytebase. Every endpoint is served by your own Bytebase instance.
+  version: 1.0.0
+security: []
+tags:
+- name: DatabaseCatalogService
+  description: DatabaseCatalogService manages database schema metadata and classification.
+paths:
+  /v1/instances/{instance}/databases/{database}/catalog:
+    get:
+      tags:
+      - DatabaseCatalogService
+      summary: GetDatabaseCatalog
+      description: 'Gets the catalog metadata for a database.
+
+        Permissions required: bb.databaseCatalogs.get'
+      operationId: DatabaseCatalogService_GetDatabaseCatalog
+      parameters:
+      - name: instance
+        in: path
+        description: The instance id.
+        required: true
+        schema:
+          type: string
+      - name: database
+        in: path
+        description: The database id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.DatabaseCatalog'
+    patch:
+      tags:
+      - DatabaseCatalogService
+      summary: UpdateDatabaseCatalog
+      description: 'Updates catalog metadata such as classifications and labels.
+
+        Permissions required: bb.databaseCatalogs.update'
+      operationId: DatabaseCatalogService_UpdateDatabaseCatalog
+      parameters:
+      - name: instance
+        in: path
+        description: The instance id.
+        required: true
+        schema:
+          type: string
+      - name: database
+        in: path
+        description: The database id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: "The database catalog to update, identified by its `name` field.\n Format: instances/{instance}/databases/{database}/catalog or projects/{project}/instances/{instance}/databases/{database}/catalog\n\n Replaces the whole catalog: send the complete value, since anything omitted\n is erased. There is no `update_mask` because `schemas` is a repeated field,\n and AIP-161 forbids addressing one element of one."
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.DatabaseCatalog'
+              title: catalog
+              description: "The database catalog to update, identified by its `name` field.\n Format: instances/{instance}/databases/{database}/catalog or projects/{project}/instances/{instance}/databases/{database}/catalog\n\n Replaces the whole catalog: send the complete value, since anything omitted\n is erased. There is no `update_mask` because `schemas` is a repeated field,\n and AIP-161 forbids addressing one element of one."
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.DatabaseCatalog'
+  /v1/projects/{project}/instances/{instance}/databases/{database}/catalog:
+    get:
+      tags:
+      - DatabaseCatalogService
+      summary: GetDatabaseCatalog
+      description: 'Gets the catalog metadata for a database.
+
+        Permissions required: bb.databaseCatalogs.get'
+      operationId: DatabaseCatalogService_GetDatabaseCatalog2
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: instance
+        in: path
+        description: The instance id.
+        required: true
+        schema:
+          type: string
+      - name: database
+        in: path
+        description: The database id.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.DatabaseCatalog'
+    patch:
+      tags:
+      - DatabaseCatalogService
+      summary: UpdateDatabaseCatalog
+      description: 'Updates catalog metadata such as classifications and labels.
+
+        Permissions required: bb.databaseCatalogs.update'
+      operationId: DatabaseCatalogService_UpdateDatabaseCatalog2
+      parameters:
+      - name: project
+        in: path
+        description: The project id.
+        required: true
+        schema:
+          type: string
+      - name: instance
+        in: path
+        description: The instance id.
+        required: true
+        schema:
+          type: string
+      - name: database
+        in: path
+        description: The database id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: "The database catalog to update, identified by its `name` field.\n Format: instances/{instance}/databases/{database}/catalog or projects/{project}/instances/{instance}/databases/{database}/catalog\n\n Replaces the whole catalog: send the complete value, since anything omitted\n is erased. There is no `update_mask` because `schemas` is a repeated field,\n and AIP-161 forbids addressing one element of one."
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/bytebase.v1.DatabaseCatalog'
+              title: catalog
+              description: "The database catalog to update, identified by its `name` field.\n Format: instances/{instance}/databases/{database}/catalog or projects/{project}/instances/{instance}/databases/{database}/catalog\n\n Replaces the whole catalog: send the complete value, since anything omitted\n is erased. There is no `update_mask` because `schemas` is a repeated field,\n and AIP-161 forbids addressing one element of one."
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.DatabaseCatalog'
+components:
+  schemas:
+    bytebase.v1.DatabaseCatalog:
+      type: object
+      properties:
+        name:
+          type: string
+          title: name
+          description: "The name of the database catalog.\n Format: instances/{instance}/databases/{database}/catalog or projects/{project}/instances/{instance}/databases/{database}/catalog"
+        schemas:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.SchemaCatalog'
+          title: schemas
+          description: The schemas in the database.
+      title: DatabaseCatalog
+      additionalProperties: false
+      description: Catalog metadata for a database including schemas, tables, and columns.
+    bytebase.v1.TableCatalog:
+      type: object
+      anyOf:
+      - type: object
+        properties:
+          columns:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.TableCatalog.Columns'
+            title: columns
+            description: Regular table columns.
+        title: columns
+      - type: object
+        properties:
+          objectSchema:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.ObjectSchema'
+            title: object_schema
+            description: Object schema for JSON/XML columns.
+        title: object_schema
+      unevaluatedProperties: false
+      not:
+        allOf:
+        - anyOf:
+          - required:
+            - columns
+          - required:
+            - objectSchema
+        - not:
+            oneOf:
+            - required:
+              - columns
+            - required:
+              - objectSchema
+      properties:
+        name:
+          type: string
+          title: name
+          description: The table name.
+        classification:
+          type: string
+          title: classification
+          description: The data classification level for this table.
+      title: TableCatalog
+      description: Table metadata within a schema.
+    bytebase.v1.ColumnCatalog:
+      type: object
+      properties:
+        name:
+          type: string
+          title: name
+          description: The column name.
+        semanticType:
+          type: string
+          title: semantic_type
+          description: The semantic type describing the data purpose.
+        labels:
+          type: object
+          title: labels
+          additionalProperties:
+            type: string
+            title: value
+          description: User-defined labels for this column.
+        classification:
+          type: string
+          title: classification
+          description: The data classification level for this column.
+        objectSchema:
+          oneOf:
+          - $ref: '#/components/schemas/bytebase.v1.ObjectSchema'
+          - type: 'null'
+          title: object_schema
+          description: Object schema for complex column types like JSON.
+      title: ColumnCatalog
+      additionalProperties: false
+      description: Column metadata within a table.
+    bytebase.v1.ObjectSchema.StructKind:
+      type: object
+      properties:
+        properties:
+          type: object
+          title: properties
+          additionalProperties:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.ObjectSchema'
+            title: value
+          description: Properties of the struct.
+      title: StructKind
+      additionalProperties: false
+      description: Structure type with named properties.
+    bytebase.v1.ObjectSchema:
+      type: object
+      anyOf:
+      - type: object
+        properties:
+          arrayKind:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.ObjectSchema.ArrayKind'
+            title: array_kind
+            description: Array schema.
+        title: array_kind
+      - type: object
+        properties:
+          structKind:
+            allOf:
+            - $ref: '#/components/schemas/bytebase.v1.ObjectSchema.StructKind'
+            title: struct_kind
+            description: Struct schema.
+        title: struct_kind
+      unevaluatedProperties: false
+      not:
+        allOf:
+        - anyOf:
+          - required:
+            - arrayKind
+          - required:
+            - structKind
+        - not:
+            oneOf:
+            - required:
+              - arrayKind
+            - required:
+              - structKind
+      properties:
+        type:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.ObjectSchema.Type'
+          title: type
+          description: The data type of this object.
+        semanticType:
+          type: string
+          title: semantic_type
+          description: The semantic type of this object.
+      title: ObjectSchema
+      description: Schema definition for object-type columns.
+    bytebase.v1.TableCatalog.Columns:
+      type: object
+      properties:
+        columns:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.ColumnCatalog'
+          title: columns
+          description: The columns in the table.
+      title: Columns
+      additionalProperties: false
+      description: Column list for regular tables.
+    bytebase.v1.ObjectSchema.ArrayKind:
+      type: object
+      properties:
+        kind:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.ObjectSchema'
+          title: kind
+          description: The schema of array elements.
+      title: ArrayKind
+      additionalProperties: false
+      description: Array type with element schema.
+    bytebase.v1.SchemaCatalog:
+      type: object
+      properties:
+        name:
+          type: string
+          title: name
+          description: The schema name.
+        tables:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.TableCatalog'
+          title: tables
+          description: The tables in the schema.
+      title: SchemaCatalog
+      additionalProperties: false
+      description: Schema metadata within a database.
+    bytebase.v1.ObjectSchema.Type:
+      type: string
+      title: Type
+      enum:
+      - TYPE_UNSPECIFIED
+      - STRING
+      - NUMBER
+      - BOOLEAN
+      - OBJECT
+      - ARRAY
+      description: Object schema data types.

@@ -1,0 +1,490 @@
+openapi: 3.2.0
+info:
+  title: Bytebase API Reference Subscription Service API
+  description: API reference for Bytebase. Every endpoint is served by your own Bytebase instance.
+  version: 1.0.0
+security: []
+tags:
+- name: SubscriptionService
+  description: SubscriptionService manages enterprise subscriptions and licensing.
+paths:
+  /v1/subscription:
+    get:
+      tags:
+      - SubscriptionService
+      summary: GetSubscription
+      description: 'GetSubscription returns the current subscription.
+
+        If there is no license, we will return a free plan subscription without expiration time.
+
+        If there is expired license, we will return a free plan subscription with the expiration time of the expired license.'
+      operationId: SubscriptionService_GetSubscription
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Subscription'
+  /v1/subscription/checkoutSession/{sessionId}:
+    get:
+      tags:
+      - SubscriptionService
+      summary: VerifyCheckoutSession
+      description: VerifyCheckoutSession verifies a Stripe Checkout Session status (SaaS only).
+      operationId: SubscriptionService_VerifyCheckoutSession
+      parameters:
+      - name: sessionId
+        in: path
+        description: "The same Stripe Checkout Session ID PurchaseResponse mints, arriving back\n the other way, so it carries the same classification. VerifyCheckoutSession\n is EXCLUDED, and a refusal of it streams its request to the stdout audit\n log, so leaving this unannotated would write the id into that line while\n the response that produced it was redacted."
+        required: true
+        schema:
+          type: string
+          title: session_id
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.VerifyCheckoutSessionResponse'
+  /v1/subscription/license:
+    patch:
+      tags:
+      - SubscriptionService
+      summary: UploadLicense
+      description: Uploads an enterprise license (self-hosted only).
+      operationId: SubscriptionService_UploadLicense
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/bytebase.v1.UploadLicenseRequest'
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Subscription'
+  /v1/subscription/paymentInfo:
+    get:
+      tags:
+      - SubscriptionService
+      summary: GetPaymentInfo
+      description: GetPaymentInfo returns payment details for the current subscription (SaaS only).
+      operationId: SubscriptionService_GetPaymentInfo
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.PaymentInfo'
+  /v1/subscription/plans:
+    get:
+      tags:
+      - SubscriptionService
+      summary: ListPurchasePlans
+      description: ListPurchasePlans returns available plans for self-service purchase.
+      operationId: SubscriptionService_ListPurchasePlans
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ListPurchasePlansResponse'
+  /v1/subscription:cancelPurchase:
+    post:
+      tags:
+      - SubscriptionService
+      summary: CancelPurchase
+      description: CancelPurchase cancels an active subscription (SaaS only).
+      operationId: SubscriptionService_CancelPurchase
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/bytebase.v1.CancelPurchaseRequest'
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.PurchaseResponse'
+  /v1/subscription:purchase:
+    post:
+      tags:
+      - SubscriptionService
+      summary: CreatePurchase
+      description: 'CreatePurchase creates a new subscription purchase (SaaS only).
+
+        Returns a Stripe Checkout URL for the user to complete payment.'
+      operationId: SubscriptionService_CreatePurchase
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/bytebase.v1.CreatePurchaseRequest'
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.PurchaseResponse'
+  /v1/subscription:startTrial:
+    post:
+      tags:
+      - SubscriptionService
+      summary: StartTrial
+      description: StartTrial starts a free trial for an eligible SaaS workspace.
+      operationId: SubscriptionService_StartTrial
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/bytebase.v1.StartTrialRequest'
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.Subscription'
+  /v1/subscription:updatePurchase:
+    post:
+      tags:
+      - SubscriptionService
+      summary: UpdatePurchase
+      description: 'UpdatePurchase updates an existing subscription (SaaS only).
+
+        May return a Stripe Checkout URL if payment method change is needed.'
+      operationId: SubscriptionService_UpdatePurchase
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/bytebase.v1.UpdatePurchaseRequest'
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.PurchaseResponse'
+  /v1/subscription:vcsProviderUsersExport:
+    get:
+      tags:
+      - SubscriptionService
+      summary: ExportVCSProviderUsers
+      description: Exports active VCS users as CSV.
+      operationId: SubscriptionService_ExportVCSProviderUsers
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bytebase.v1.ExportVCSProviderUsersResponse'
+components:
+  schemas:
+    bytebase.v1.PurchaseDiscount:
+      type: object
+      properties:
+        type:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.PurchaseDiscount.Type'
+          title: type
+        value:
+          type: integer
+          title: value
+          format: int32
+      title: PurchaseDiscount
+      additionalProperties: false
+    bytebase.v1.PurchaseBillingMethod:
+      type: object
+      properties:
+        interval:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.BillingInterval'
+          title: interval
+        discount:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.PurchaseDiscount'
+          title: discount
+      title: PurchaseBillingMethod
+      additionalProperties: false
+    bytebase.v1.ListPurchasePlansResponse:
+      type: object
+      properties:
+        plans:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.PurchasePlan'
+          title: plans
+      title: ListPurchasePlansResponse
+      additionalProperties: false
+    bytebase.v1.Subscription:
+      type: object
+      properties:
+        plan:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.PlanType'
+          title: plan
+          readOnly: true
+        seats:
+          type: integer
+          title: seats
+          format: int32
+          readOnly: true
+        instances:
+          type: integer
+          title: instances
+          format: int32
+          readOnly: true
+        activeInstances:
+          type: integer
+          title: active_instances
+          format: int32
+          readOnly: true
+        expiresTime:
+          allOf:
+          - $ref: '#/components/schemas/google.protobuf.Timestamp'
+          title: expires_time
+          readOnly: true
+        trialing:
+          type: boolean
+          title: trialing
+          readOnly: true
+        orgName:
+          type: string
+          title: org_name
+          readOnly: true
+        ha:
+          type: boolean
+          title: ha
+          description: Whether high availability (multiple replicas) is enabled.
+          readOnly: true
+        etag:
+          type: string
+          title: etag
+          description: Etag for optimistic concurrency on purchase updates. Only set in SaaS mode.
+          readOnly: true
+      title: Subscription
+      additionalProperties: false
+    bytebase.v1.UpdatePurchaseRequest:
+      type: object
+      properties:
+        plan:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.PlanType'
+          title: plan
+        interval:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.BillingInterval'
+          title: interval
+        seats:
+          type: integer
+          title: seats
+          format: int32
+        etag:
+          type: string
+          title: etag
+      title: UpdatePurchaseRequest
+      additionalProperties: false
+    bytebase.v1.CreatePurchaseRequest:
+      type: object
+      properties:
+        plan:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.PlanType'
+          title: plan
+        interval:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.BillingInterval'
+          title: interval
+        seats:
+          type: integer
+          title: seats
+          format: int32
+      title: CreatePurchaseRequest
+      additionalProperties: false
+    bytebase.v1.PaymentInfo:
+      type: object
+      properties:
+        totalPrice:
+          type: string
+          title: total_price
+          description: Total amount paid for the current billing period, in the smallest currency unit (e.g. cents).
+        currency:
+          type: string
+          title: currency
+        periodStart:
+          type: string
+          title: period_start
+        periodEnd:
+          type: string
+          title: period_end
+        invoiceUrl:
+          type: string
+          title: invoice_url
+          description: Stripe Billing Portal URL for invoice management.
+        cancelAtPeriodEnd:
+          type: boolean
+          title: cancel_at_period_end
+          description: Whether the subscription is scheduled to cancel at the end of the current billing period.
+        nextPeriodPrice:
+          type: string
+          title: next_period_price
+          description: "Amount that will be charged at the next renewal, in the smallest currency unit (e.g. cents).\n Empty when the subscription will not renew (e.g. scheduled to cancel at period end)."
+      title: PaymentInfo
+      additionalProperties: false
+    bytebase.v1.PurchasePlan:
+      type: object
+      properties:
+        type:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.PlanType'
+          title: type
+        selfServicePurchase:
+          type: boolean
+          title: self_service_purchase
+        additionals:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.PurchasePlanAdditional'
+          title: additionals
+        billingMethods:
+          type: array
+          items:
+            $ref: '#/components/schemas/bytebase.v1.PurchaseBillingMethod'
+          title: billing_methods
+      title: PurchasePlan
+      additionalProperties: false
+    google.protobuf.Timestamp:
+      type: string
+      examples:
+      - '2023-01-15T01:30:15.01Z'
+      - '2024-12-25T12:00:00Z'
+      format: date-time
+      description: A point in time in RFC 3339 format, with up to nanosecond precision. Output uses UTC (`Z`); input may use an offset from UTC.
+    bytebase.v1.ExportVCSProviderUsersResponse:
+      type: object
+      properties:
+        content:
+          type: string
+          title: content
+          format: byte
+      title: ExportVCSProviderUsersResponse
+      additionalProperties: false
+    bytebase.v1.BillingInterval:
+      type: string
+      title: BillingInterval
+      enum:
+      - BILLING_INTERVAL_UNSPECIFIED
+      - MONTH
+      - YEAR
+    bytebase.v1.PurchasePlanAdditional.Type:
+      type: string
+      title: Type
+      enum:
+      - TYPE_UNSPECIFIED
+      - USER
+    bytebase.v1.CancelPurchaseRequest:
+      type: object
+      properties:
+        feedback:
+          type: string
+          title: feedback
+          description: "Reason the customer is canceling. Maps to Stripe's cancellation_details.feedback.\n Valid Stripe values: \"customer_service\", \"low_quality\", \"missing_features\",\n \"switched_service\", \"too_complex\", \"too_expensive\", \"unused\", \"other\".\n Required."
+        comment:
+          type: string
+          title: comment
+          description: Optional free-form comment. Max 500 chars (Stripe limit).
+      title: CancelPurchaseRequest
+      additionalProperties: false
+    bytebase.v1.PurchaseResponse:
+      type: object
+      properties:
+        paymentUrl:
+          type: string
+          title: payment_url
+          description: "If set, redirect to this Stripe Checkout URL.\n If empty, the update was applied directly using the existing payment method."
+        sessionId:
+          type: string
+          title: session_id
+          description: Stripe Checkout Session ID. Used to verify the session after redirect.
+      title: PurchaseResponse
+      additionalProperties: false
+    bytebase.v1.StartTrialRequest:
+      type: object
+      title: StartTrialRequest
+      additionalProperties: false
+    bytebase.v1.VerifyCheckoutSessionResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          title: status
+          description: 'Stripe Checkout Session status: "complete", "expired", or "open".'
+      title: VerifyCheckoutSessionResponse
+      additionalProperties: false
+    bytebase.v1.PurchaseDiscount.Type:
+      type: string
+      title: Type
+      enum:
+      - TYPE_UNSPECIFIED
+      - PERCENTAGE_OFF
+      - FIXED_MONTH_OFF
+      - FIXED_PRICE_OFF
+    bytebase.v1.PlanType:
+      type: string
+      title: PlanType
+      enum:
+      - PLAN_TYPE_UNSPECIFIED
+      - FREE
+      - TEAM
+      - ENTERPRISE
+    bytebase.v1.PurchasePlanAdditional:
+      type: object
+      properties:
+        type:
+          allOf:
+          - $ref: '#/components/schemas/bytebase.v1.PurchasePlanAdditional.Type'
+          title: type
+        unitPrice:
+          type: integer
+          title: unit_price
+          format: int32
+          description: Price in USD cents per month.
+        freeCount:
+          type: integer
+          title: free_count
+          format: int32
+        minimumCount:
+          type: integer
+          title: minimum_count
+          format: int32
+        maximumCount:
+          type: integer
+          title: maximum_count
+          format: int32
+          description: -1 means unlimited.
+      title: PurchasePlanAdditional
+      additionalProperties: false
+    bytebase.v1.UploadLicenseRequest:
+      type: object
+      properties:
+        license:
+          type: string
+          title: license
+      title: UploadLicenseRequest
+      additionalProperties: false

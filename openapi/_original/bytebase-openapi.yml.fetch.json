@@ -1,0 +1,12 @@
+{
+ "url": "https://api.bytebase.com/openapi.yaml",
+ "final": "https://api.bytebase.com/openapi.yaml",
+ "status": 200,
+ "content_type": "text/yaml; charset=utf-8",
+ "bytes": 1167760,
+ "sha256": "5e802e91733b33812761d9ae09302c0535ce62217864aae33f46fb3f554e9fe7",
+ "fetched_at": "2026-10-19",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "byte-identical",
+ "note": "re-archived: the provider's current document replaced a stale archive (roadmap#793); the old files are in openapi/_superseded/2026-10-19-stale"
+}
