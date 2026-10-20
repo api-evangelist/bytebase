@@ -49,3 +49,89 @@
     detected: '2026-10-19'
   status: not-a-workflow
   arazzo: null
+- slug: bytebase-agent-skills-own-github-org
+  label: Agent Skills (own GitHub org)
+  partner_name: Agent Skills (own GitHub org)
+  category: Agent Skills package
+  type: register
+  channel: provider-built
+  evidence: https://github.com/bytebase/dbhub
+  source: edge
+  relationship: compatible
+  contract_reference:
+    register: 'provider''s own GitHub org (GitHub REST API: repo + git tree holds SKILL.md)'
+    spec_file: null
+    standard: Agent Skills (agentskills.io)
+    role: agent-skills-repo
+    matched_org: bytebase
+    matched_by: org-profile-domain:bytebase.com
+    detected_by: sweep-agent-skills.py
+    detected: '2026-10-20'
+  status: not-a-workflow
+  arazzo: null
+- slug: bytebase-skills-sh
+  label: skills.sh
+  partner_name: skills.sh
+  category: Agent Skills register
+  type: register
+  channel: standard-directory
+  evidence: https://www.skills.sh/bytebase/dbhub
+  source: edge
+  relationship: compatible
+  contract_reference:
+    register: skills.sh (public sitemap / list)
+    spec_file: null
+    standard: Agent Skills (agentskills.io)
+    role: agent-skills-listing
+    matched_org: bytebase
+    matched_by: org-profile-domain:bytebase.com
+    sample_skills:
+    - dbhub
+    detected_by: sweep-agent-skills.py
+    detected: '2026-10-20'
+  status: not-a-workflow
+  arazzo: null
+- slug: bytebase-claude-plugins-dev
+  label: claude-plugins.dev
+  partner_name: claude-plugins.dev
+  category: Agent Skills register
+  type: register
+  channel: standard-directory
+  evidence: https://claude-plugins.dev/skills/@bytebase/dbhub
+  source: edge
+  relationship: compatible
+  contract_reference:
+    register: claude-plugins.dev (public sitemap / list)
+    spec_file: null
+    standard: Agent Skills (agentskills.io)
+    role: agent-skills-listing
+    matched_org: bytebase
+    matched_by: org-profile-domain:bytebase.com
+    sample_skills:
+    - testing
+    detected_by: sweep-agent-skills.py
+    detected: '2026-10-20'
+  status: not-a-workflow
+  arazzo: null
+- slug: bytebase-skillsmp-skillsmp-com
+  label: SkillsMP (skillsmp.com)
+  partner_name: SkillsMP (skillsmp.com)
+  category: Agent Skills register
+  type: register
+  channel: standard-directory
+  evidence: https://skillsmp.com/creators/bytebase/dbhub
+  source: edge
+  relationship: compatible
+  contract_reference:
+    register: SkillsMP (skillsmp.com) (public sitemap / list)
+    spec_file: null
+    standard: Agent Skills (agentskills.io)
+    role: agent-skills-listing
+    matched_org: bytebase
+    matched_by: org-profile-domain:bytebase.com
+    sample_skills:
+    - skills-dbhub
+    detected_by: sweep-agent-skills.py
+    detected: '2026-10-20'
+  status: not-a-workflow
+  arazzo: null
