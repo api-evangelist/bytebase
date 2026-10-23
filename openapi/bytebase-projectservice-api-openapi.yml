@@ -1326,3 +1326,9 @@ components:
       title: CreateStruct
       additionalProperties: false
       description: "A map or message creation expression.\n\n Maps are constructed as `{'key_name': 'value'}`. Message construction is\n similar, but prefixed with a type name and composed of field ids:\n `types.MyType{field_id: 'value'}`."
+x-provenance:
+  method: harvested
+  publisher: Bytebase
+  source: https://api.bytebase.com/openapi.yaml
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)

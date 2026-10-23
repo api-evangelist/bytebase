@@ -221,3 +221,9 @@ components:
       type: string
       format: duration
       description: A signed duration in seconds, with up to nine fractional digits and an `s` suffix (for example, `3s` or `-0.001s`).
+x-provenance:
+  method: harvested
+  publisher: Bytebase
+  source: https://api.bytebase.com/openapi.yaml
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)

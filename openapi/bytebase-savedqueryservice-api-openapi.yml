@@ -661,3 +661,9 @@ components:
           description: "Pass to the next ListSavedQueries call to fetch the following page. Empty\n on the last page."
       title: ListSavedQueriesResponse
       additionalProperties: false
+x-provenance:
+  method: harvested
+  publisher: Bytebase
+  source: https://api.bytebase.com/openapi.yaml
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)

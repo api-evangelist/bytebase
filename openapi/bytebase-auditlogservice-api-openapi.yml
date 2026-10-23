@@ -420,3 +420,9 @@ components:
           format: binary
       additionalProperties: true
       description: An arbitrary message with a type URL identifying the encoded message type.
+x-provenance:
+  method: harvested
+  publisher: Bytebase
+  source: https://api.bytebase.com/openapi.yaml
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)
