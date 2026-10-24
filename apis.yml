@@ -198,6 +198,8 @@ apis:
   humanURL: https://docs.bytebase.com/integrations/api/overview
   baseURL: https://demo.bytebase.com/v1
   tags:
+  - Database Service
+  tags_raw:
   - DatabaseService
   properties:
   - type: OpenAPI
@@ -570,6 +572,8 @@ apis:
   humanURL: https://docs.bytebase.com/integrations/api/overview
   baseURL: https://demo.bytebase.com/v1
   tags:
+  - Subscription Service
+  tags_raw:
   - SubscriptionService
   properties:
   - type: OpenAPI
