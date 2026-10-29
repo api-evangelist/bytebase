@@ -1,4 +1,4 @@
-# Bytebase (bytebase)
+# Bytebase
 
 <!-- API-EVANGELIST-PROVENANCE:BEGIN -->
 > ### About this repository
@@ -66,204 +66,139 @@
 
 Bytebase is a database DevOps and CI/CD platform - the GitOps-style control plane for schema change, migration, and access management across MySQL, PostgreSQL, and many other engines. Every action in the web console is backed by a documented API exposed as both Connect/gRPC and RESTful HTTP (gRPC transcoding), authenticated with a service-account Bearer token. Bytebase ships as free, self-hostable open source (OSS) with paid Pro and Enterprise tiers.
 
-**APIs.json:** [https://raw.githubusercontent.com/api-evangelist/bytebase/refs/heads/main/apis.yml](https://raw.githubusercontent.com/api-evangelist/bytebase/refs/heads/main/apis.yml)
+**Areas:** Database · DevOps · Schema Migration · CI/CD · DevSecOps · Developer Tools
 
-## Tags
+## Bytebase on APIs.io
 
-- Database
-- DevOps
-- Schema Migration
-- CI/CD
-- DevSecOps
+Everything profiled for Bytebase is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/bytebase/](https://apis.io/providers/bytebase/)** — or go straight to one of the APIs or properties below.
 
-## Timestamps
+### APIs (12)
 
-- **Created:** 2026-06-21
-- **Modified:** 2026-06-21
+- [Bytebase Auth API](https://apis.io/apis/bytebase/bytebase-auth-api/) — The Auth API from Bytebase — 1 operation(s) for auth.
+- [Bytebase Databases API](https://apis.io/apis/bytebase/bytebase-databases-api/) — The Databases API from Bytebase — 2 operation(s) for databases.
+- [Bytebase Groups API](https://apis.io/apis/bytebase/bytebase-groups-api/) — The Groups API from Bytebase — 1 operation(s) for groups.
+- [Bytebase Instances API](https://apis.io/apis/bytebase/bytebase-instances-api/) — The Instances API from Bytebase — 2 operation(s) for instances.
+- [Bytebase Issues API](https://apis.io/apis/bytebase/bytebase-issues-api/) — The Issues API from Bytebase — 3 operation(s) for issues.
+- [Bytebase Plans API](https://apis.io/apis/bytebase/bytebase-plans-api/) — The Plans API from Bytebase — 1 operation(s) for plans.
+- [Bytebase Projects API](https://apis.io/apis/bytebase/bytebase-projects-api/) — The Projects API from Bytebase — 2 operation(s) for projects.
+- [Bytebase Roles API](https://apis.io/apis/bytebase/bytebase-roles-api/) — The Roles API from Bytebase — 1 operation(s) for roles.
+- [Bytebase Rollouts API](https://apis.io/apis/bytebase/bytebase-rollouts-api/) — The Rollouts API from Bytebase — 2 operation(s) for rollouts.
+- [Bytebase Sheets API](https://apis.io/apis/bytebase/bytebase-sheets-api/) — The Sheets API from Bytebase — 1 operation(s) for sheets.
+- [Bytebase Users API](https://apis.io/apis/bytebase/bytebase-users-api/) — The Users API from Bytebase — 1 operation(s) for users.
+- [Bytebase Webhooks API](https://apis.io/apis/bytebase/bytebase-webhooks-api/) — The Webhooks API from Bytebase — 1 operation(s) for webhooks.
 
-## APIs
+### Published properties
 
-### Bytebase Instances API
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
 
-Register, list, update, and sync the database instances (and their data sources) that Bytebase manages, plus list the databases discovered on each instance.
+#### Agentic access (1)
 
-- **Human URL:** [https://docs.bytebase.com/integrations/api/overview](https://docs.bytebase.com/integrations/api/overview)
-- **Base URL:** `https://demo.bytebase.com/v1`
+Which operations an agent can call, which act, and which need a human in the loop.
 
-#### Tags
+- [Bytebase Agentic Access](https://apis.io/agentic-access/bytebase/bytebase-agentic-access/)
 
-- Instances
-- Data Sources
-- Database Servers
+#### Collections (13)
 
-#### Properties
+Postman and Open Collection request collections.
 
-- [Documentation](https://docs.bytebase.com/integrations/api/overview)
-- [API Reference](https://api.bytebase.com/)
-- [OpenAPI](openapi/bytebase-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/bytebase.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/bytebase.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+- [Bytebase API](https://apis.io/collections/bytebase/open-bytebase/)
+- [Bytebase Auth API](https://apis.io/collections/bytebase/open-bytebase-auth-api/)
+- [Bytebase Auth Databases API](https://apis.io/collections/bytebase/open-bytebase-databases-api/)
+- [Bytebase Auth Groups API](https://apis.io/collections/bytebase/open-bytebase-groups-api/)
+- [Bytebase Auth Instances API](https://apis.io/collections/bytebase/open-bytebase-instances-api/)
+- [Bytebase Auth Issues API](https://apis.io/collections/bytebase/open-bytebase-issues-api/)
+- [Bytebase Auth Plans API](https://apis.io/collections/bytebase/open-bytebase-plans-api/)
+- [Bytebase Auth Projects API](https://apis.io/collections/bytebase/open-bytebase-projects-api/)
+- [Bytebase Auth Roles API](https://apis.io/collections/bytebase/open-bytebase-roles-api/)
+- [Bytebase Auth Rollouts API](https://apis.io/collections/bytebase/open-bytebase-rollouts-api/)
+- [Bytebase Auth Sheets API](https://apis.io/collections/bytebase/open-bytebase-sheets-api/)
+- [Bytebase Auth Users API](https://apis.io/collections/bytebase/open-bytebase-users-api/)
+- [Bytebase Auth Webhooks API](https://apis.io/collections/bytebase/open-bytebase-webhooks-api/)
 
-### Bytebase Databases API
+#### Security (3)
 
-Read and update databases, fetch live schema and metadata, list changelogs, diff schemas, and trigger synchronization for databases tracked by Bytebase.
+Authentication, trust centre, and vulnerability disclosure.
 
-- **Human URL:** [https://docs.bytebase.com/integrations/api/overview](https://docs.bytebase.com/integrations/api/overview)
-- **Base URL:** `https://demo.bytebase.com/v1`
+- [Bytebase Authentication](https://apis.io/security/bytebase/bytebase-authentication/)
+- [Bytebase Domain Security](https://apis.io/security/bytebase/bytebase-domain-security/)
+- [Bytebase Trust Center](https://apis.io/security/bytebase/bytebase-trust-center/)
 
-#### Tags
+#### Plans and pricing (1)
 
-- Databases
-- Schema
-- Metadata
+Published plans, tiers and prices.
 
-#### Properties
+- [Bytebase Plans Pricing](https://apis.io/plans/bytebase/bytebase-plans-pricing/)
 
-- [Documentation](https://docs.bytebase.com/integrations/api/overview)
-- [API Reference](https://api.bytebase.com/)
-- [OpenAPI](openapi/bytebase-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/bytebase.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/bytebase.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+#### Rate limits (1)
 
-### Bytebase Projects API
+Published request limits.
 
-Create, list, update, and delete projects - the organizational units that group databases, members, and database-change workflows in Bytebase.
+- [Bytebase Rate Limits](https://apis.io/rate-limits/bytebase/bytebase-rate-limits/)
 
-- **Human URL:** [https://docs.bytebase.com/integrations/api/overview](https://docs.bytebase.com/integrations/api/overview)
-- **Base URL:** `https://demo.bytebase.com/v1`
+#### FinOps (1)
 
-#### Tags
+What the API costs to run, by operation.
 
-- Projects
-- Organization
-- Governance
+- [Bytebase Finops](https://apis.io/finops/bytebase/bytebase-finops/)
 
-#### Properties
+## Where to find this API
 
-- [Documentation](https://docs.bytebase.com/integrations/api/overview)
-- [API Reference](https://api.bytebase.com/)
-- [OpenAPI](openapi/bytebase-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/bytebase.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/bytebase.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
 
-### Bytebase Issues / Migrations API
-
-Create and track schema-change and data-change issues (the migration review unit in Bytebase), drive approval flows (approve, reject, request), and manage issue comments. Plans organize the proposed changes behind an issue.
-
-- **Human URL:** [https://docs.bytebase.com/integrations/api/overview](https://docs.bytebase.com/integrations/api/overview)
-- **Base URL:** `https://demo.bytebase.com/v1`
-
-#### Tags
-
-- Issues
-- Migrations
-- Schema Change
-- Approvals
-
-#### Properties
-
-- [Documentation](https://docs.bytebase.com/integrations/api/overview)
-- [API Reference](https://api.bytebase.com/)
-- [OpenAPI](openapi/bytebase-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/bytebase.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/bytebase.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
-
-### Bytebase Rollouts API
-
-Execute the plan behind an issue by creating and managing rollouts and their tasks - run, skip, or cancel tasks across stages and inspect task-run logs.
-
-- **Human URL:** [https://docs.bytebase.com/integrations/api/overview](https://docs.bytebase.com/integrations/api/overview)
-- **Base URL:** `https://demo.bytebase.com/v1`
-
-#### Tags
-
-- Rollouts
-- Deployment
-- Tasks
-
-#### Properties
-
-- [Documentation](https://docs.bytebase.com/integrations/api/overview)
-- [API Reference](https://api.bytebase.com/)
-- [OpenAPI](openapi/bytebase-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/bytebase.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/bytebase.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
-
-### Bytebase Sheets API
-
-Create and retrieve sheets - the SQL statements / scripts that back plan specs, migrations, and ad-hoc work in a project.
-
-- **Human URL:** [https://docs.bytebase.com/integrations/api/overview](https://docs.bytebase.com/integrations/api/overview)
-- **Base URL:** `https://demo.bytebase.com/v1`
-
-#### Tags
-
-- Sheets
-- SQL
-- Scripts
-
-#### Properties
-
-- [Documentation](https://docs.bytebase.com/integrations/api/overview)
-- [API Reference](https://api.bytebase.com/)
-- [OpenAPI](openapi/bytebase-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/bytebase.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/bytebase.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
-
-### Bytebase Users / Roles API
-
-Manage user accounts (including service accounts), custom roles, and user groups that drive role-based access control across the Bytebase workspace.
-
-- **Human URL:** [https://docs.bytebase.com/integrations/api/overview](https://docs.bytebase.com/integrations/api/overview)
-- **Base URL:** `https://demo.bytebase.com/v1`
-
-#### Tags
-
-- Users
-- Roles
-- Groups
-- IAM
-
-#### Properties
-
-- [Documentation](https://docs.bytebase.com/integrations/api/overview)
-- [API Reference](https://api.bytebase.com/)
-- [OpenAPI](openapi/bytebase-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/bytebase.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/bytebase.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
-
-### Bytebase Webhooks API
-
-Add, update, remove, and test project webhooks that push Bytebase events (issue and rollout activity) to Slack, Discord, Teams, Lark, DingTalk, WeCom, or a custom endpoint.
-
-- **Human URL:** [https://docs.bytebase.com/integrations/api/overview](https://docs.bytebase.com/integrations/api/overview)
-- **Base URL:** `https://demo.bytebase.com/v1`
-
-#### Tags
-
-- Webhooks
-- Notifications
-- Events
-
-#### Properties
-
-- [Documentation](https://docs.bytebase.com/integrations/api/overview)
-- [API Reference](https://api.bytebase.com/)
-- [OpenAPI](openapi/bytebase-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/bytebase.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/bytebase.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
-
-## Common Properties
-
-- [GitHub Organization](https://github.com/bytebase)
-- [LinkedIn](https://www.linkedin.com/company/bytebase)
 - [Website](https://www.bytebase.com)
 - [Documentation](https://docs.bytebase.com/integrations/api/overview)
-- [Plans](plans/bytebase-plans-pricing.yml)
-- [Rate Limits](rate-limits/bytebase-rate-limits.yml)
-- [Fin Ops](finops/bytebase-finops.yml)
+- [Blog](https://www.bytebase.com/blog/)
+- [GitHub](https://github.com/bytebase)
 
-## Maintainers
+## API Evangelist rating
 
-**FN:** Kin Lane
-**Email:** kin@apievangelist.com
+**Kin Score 26.1** — emerging · rubric 0.24.0 · scored 2026-10-17
+
+| Facet | Score |
+|---|---|
+| Discoverability | 66.1 |
+| Contract quality | 43.6 |
+| Contract governance | 0.0 |
+| Operational transparency | 10.5 |
+| Developer ergonomics | 22.6 |
+| Access clarity | 15.8 |
+
+**Agent readiness 17.9** — agent-aware
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | derived (partial credit) |
+| Reversibility Documented | — |
+| MCP Server | — |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | — |
+| Error Semantics | — |
+| OpenAPI Examples | — |
+| Rate Limit Signal | derived (partial credit) |
+| Event Surface Described | — |
+| Agent Skills | — |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+
+**Regulatory alignment 16.7** — Horizontal (data, software, accessibility, platform)
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/bytebase/](https://apis.io/providers/bytebase/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Bytebase: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/bytebase/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
